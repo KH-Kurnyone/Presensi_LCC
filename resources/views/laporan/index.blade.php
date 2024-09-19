@@ -84,10 +84,10 @@
                         </div>
                     </div>
                     <div class="d-flex mt-2">
-                        <button class="btn btn-login text-white me-2" style="border-radius: 5px" tabindex="4"><i
+                        <button class="btn btn-danger btn-login text-white me-2" style="border-radius: 5px" tabindex="4"><i
                                 class="bi bi-search"></i> Cari
                             Data</button>
-                        <a href="/laporan" class="btn btn-login text-white" style="border-radius: 5px" tabindex="5">
+                        <a href="/laporan" class="btn btn-danger btn-login text-white" style="border-radius: 5px" tabindex="5">
                             <i class="bi bi-arrow-clockwise"></i> Refresh
                         </a>
                     </div>
@@ -111,7 +111,7 @@
                         </thead>
                         <tbody>
                             <tr>
-                                <td colspan="5" class="text-center text-danger">Data Tidak Ditemukan!</td>
+                                <td colspan="5" class="text-center text-danger">Filter Data Terlebih Dahulu!</td>
                             </tr>
                         </tbody>
                     </table>
@@ -183,7 +183,7 @@
                                 </tr>
                                 <div class="modal fade" id="keteranganKehadiran{{ $mahasiswa->id }}" tabindex="-1"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel">Keterangan
@@ -216,9 +216,10 @@
                     <div class="titik-mobile">
                         <form action="/laporan/create" method="GET" target="_blank">
                             @csrf
+                            <input type="hidden" name="kegiatan" value="{{ request('kegiatan') }}">
                             <input type="hidden" name="tanggal_awal" value="{{ request('tanggal_awal') }}">
                             <input type="hidden" name="tanggal_akhir" value="{{ request('tanggal_akhir') }}">
-                            <button class="btn btn-login text-white">Cetak Laporan <i
+                            <button class="btn btn-danger btn-login text-white">Cetak Laporan <i
                                     class="bi bi-box-arrow-in-right"></i></button>
                         </form>
                     </div>
@@ -282,7 +283,7 @@
                                                     <tr class="border">
                                                         <td class="text-center">{{ $loop->iteration }}.</td>
                                                         <td>{{ $item->nama }}</td>
-                                                        <td class="text-center">{{ $item->kelas->prodi->prodi }}</td>
+                                                        <td>{{ $item->kelas->prodi->prodi }}</td>
                                                         <td class="text-center">{{ $item->kelas->kelas }}</td>
                                                         <td class="text-center">{{ $item->jenis_kelamin }}</td>
                                                         <td rowspan="2">{{ $loop->iteration }}.</td>
@@ -297,7 +298,7 @@
                                     </div>
                                     <div class="d-flex justify-content-end">
                                         <div class="titik-mobile">
-                                            <a href="/printlcc" target="_blank" class="btn btn-login text-white">Cetak
+                                            <a href="/printlcc" target="_blank" class="btn btn-danger btn-danger btn-login text-white">Cetak
                                                 Absensi <i class="bi bi-box-arrow-in-right"></i></a>
                                         </div>
                                     </div>
@@ -356,7 +357,7 @@
                                     </div>
                                     <div class="d-flex justify-content-end">
                                         <div class="titik-mobile">
-                                            <a href="/printlcc" target="_blank" class="btn btn-login text-white">Cetak
+                                            <a href="/printlcc" target="_blank" class="btn btn-danger btn-login text-white">Cetak
                                                 Absensi <i class="bi bi-box-arrow-in-right"></i></a>
                                         </div>
                                     </div>
@@ -416,6 +417,12 @@
                                                     </tr>
                                                 </tbody>
                                             </table>
+                                        </div>
+                                        <div class="d-flex justify-content-end">
+                                            <div class="titik-mobile">
+                                                <a href="#" target="" class="btn btn-danger btn-login text-white">Cetak
+                                                    Absensi <i class="bi bi-box-arrow-in-right"></i></a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

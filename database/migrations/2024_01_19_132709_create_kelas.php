@@ -17,8 +17,8 @@ class CreateKelas extends Migration
             $table->id();
             $table->foreignId('prodi_id')->nullable();
             $table->string('kelas','50');
-            $table->enum('status',['Aktif','Non Aktif']);
             $table->string('angkatan','5');
+            $table->enum('tingkat',['1','2','3','4']);
             $table->timestamps();
         });
     }

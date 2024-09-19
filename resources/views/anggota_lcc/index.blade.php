@@ -1,3 +1,4 @@
+{{-- -- Active: 1721786708323@@127.0.0.1@3306@e_presence_lcc --}}
 @extends('master.indexadmin')
 <title>Anggota LCC - E-Presence LCC</title>
 @section('content')
@@ -28,33 +29,40 @@
                         <tr>
                             <th scope="col">No.</th>
                             <th scope="col">Nama</th>
-                            <th scope="col">Prodi</th>
+                            {{-- <th scope="col">Prodi</th> --}}
                             <th scope="col">Kelas</th>
                             <th scope="col">Gender</th>
                             <th scope="col">Tingkat</th>
+                            <th scope="col">Jabatan</th>
                             <th scope="col">Angkatan</th>
-                            {{-- <th scope="col">Status UKM</th> --}}
                             <th scope="col">Detail</th>
                         </tr>
                     </thead>
                     <tbody>
+                         @php
+                            use Carbon\Carbon;
+                            Carbon::setLocale('id');
+                        @endphp
                         @foreach ($data as $item)
                             <tr>
-                                <td>{{ $loop->iteration }}.</td>
+                                <td class="text-center">{{ $loop->iteration }}.</td>
                                 <td>{{ $item->nama }}</td>
-                                <td>{{ $item->kelas->prodi->prodi }}</td>
-                                <td>{{ $item->kelas->kelas }}</td>
-                                <td>{{ $item->jenis_kelamin }}</td>
-                                @if ($item->tingkat == 1)
-                                    <td>Satu</td>
-                                @elseif($item->tingkat == 2)
-                                    <td>Dua</td>
-                                @elseif($item->tingkat == 3)
-                                    <td>Tiga</td>
-                                @elseif($item->tingkat == 4)
-                                    <td>Alumni</td>
-                                @endif
-                                <td>{{ $item->angkatan }}</td>
+                                {{-- <td class="text-center">{{ $item->kelas->prodi->prodi }}</td> --}}
+                                <td class="text-center">{{ $item->kelas->kelas }}</td>
+                                <td class="text-center">{{ $item->jenis_kelamin }}</td>
+                                <td class="text-center">
+                                    @if ($item->kelas->tingkat == 1)
+                                        <span class="badge rounded-pill bg-success py-2 px-4">I</span>
+                                    @elseif ($item->kelas->tingkat == 2)
+                                        <span class="badge rounded-pill text-dark bg-warning py-2 px-4">II</span>
+                                    @elseif ($item->kelas->tingkat == 3)
+                                        <span class="badge rounded-pill bg-danger py-2 px-4">III</span>
+                                    @elseif ($item->kelas->tingkat == 4)
+                                        <span class="badge rounded-pill bg-secondary p-2">Alumni</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">{{ $item->jabatan->jabatan }}</td>
+                                <td class="text-center">{{ $item->kelas->angkatan }}</td>
                                 {{-- <td>
                                         @if ($item->status_ukm == 'Anggota LCC')
                                             <span class="badge rounded-pill bg-success p-2">{{ $item->status_ukm }}</span>
@@ -67,9 +75,10 @@
                                         data-bs-target="#detailmahasiswa{{ $item->id }}"><i
                                             class="bi bi-list"></i></button>
                                 </td>
+
                                 <div class="modal fade" id="detailmahasiswa{{ $item->id }}" tabindex="-1">
                                     <div
-                                        class="modal-dialog @can('Admin') modal-lg @endcan @can('Petugas') modal-lg @endcan">
+                                        class="modal-dialog modal-dialog-centered @can('Admin') modal-lg @endcan @can('Petugas') modal-lg @endcan">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title fw-bold" style="color: #012970">
@@ -93,9 +102,11 @@
                                                                 <div class="col-lg-3">
                                                                     <div class="text-center">
                                                                         <div class="d-flex justify-content-center">
-                                                                            {!! DNS2D::getBarcodeHTML("$item->nim", 'QRCODE', 6, 6) !!}
+                                                                            {!! DNS2D::getBarcodeHTML("$item->nim", 'QRCODE', 7, 7) !!}
                                                                         </div>
-                                                                        <h5 class="fw-bold mt-2">Barcode</p>
+                                                                        {{-- <div class="mt-2">{{ $item->nim }}</div> --}}
+                                                                        <div class="fw-bold fs-6 mt-2">{{ $item->nama }}</div>
+                                                                        <div class="fs-6">{{ $item->jabatan->jabatan }}</div>
                                                                     </div>
                                                                 </div>
                                                             @endcan
@@ -105,9 +116,12 @@
                                                                 <div class="col-lg-3">
                                                                     <div class="text-center">
                                                                         <div class="d-flex justify-content-center">
-                                                                            {!! DNS2D::getBarcodeHTML("$item->nim", 'QRCODE', 6, 6) !!}
+                                                                            {!! DNS2D::getBarcodeHTML("$item->nim", 'QRCODE', 7, 7) !!}
                                                                         </div>
-                                                                        <h5 class="fw-bold mt-2">Barcode</p>
+                                                                        {{-- <div class="mt-2">{{ $item->nim }}</div> --}}
+                                                                        <div class="fw-bold fs-6 mt-2">{{ $item->nama }}
+                                                                        </div>
+                                                                        <div class="fs-6">{{ $item->jabatan->jabatan }}</div>
                                                                     </div>
                                                                 </div>
                                                             @endcan
@@ -123,11 +137,6 @@
                                                                         <div class="col-7">{{ $item->nim }}</div>
                                                                     </div>
                                                                     <div class="row mx-3 ">
-                                                                        <div class="col-4 fw-bold">Nama</div>
-                                                                        <div class="col-1">:</div>
-                                                                        <div class="col-7">{{ $item->nama }}</div>
-                                                                    </div>
-                                                                    <div class="row mx-3 ">
                                                                         <div class="col-4 fw-bold">Prodi</div>
                                                                         <div class="col-1">:</div>
                                                                         <div class="col-7">
@@ -137,7 +146,8 @@
                                                                     <div class="row mx-3 ">
                                                                         <div class="col-4 fw-bold">Kelas</div>
                                                                         <div class="col-1">:</div>
-                                                                        <div class="col-7">{{ $item->Kelas->kelas }}</div>
+                                                                        <div class="col-7">{{ $item->Kelas->kelas }}
+                                                                        </div>
                                                                     </div>
                                                                     <div class="row mx-3 ">
                                                                         <div class="col-4 fw-bold">Gender</div>
@@ -148,13 +158,14 @@
                                                                     <div class="row mx-3 ">
                                                                         <div class="col-4 fw-bold">Tempat Lahir</div>
                                                                         <div class="col-1">:</div>
-                                                                        <div class="col-7">{{ $item->tempat_lahir }}</div>
+                                                                        <div class="col-7">{{ $item->tempat_lahir }}
+                                                                        </div>
                                                                     </div>
                                                                     <div class="row mx-3 ">
                                                                         <div class="col-4 fw-bold">Tanggal Lahir</div>
                                                                         <div class="col-1">:</div>
                                                                         <div class="col-7">
-                                                                            {{ \Carbon\Carbon::parse($item->tanggal_lahir)->format('d/m/Y') }}
+                                                                            {{ Carbon::parse($item->tanggal_lahir)->translatedFormat('l, d F Y') }}
                                                                         </div>
                                                                     </div>
                                                                     <div class="row mx-3 ">
@@ -187,21 +198,27 @@
                                                                         <div class="col-4 fw-bold">Tingkat</div>
                                                                         <div class="col-1">:</div>
                                                                         <div class="col-7">
-                                                                            @if ($item->tingkat == 1)
-                                                                                <span>Satu</span>
-                                                                            @elseif($item->tingkat == 2)
-                                                                                <span>Dua</span>
-                                                                            @elseif($item->tingkat == 3)
-                                                                                <span>Tiga</span>
-                                                                            @elseif($item->tingkat == 4)
+                                                                            @if ($item->kelas->tingkat == 1)
+                                                                                <span>I</span>
+                                                                            @elseif($item->kelas->tingkat == 2)
+                                                                                <span>II</span>
+                                                                            @elseif($item->kelas->tingkat == 3)
+                                                                                <span>III</span>
+                                                                            @elseif($item->kelas->tingkat == 4)
                                                                                 <span>Alumni</span>
                                                                             @endif
                                                                         </div>
                                                                     </div>
-                                                                    <div class="row mx-3 mb-4">
+                                                                    <div class="row mx-3">
                                                                         <div class="col-4 fw-bold">Angkatan</div>
                                                                         <div class="col-1">:</div>
-                                                                        <div class="col-7">{{ $item->angkatan }}</div>
+                                                                        <div class="col-7">{{ $item->kelas->angkatan }}
+                                                                        </div>
+                                                                    </div>
+                                                                    <div class="row mx-3 mb-4">
+                                                                        <div class="col-4 fw-bold">Alasan Masuk LCC</div>
+                                                                        <div class="col-1">:</div>
+                                                                        <div class="col-7">{{ $item->alasan }}</div>
                                                                     </div>
                                                                     @can('Admin')
                                                                     </div>

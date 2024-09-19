@@ -112,7 +112,19 @@
                 </tbody>
             </table>
         </div>
-        {{-- <div>
+        
+    </section>
+
+    <script>
+        addEventListener('load',function myfunction(){
+            window.print()
+        });
+    </script>
+</body>
+
+</html>
+
+{{-- <div>
             @foreach ($statuskehadiran->groupBy('mahasiswa_id') as $mahasiswaKehadiran)
                 @php
                     $mahasiswa = $mahasiswaKehadiran->first()->mahasiswa;
@@ -137,13 +149,3 @@
                 </table>
             @endforeach
         </div> --}}
-    </section>
-
-    <script>
-        addEventListener('load',function myfunction(){
-            window.print()
-        });
-    </script>
-</body>
-
-</html>

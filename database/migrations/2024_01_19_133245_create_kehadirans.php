@@ -16,11 +16,10 @@ class CreateKehadirans extends Migration
         Schema::create('kehadirans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id');
+            $table->foreignId('mahasiswa_id');
             $table->foreignId('kegiatan_id');
             $table->date('tanggal');
-            // $table->enum('pertemuan',['01','02','03','04','05']);
-            // $table->enum('nama_kegiatan',['Office Class','Multimedia Class','Programing Class']);
-            $table->string('ket_kegiatan','100');
+            $table->text('ket_kegiatan');
             $table->enum('status',['Aktif','Non Aktif']);
             $table->timestamps();
         });

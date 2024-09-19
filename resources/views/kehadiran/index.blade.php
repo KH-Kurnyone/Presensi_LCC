@@ -35,14 +35,16 @@
     <section class="section dashboard">
         @can('Admin')
             <div class="mb-3 d-lg-flex justify-content-between">
-                <a href="/kehadiran/create" class="btn btn-login text-white mb-1"><i class="bi bi-plus-lg"></i> Tambah Data
+                <a href="/kehadiran/create" tabindex="1" class="btn btn-danger btn-login text-white mb-1"><i
+                        class="bi bi-plus-lg"></i> Tambah Data
                     Kehadiran</a>
                 <button class="btn btn-warning mb-1" data-bs-toggle="modal" data-bs-target="#editStatusKehadiran"><i
                         class="bi bi-pencil-square"></i> Edit Status</button>
             </div>
             {{-- Modal Edit Status --}}
-            <div class="modal fade" id="editStatusKehadiran" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-                <div class="modal-dialog">
+            <div class="modal fade" id="editStatusKehadiran" tabindex="-1" aria-labelledby="exampleModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
                     <div class="modal-content">
                         <div class="modal-header">
                             <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel"><i class="bi bi-pencil-square"></i> Edit
@@ -70,7 +72,7 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
-                                <button type="submit" class="btn btn-login text-white">Simpan <i
+                                <button type="submit" class="btn btn-danger btn-login text-white">Simpan <i
                                         class="bi bi-box-arrow-in-right"></i></button>
                             </div>
                         </form>
@@ -80,7 +82,8 @@
         @endcan
         @can('Petugas')
             <div class="mb-3">
-                <a href="/kehadiran/create" class="btn btn-login text-white"><i class="bi bi-plus-lg"></i> Tambah Data
+                <a href="/kehadiran/create" class="btn btn-danger btn-login text-white" tabindex="1"><i
+                        class="bi bi-plus-lg"></i> Tambah Data
                     Kehadiran</a>
             </div>
         @endcan
@@ -97,10 +100,10 @@
                                 </th>
                             @endcan
                             <th scope="col">No.</th>
-                            <th scope="col">Tanggal</th>
+                            <th scope="col">Hari, Tanggal</th>
                             {{-- <th scope="col">Waktu</th> --}}
                             <th scope="col">Nama Kegiatan</th>
-                            <th scope="col">Ket. Kegiatan</th>
+                            <th scope="col">Pemateri</th>
                             @can('Admin')
                                 <th scope="col">Status</th>
                             @endcan
@@ -112,22 +115,31 @@
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            use Carbon\Carbon;
+                            Carbon::setLocale('id');
+                        @endphp
                         {{-- @can('Admin') --}}
                         @foreach ($datakehadiranadmin as $item)
                             <tr>
                                 @can('Admin')
-                                    <td>
+                                    <td class="text-center">
                                         <input class="form-check-input border-secondary checkbox_ids" type="checkbox"
                                             name="selected_ids[]" value="{{ $item->id }}">
                                     </td>
                                 @endcan
-                                <td>{{ $loop->iteration }}.</td>
-                                <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td>
+                                <td class="text-center">{{ $loop->iteration }}.</td>
+                                {{-- <td class="text-center">{{ \Carbon\Carbon::parse($item->tanggal)->format('d/m/Y') }}</td> --}}
+                                <td>{{ Carbon::parse($item->tanggal)->translatedFormat('l, d F Y') }}</td>
                                 {{-- <td>{{ $item->created_at->format('H:i') }}</td> --}}
                                 <td>{{ $item->kegiatan->kegiatan }}</td>
-                                <td>{{ $item->ket_kegiatan }}</td>
+                                @if ($item->mahasiswa_id == 0)
+                                    <td>BPH LCC</td>
+                                @else
+                                    <td>{{ $item->mahasiswa->nama }}</td>
+                                @endif
                                 @can('Admin')
-                                    <td>
+                                    <td class="text-center">
                                         @if ($item->status == 'Aktif')
                                             <span class="badge rounded-pill bg-success py-2 px-4">{{ $item->status }}</span>
                                         @elseif ($item->status == 'Non Aktif')
@@ -136,7 +148,7 @@
                                     </td>
                                 @endcan
                                 @can('Viewer')
-                                    <td>
+                                    <td class="text-center">
                                         @if ($item->status == 'Aktif')
                                             <span class="badge rounded-pill bg-success py-2 px-4">{{ $item->status }}</span>
                                         @elseif ($item->status == 'Non Aktif')
@@ -164,7 +176,7 @@
                                 </td>
                                 {{-- Modal Delete --}}
                                 <div class="modal fade" id="deletekehadiran{{ $item->id }}" tabindex="-1">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title text-danger fw-bold"><i class="bi bi-trash3"></i>

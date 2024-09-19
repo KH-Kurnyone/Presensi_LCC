@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Kegiatan;
 use App\Models\Kehadiran;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Gate;
 
 class KegiatanController extends Controller
@@ -16,16 +17,16 @@ class KegiatanController extends Controller
      */
     public function index()
     {
-        if (Gate::allows('Admin'))
-        {
-            $data = Kegiatan::orderBy('kegiatan','asc');
+        if (Gate::allows('Admin')) {
+            $data = Kegiatan::orderBy('kegiatan', 'asc')->get();
 
             return view('kegiatan.index', [
-                'datakegiatan' => $data->paginate(50),
+                'datakegiatan' => $data,
                 'datakehadiran' => Kehadiran::all(),
                 'title' => 'kegiatan',
             ]);
-        } return back();
+        }
+        return back();
     }
 
     /**
@@ -50,7 +51,7 @@ class KegiatanController extends Controller
             'kegiatan'     => 'required|unique:kegiatans',
         ]);
         Kegiatan::create($data);
-        return redirect('/kegiatan')->with('kegiatanadd','Data kegiatan berhasil di buat!');
+        return redirect('/kegiatan')->with('kegiatanadd', 'Data kegiatan berhasil di buat!');
     }
 
     /**
@@ -84,11 +85,14 @@ class KegiatanController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = $request->validate ([
-            'kegiatan'     => 'required|unique:kegiatans',
+        $data = $request->validate([
+            'kegiatan'   =>  [
+                'required',
+                Rule::unique('kegiatans')->ignore($id, 'id'),
+            ],
         ]);
         Kegiatan::where('id', $id)->update($data);
-        return redirect('/kegiatan')->with('kegiatanedit','Data kegiatan berhasil di ubah!');
+        return redirect('/kegiatan')->with('kegiatanedit', 'Data kegiatan berhasil di ubah!');
     }
 
     /**
@@ -100,6 +104,6 @@ class KegiatanController extends Controller
     public function destroy($id)
     {
         Kegiatan::where('id', $id)->delete();
-        return redirect('/kegiatan')->with('kegiatandelete','Data kegiatan berhasil di hapus!');
+        return redirect('/kegiatan')->with('kegiatandelete', 'Data kegiatan berhasil di hapus!');
     }
 }

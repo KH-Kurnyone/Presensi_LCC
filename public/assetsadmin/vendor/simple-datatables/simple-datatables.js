@@ -94,14 +94,27 @@
                                         : t.childNodes
                                         ? t.childNodes.map((t) => i(t)).join("")
                                         : "",
-                                n = function (t) {
+                                n = (t) => {
+                                    if (null == t) return "";
+                                    if (
+                                        t.hasOwnProperty("text") ||
+                                        t.hasOwnProperty("data")
+                                    ) {
+                                        const e = t;
+                                        return e.text ?? n(e.data);
+                                    }
+                                    return t.hasOwnProperty("nodeName")
+                                        ? i(t)
+                                        : String(t);
+                                },
+                                a = function (t) {
                                     return t
                                         .replace(/&/g, "&amp;")
                                         .replace(/</g, "&lt;")
                                         .replace(/>/g, "&gt;")
                                         .replace(/"/g, "&quot;");
                                 },
-                                a = function (t, e) {
+                                o = function (t, e) {
                                     let s = 0,
                                         i = 0;
                                     for (; s < t + 1; ) {
@@ -109,15 +122,121 @@
                                     }
                                     return i - 1;
                                 },
-                                o = function (t, e) {
-                                    let s = t,
-                                        i = 0;
-                                    for (; i < t; ) {
-                                        e[i].hidden && (s -= 1), i++;
-                                    }
-                                    return s;
-                                };
-                            function r(t, e, s) {
+                                r = function (t) {
+                                    const e = {};
+                                    if (t)
+                                        for (const s of t) e[s.name] = s.value;
+                                    return e;
+                                },
+                                l = (t) =>
+                                    t
+                                        ? t
+                                              .trim()
+                                              .split(" ")
+                                              .map((t) => `.${t}`)
+                                              .join("")
+                                        : null,
+                                d = (t, e) => {
+                                    const s = e
+                                        ?.split(" ")
+                                        .some((e) => !t.classList.contains(e));
+                                    return !s;
+                                },
+                                c = (t, e) =>
+                                    t ? (e ? `${t} ${e}` : t) : e || "";
+                            var h = function () {
+                                return (
+                                    (h =
+                                        Object.assign ||
+                                        function (t) {
+                                            for (
+                                                var e,
+                                                    s = arguments,
+                                                    i = 1,
+                                                    n = arguments.length;
+                                                i < n;
+                                                i++
+                                            )
+                                                for (var a in (e = s[i]))
+                                                    Object.prototype.hasOwnProperty.call(
+                                                        e,
+                                                        a
+                                                    ) && (t[a] = e[a]);
+                                            return t;
+                                        }),
+                                    h.apply(this, arguments)
+                                );
+                            };
+                            function u(t, e, s) {
+                                if (s || 2 === arguments.length)
+                                    for (var i, n = 0, a = e.length; n < a; n++)
+                                        (!i && n in e) ||
+                                            (i ||
+                                                (i = Array.prototype.slice.call(
+                                                    e,
+                                                    0,
+                                                    n
+                                                )),
+                                            (i[n] = e[n]));
+                                return t.concat(
+                                    i || Array.prototype.slice.call(e)
+                                );
+                            }
+                            "function" == typeof SuppressedError &&
+                                SuppressedError;
+                            var p = (function () {
+                                function t(t) {
+                                    void 0 === t && (t = {});
+                                    var e = this;
+                                    Object.entries(t).forEach(function (t) {
+                                        var s = t[0],
+                                            i = t[1];
+                                        return (e[s] = i);
+                                    });
+                                }
+                                return (
+                                    (t.prototype.toString = function () {
+                                        return JSON.stringify(this);
+                                    }),
+                                    (t.prototype.setValue = function (t, e) {
+                                        return (this[t] = e), this;
+                                    }),
+                                    t
+                                );
+                            })();
+                            function f(t) {
+                                for (
+                                    var e = arguments, s = [], i = 1;
+                                    i < arguments.length;
+                                    i++
+                                )
+                                    s[i - 1] = e[i];
+                                return (
+                                    null != t &&
+                                    s.some(function (e) {
+                                        var s, i;
+                                        return (
+                                            "function" ==
+                                                typeof (null ===
+                                                    (i =
+                                                        null ===
+                                                            (s =
+                                                                null == t
+                                                                    ? void 0
+                                                                    : t.ownerDocument) ||
+                                                        void 0 === s
+                                                            ? void 0
+                                                            : s.defaultView) ||
+                                                void 0 === i
+                                                    ? void 0
+                                                    : i[e]) &&
+                                            t instanceof
+                                                t.ownerDocument.defaultView[e]
+                                        );
+                                    })
+                                );
+                            }
+                            function m(t, e, s) {
                                 var i;
                                 return (
                                     "#text" === t.nodeName
@@ -127,10 +246,13 @@
                                         : "#comment" === t.nodeName
                                         ? (i = s.document.createComment(t.data))
                                         : (e
-                                              ? (i = s.document.createElementNS(
-                                                    "http://www.w3.org/2000/svg",
-                                                    t.nodeName
-                                                ))
+                                              ? ((i =
+                                                    s.document.createElementNS(
+                                                        "http://www.w3.org/2000/svg",
+                                                        t.nodeName
+                                                    )),
+                                                "foreignObject" ===
+                                                    t.nodeName && (e = !1))
                                               : "svg" ===
                                                 t.nodeName.toLowerCase()
                                               ? ((i =
@@ -155,95 +277,86 @@
                                                   t
                                               ) {
                                                   return i.appendChild(
-                                                      r(t, e, s)
+                                                      m(t, e, s)
                                                   );
                                               }),
                                           s.valueDiffing &&
                                               (t.value &&
-                                                  (i instanceof
-                                                      HTMLButtonElement ||
-                                                      i instanceof
-                                                          HTMLDataElement ||
-                                                      i instanceof
-                                                          HTMLInputElement ||
-                                                      i instanceof
-                                                          HTMLLIElement ||
-                                                      i instanceof
-                                                          HTMLMeterElement ||
-                                                      i instanceof
-                                                          HTMLOptionElement ||
-                                                      i instanceof
-                                                          HTMLProgressElement ||
-                                                      i instanceof
-                                                          HTMLParamElement) &&
+                                                  f(
+                                                      i,
+                                                      "HTMLButtonElement",
+                                                      "HTMLDataElement",
+                                                      "HTMLInputElement",
+                                                      "HTMLLIElement",
+                                                      "HTMLMeterElement",
+                                                      "HTMLOptionElement",
+                                                      "HTMLProgressElement",
+                                                      "HTMLParamElement"
+                                                  ) &&
                                                   (i.value = t.value),
                                               t.checked &&
-                                                  i instanceof
-                                                      HTMLInputElement &&
+                                                  f(i, "HTMLInputElement") &&
                                                   (i.checked = t.checked),
                                               t.selected &&
-                                                  i instanceof
-                                                      HTMLOptionElement &&
+                                                  f(i, "HTMLOptionElement") &&
                                                   (i.selected = t.selected))),
                                     i
                                 );
                             }
-                            var l = function (t, e) {
+                            var g = function (t, e) {
                                 for (e = e.slice(); e.length > 0; ) {
                                     var s = e.splice(0, 1)[0];
                                     t = t.childNodes[s];
                                 }
                                 return t;
                             };
-                            function d(t, e, s) {
+                            function b(t, e, s) {
                                 var i,
                                     n,
                                     a,
                                     o = e[s._const.action],
-                                    d = e[s._const.route];
+                                    r = e[s._const.route];
                                 [
                                     s._const.addElement,
                                     s._const.addTextElement,
-                                ].includes(o) || (i = l(t, d));
-                                var c = { diff: e, node: i };
-                                if (s.preDiffApply(c)) return !0;
+                                ].includes(o) || (i = g(t, r));
+                                var l = { diff: e, node: i };
+                                if (s.preDiffApply(l)) return !0;
                                 switch (o) {
                                     case s._const.addAttribute:
-                                        if (!(i && i instanceof Element))
-                                            return !1;
+                                        if (!i || !f(i, "Element")) return !1;
                                         i.setAttribute(
                                             e[s._const.name],
                                             e[s._const.value]
                                         );
                                         break;
                                     case s._const.modifyAttribute:
-                                        if (!(i && i instanceof Element))
-                                            return !1;
+                                        if (!i || !f(i, "Element")) return !1;
                                         i.setAttribute(
                                             e[s._const.name],
                                             e[s._const.newValue]
                                         ),
-                                            i instanceof HTMLInputElement &&
+                                            f(i, "HTMLInputElement") &&
                                                 "value" === e[s._const.name] &&
                                                 (i.value =
                                                     e[s._const.newValue]);
                                         break;
                                     case s._const.removeAttribute:
-                                        if (!(i && i instanceof Element))
-                                            return !1;
+                                        if (!i || !f(i, "Element")) return !1;
                                         i.removeAttribute(e[s._const.name]);
                                         break;
                                     case s._const.modifyTextElement:
-                                        if (!(i && i instanceof Text))
-                                            return !1;
+                                        if (!i || !f(i, "Text")) return !1;
                                         s.textDiff(
                                             i,
                                             i.data,
                                             e[s._const.oldValue],
                                             e[s._const.newValue]
                                         ),
-                                            i.parentNode instanceof
-                                                HTMLTextAreaElement &&
+                                            f(
+                                                i.parentNode,
+                                                "HTMLTextAreaElement"
+                                            ) &&
                                                 (i.parentNode.value =
                                                     e[s._const.newValue]);
                                         break;
@@ -252,8 +365,7 @@
                                         i.value = e[s._const.newValue];
                                         break;
                                     case s._const.modifyComment:
-                                        if (!(i && i instanceof Comment))
-                                            return !1;
+                                        if (!i || !f(i, "Comment")) return !1;
                                         s.textDiff(
                                             i,
                                             i.data,
@@ -272,7 +384,7 @@
                                         i.selected = e[s._const.newValue];
                                         break;
                                     case s._const.replaceElement:
-                                        var h =
+                                        var d =
                                             "svg" ===
                                                 e[
                                                     s._const.newValue
@@ -280,14 +392,15 @@
                                             "http://www.w3.org/2000/svg" ===
                                                 i.parentNode.namespaceURI;
                                         i.parentNode.replaceChild(
-                                            r(e[s._const.newValue], h, s),
+                                            m(e[s._const.newValue], d, s),
                                             i
                                         );
                                         break;
                                     case s._const.relocateGroup:
-                                        Array.apply(
-                                            void 0,
-                                            new Array(e[s._const.groupLength])
+                                        u(
+                                            [],
+                                            new Array(e[s._const.groupLength]),
+                                            !0
                                         )
                                             .map(function () {
                                                 return i.removeChild(
@@ -312,48 +425,50 @@
                                         i.parentNode.removeChild(i);
                                         break;
                                     case s._const.addElement:
-                                        var u = (f = d.slice()).splice(
-                                            f.length - 1,
+                                        var c = (p = r.slice()).splice(
+                                            p.length - 1,
                                             1
                                         )[0];
-                                        if (!((i = l(t, f)) instanceof Element))
+                                        if (!f((i = g(t, p)), "Element"))
                                             return !1;
                                         i.insertBefore(
-                                            r(
+                                            m(
                                                 e[s._const.element],
                                                 "http://www.w3.org/2000/svg" ===
                                                     i.namespaceURI,
                                                 s
                                             ),
-                                            i.childNodes[u] || null
+                                            i.childNodes[c] || null
                                         );
                                         break;
                                     case s._const.removeTextElement:
                                         if (!i || 3 !== i.nodeType) return !1;
-                                        var p = i.parentNode;
-                                        p.removeChild(i),
-                                            p instanceof HTMLTextAreaElement &&
-                                                (p.value = "");
+                                        var h = i.parentNode;
+                                        h.removeChild(i),
+                                            f(h, "HTMLTextAreaElement") &&
+                                                (h.value = "");
                                         break;
                                     case s._const.addTextElement:
-                                        var f;
-                                        u = (f = d.slice()).splice(
-                                            f.length - 1,
+                                        var p;
+                                        c = (p = r.slice()).splice(
+                                            p.length - 1,
                                             1
                                         )[0];
                                         if (
                                             ((n = s.document.createTextNode(
                                                 e[s._const.value]
                                             )),
-                                            !(i = l(t, f)).childNodes)
+                                            !(i = g(t, p)).childNodes)
                                         )
                                             return !1;
                                         i.insertBefore(
                                             n,
-                                            i.childNodes[u] || null
+                                            i.childNodes[c] || null
                                         ),
-                                            i.parentNode instanceof
-                                                HTMLTextAreaElement &&
+                                            f(
+                                                i.parentNode,
+                                                "HTMLTextAreaElement"
+                                            ) &&
                                                 (i.parentNode.value =
                                                     e[s._const.value]);
                                         break;
@@ -362,18 +477,18 @@
                                 }
                                 return (
                                     s.postDiffApply({
-                                        diff: c.diff,
-                                        node: c.node,
+                                        diff: l.diff,
+                                        node: l.node,
                                         newNode: n,
                                     }),
                                     !0
                                 );
                             }
-                            function c(t, e, s) {
+                            function v(t, e, s) {
                                 var i = t[e];
                                 (t[e] = t[s]), (t[s] = i);
                             }
-                            function h(t, e, s) {
+                            function _(t, e, s) {
                                 (e = e.slice()).reverse(),
                                     e.forEach(function (e) {
                                         !(function (t, e, s) {
@@ -381,20 +496,20 @@
                                                 case s._const.addAttribute:
                                                     (e[s._const.action] =
                                                         s._const.removeAttribute),
-                                                        d(t, e, s);
+                                                        b(t, e, s);
                                                     break;
                                                 case s._const.modifyAttribute:
-                                                    c(
+                                                    v(
                                                         e,
                                                         s._const.oldValue,
                                                         s._const.newValue
                                                     ),
-                                                        d(t, e, s);
+                                                        b(t, e, s);
                                                     break;
                                                 case s._const.removeAttribute:
                                                     (e[s._const.action] =
                                                         s._const.addAttribute),
-                                                        d(t, e, s);
+                                                        b(t, e, s);
                                                     break;
                                                 case s._const.modifyTextElement:
                                                 case s._const.modifyValue:
@@ -402,40 +517,40 @@
                                                 case s._const.modifyChecked:
                                                 case s._const.modifySelected:
                                                 case s._const.replaceElement:
-                                                    c(
+                                                    v(
                                                         e,
                                                         s._const.oldValue,
                                                         s._const.newValue
                                                     ),
-                                                        d(t, e, s);
+                                                        b(t, e, s);
                                                     break;
                                                 case s._const.relocateGroup:
-                                                    c(
+                                                    v(
                                                         e,
                                                         s._const.from,
                                                         s._const.to
                                                     ),
-                                                        d(t, e, s);
+                                                        b(t, e, s);
                                                     break;
                                                 case s._const.removeElement:
                                                     (e[s._const.action] =
                                                         s._const.addElement),
-                                                        d(t, e, s);
+                                                        b(t, e, s);
                                                     break;
                                                 case s._const.addElement:
                                                     (e[s._const.action] =
                                                         s._const.removeElement),
-                                                        d(t, e, s);
+                                                        b(t, e, s);
                                                     break;
                                                 case s._const.removeTextElement:
                                                     (e[s._const.action] =
                                                         s._const.addTextElement),
-                                                        d(t, e, s);
+                                                        b(t, e, s);
                                                     break;
                                                 case s._const.addTextElement:
                                                     (e[s._const.action] =
                                                         s._const.removeTextElement),
-                                                        d(t, e, s);
+                                                        b(t, e, s);
                                                     break;
                                                 default:
                                                     console.log(
@@ -445,7 +560,7 @@
                                         })(t, e, s);
                                     });
                             }
-                            var u = function (t) {
+                            var w = function (t) {
                                     var e = [];
                                     return (
                                         e.push(t.nodeName),
@@ -472,12 +587,12 @@
                                         e
                                     );
                                 },
-                                p = function (t) {
+                                y = function (t) {
                                     var e = {},
                                         s = {};
                                     return (
                                         t.forEach(function (t) {
-                                            u(t).forEach(function (t) {
+                                            w(t).forEach(function (t) {
                                                 var i = t in e;
                                                 i || t in s
                                                     ? i &&
@@ -488,9 +603,9 @@
                                         e
                                     );
                                 },
-                                f = function (t, e) {
-                                    var s = p(t),
-                                        i = p(e),
+                                D = function (t, e) {
+                                    var s = y(t),
+                                        i = y(e),
                                         n = {};
                                     return (
                                         Object.keys(s).forEach(function (t) {
@@ -499,15 +614,15 @@
                                         n
                                     );
                                 },
-                                m = function (t) {
+                                M = function (t) {
                                     return (
                                         delete t.outerDone,
                                         delete t.innerDone,
                                         delete t.valueDone,
-                                        !t.childNodes || t.childNodes.every(m)
+                                        !t.childNodes || t.childNodes.every(M)
                                     );
                                 },
-                                g = function (t) {
+                                N = function (t) {
                                     if (
                                         Object.prototype.hasOwnProperty.call(
                                             t,
@@ -526,7 +641,11 @@
                                         Object.prototype.hasOwnProperty.call(
                                             t,
                                             "attributes"
-                                        ) && (e.attributes = t.attributes),
+                                        ) &&
+                                            (e.attributes = h(
+                                                {},
+                                                t.attributes
+                                            )),
                                         Object.prototype.hasOwnProperty.call(
                                             t,
                                             "checked"
@@ -545,13 +664,13 @@
                                         ) &&
                                             (e.childNodes = t.childNodes.map(
                                                 function (t) {
-                                                    return g(t);
+                                                    return N(t);
                                                 }
                                             )),
                                         e
                                     );
                                 },
-                                b = function (t, e) {
+                                x = function (t, e) {
                                     if (
                                         ![
                                             "nodeName",
@@ -606,14 +725,14 @@
                                                 t,
                                                 s
                                             ) {
-                                                return b(t, e.childNodes[s]);
+                                                return x(t, e.childNodes[s]);
                                             })
                                         )
                                             return !1;
                                     }
                                     return !0;
                                 },
-                                v = function (t, e, s, i, n) {
+                                O = function (t, e, s, i, n) {
                                     if ((void 0 === n && (n = !1), !t || !e))
                                         return !1;
                                     if (t.nodeName !== e.nodeName) return !1;
@@ -668,20 +787,19 @@
                                         return a.every(function (t, e) {
                                             return t.nodeName === o[e].nodeName;
                                         });
-                                    var r = f(a, o);
+                                    var r = D(a, o);
                                     return a.every(function (t, e) {
-                                        return v(t, o[e], r, !0, !0);
+                                        return O(t, o[e], r, !0, !0);
                                     });
                                 },
-                                w = function (t, e) {
-                                    return Array.apply(
-                                        void 0,
-                                        new Array(t)
-                                    ).map(function () {
-                                        return e;
-                                    });
+                                E = function (t, e) {
+                                    return u([], new Array(t), !0).map(
+                                        function () {
+                                            return e;
+                                        }
+                                    );
                                 },
-                                _ = function (t, e) {
+                                V = function (t, e) {
                                     for (
                                         var s = t.childNodes
                                                 ? t.childNodes
@@ -689,8 +807,8 @@
                                             i = e.childNodes
                                                 ? e.childNodes
                                                 : [],
-                                            n = w(s.length, !1),
-                                            a = w(i.length, !1),
+                                            n = E(s.length, !1),
+                                            a = E(i.length, !1),
                                             o = [],
                                             r = function () {
                                                 return arguments[1];
@@ -702,18 +820,19 @@
                                                         a = [],
                                                         o = t.length,
                                                         r = e.length,
-                                                        l = Array.apply(
-                                                            void 0,
-                                                            new Array(o + 1)
+                                                        l = u(
+                                                            [],
+                                                            new Array(o + 1),
+                                                            !0
                                                         ).map(function () {
                                                             return [];
                                                         }),
-                                                        d = f(t, e),
+                                                        d = D(t, e),
                                                         c = o === r;
                                                     c &&
                                                         t.some(function (t, s) {
-                                                            var i = u(t),
-                                                                n = u(e[s]);
+                                                            var i = w(t),
+                                                                n = w(e[s]);
                                                             return i.length !==
                                                                 n.length
                                                                 ? ((c = !1), !0)
@@ -739,38 +858,38 @@
                                                         });
                                                     for (var h = 0; h < o; h++)
                                                         for (
-                                                            var p = t[h], m = 0;
-                                                            m < r;
-                                                            m++
+                                                            var p = t[h], f = 0;
+                                                            f < r;
+                                                            f++
                                                         ) {
-                                                            var g = e[m];
+                                                            var m = e[f];
                                                             s[h] ||
-                                                            i[m] ||
-                                                            !v(p, g, d, c)
+                                                            i[f] ||
+                                                            !O(p, m, d, c)
                                                                 ? (l[h + 1][
-                                                                      m + 1
+                                                                      f + 1
                                                                   ] = 0)
                                                                 : ((l[h + 1][
-                                                                      m + 1
-                                                                  ] = l[h][m]
+                                                                      f + 1
+                                                                  ] = l[h][f]
                                                                       ? l[h][
-                                                                            m
+                                                                            f
                                                                         ] + 1
                                                                       : 1),
                                                                   l[h + 1][
-                                                                      m + 1
+                                                                      f + 1
                                                                   ] >= n &&
                                                                       ((n =
                                                                           l[
                                                                               h +
                                                                                   1
                                                                           ][
-                                                                              m +
+                                                                              f +
                                                                                   1
                                                                           ]),
                                                                       (a = [
                                                                           h + 1,
-                                                                          m + 1,
+                                                                          f + 1,
                                                                       ])));
                                                         }
                                                     return (
@@ -783,9 +902,10 @@
                                                 })(s, i, n, a);
                                                 t
                                                     ? (o.push(t),
-                                                      Array.apply(
-                                                          void 0,
-                                                          new Array(t.length)
+                                                      u(
+                                                          [],
+                                                          new Array(t.length),
+                                                          !0
                                                       )
                                                           .map(r)
                                                           .forEach(function (
@@ -817,7 +937,7 @@
                                         (t.subsets = o), (t.subsetsAge = 100), o
                                     );
                                 },
-                                y = (function () {
+                                $ = (function () {
                                     function t() {
                                         this.list = [];
                                     }
@@ -833,31 +953,8 @@
                                         }),
                                         t
                                     );
-                                })(),
-                                x = (function () {
-                                    function t(t) {
-                                        void 0 === t && (t = {});
-                                        var e = this;
-                                        Object.entries(t).forEach(function (t) {
-                                            var s = t[0],
-                                                i = t[1];
-                                            return (e[s] = i);
-                                        });
-                                    }
-                                    return (
-                                        (t.prototype.toString = function () {
-                                            return JSON.stringify(this);
-                                        }),
-                                        (t.prototype.setValue = function (
-                                            t,
-                                            e
-                                        ) {
-                                            return (this[t] = e), this;
-                                        }),
-                                        t
-                                    );
                                 })();
-                            function N(t, e) {
+                            function C(t, e) {
                                 var s,
                                     i,
                                     n = t;
@@ -869,7 +966,7 @@
                                             : void 0);
                                 return { node: n, parentNode: s, nodeIndex: i };
                             }
-                            function D(t, e, s) {
+                            function S(t, e, s) {
                                 return (
                                     e.forEach(function (e) {
                                         !(function (t, e, s) {
@@ -880,7 +977,7 @@
                                                     s._const.addTextElement,
                                                 ].includes(e[s._const.action])
                                             ) {
-                                                var r = N(t, e[s._const.route]);
+                                                var r = C(t, e[s._const.route]);
                                                 (n = r.node),
                                                     (a = r.parentNode),
                                                     (o = r.nodeIndex);
@@ -972,7 +1069,9 @@
                                                         e[s._const.newValue];
                                                     break;
                                                 case s._const.replaceElement:
-                                                    (l = e[s._const.newValue]),
+                                                    (l = N(
+                                                        e[s._const.newValue]
+                                                    )),
                                                         (a.childNodes[o] = l);
                                                     break;
                                                 case s._const.relocateGroup:
@@ -1182,14 +1281,13 @@
                                                     )[0];
                                                     (n =
                                                         null ===
-                                                            (i = N(t, d)) ||
+                                                            (i = C(t, d)) ||
                                                         void 0 === i
                                                             ? void 0
                                                             : i.node),
-                                                        (l =
-                                                            e[
-                                                                s._const.element
-                                                            ]),
+                                                        (l = N(
+                                                            e[s._const.element]
+                                                        )),
                                                         n.childNodes ||
                                                             (n.childNodes = []),
                                                         u >= n.childNodes.length
@@ -1291,11 +1389,11 @@
                                                         d.length - 1,
                                                         1
                                                     )[0];
-                                                    ((l = {}).nodeName =
-                                                        "#text"),
-                                                        (l.data =
-                                                            e[s._const.value]),
-                                                        (n = N(t, d).node)
+                                                    (l = {
+                                                        nodeName: "#text",
+                                                        data: e[s._const.value],
+                                                    }),
+                                                        (n = C(t, d).node)
                                                             .childNodes ||
                                                             (n.childNodes = []),
                                                         p >= n.childNodes.length
@@ -1374,11 +1472,10 @@
                                     !0
                                 );
                             }
-                            function M(t, e) {
+                            function k(t, e) {
                                 void 0 === e && (e = { valueDiffing: !0 });
                                 var s = { nodeName: t.nodeName };
-                                if (t instanceof Text || t instanceof Comment)
-                                    s.data = t.data;
+                                if (f(t, "Text", "Comment")) s.data = t.data;
                                 else {
                                     if (t.attributes && t.attributes.length > 0)
                                         (s.attributes = {}),
@@ -1395,49 +1492,45 @@
                                                 .call(t.childNodes)
                                                 .forEach(function (t) {
                                                     return s.childNodes.push(
-                                                        M(t, e)
+                                                        k(t, e)
                                                     );
                                                 });
                                     e.valueDiffing &&
-                                        (t instanceof HTMLTextAreaElement &&
+                                        (f(t, "HTMLTextAreaElement") &&
                                             (s.value = t.value),
-                                        t instanceof HTMLInputElement &&
+                                        f(t, "HTMLInputElement") &&
                                         ["radio", "checkbox"].includes(
                                             t.type.toLowerCase()
                                         ) &&
                                         void 0 !== t.checked
                                             ? (s.checked = t.checked)
-                                            : (t instanceof HTMLButtonElement ||
-                                                  t instanceof
-                                                      HTMLDataElement ||
-                                                  t instanceof
-                                                      HTMLInputElement ||
-                                                  t instanceof HTMLLIElement ||
-                                                  t instanceof
-                                                      HTMLMeterElement ||
-                                                  t instanceof
-                                                      HTMLOptionElement ||
-                                                  t instanceof
-                                                      HTMLProgressElement ||
-                                                  t instanceof
-                                                      HTMLParamElement) &&
-                                              (s.value = t.value),
-                                        t instanceof HTMLOptionElement &&
+                                            : f(
+                                                  t,
+                                                  "HTMLButtonElement",
+                                                  "HTMLDataElement",
+                                                  "HTMLInputElement",
+                                                  "HTMLLIElement",
+                                                  "HTMLMeterElement",
+                                                  "HTMLOptionElement",
+                                                  "HTMLProgressElement",
+                                                  "HTMLParamElement"
+                                              ) && (s.value = t.value),
+                                        f(t, "HTMLOptionElement") &&
                                             (s.selected = t.selected));
                                 }
                                 return s;
                             }
-                            var O =
+                            var T =
                                     /<\s*\/*[a-zA-Z:_][a-zA-Z0-9:_\-.]*\s*(?:"[^"]*"['"]*|'[^']*'['"]*|[^'"/>])*\/*\s*>|<!--(?:.|\n|\r)*?-->/g,
-                                E =
+                                A =
                                     /\s([^'"/\s><]+?)[\s/>]|([^\s=]+)=\s?(".*?"|'.*?')/g;
-                            function V(t) {
+                            function L(t) {
                                 return t
                                     .replace(/&lt;/g, "<")
                                     .replace(/&gt;/g, ">")
                                     .replace(/&amp;/g, "&");
                             }
-                            var $ = {
+                            var P = {
                                     area: !0,
                                     base: !0,
                                     br: !0,
@@ -1455,166 +1548,195 @@
                                     track: !0,
                                     wbr: !0,
                                 },
-                                S = function (t) {
-                                    var e = { nodeName: "", attributes: {} },
-                                        s = !1,
-                                        i = t.match(/<\/?([^\s]+?)[/\s>]/);
+                                R = function (t, e) {
+                                    var s = { nodeName: "", attributes: {} },
+                                        i = !1,
+                                        n = t.match(/<\/?([^\s]+?)[/\s>]/);
                                     if (
-                                        i &&
-                                        ((e.nodeName = i[1]),
-                                        ($[i[1]] ||
+                                        n &&
+                                        ((s.nodeName =
+                                            e || "svg" === n[1]
+                                                ? n[1]
+                                                : n[1].toUpperCase()),
+                                        (P[n[1]] ||
                                             "/" === t.charAt(t.length - 2)) &&
-                                            (s = !0),
-                                        e.nodeName.startsWith("!--"))
+                                            (i = !0),
+                                        s.nodeName.startsWith("!--"))
                                     ) {
-                                        var n = t.indexOf("--\x3e");
+                                        var a = t.indexOf("--\x3e");
                                         return {
                                             type: "comment",
                                             node: {
                                                 nodeName: "#comment",
                                                 data:
-                                                    -1 !== n
-                                                        ? t.slice(4, n)
+                                                    -1 !== a
+                                                        ? t.slice(4, a)
                                                         : "",
                                             },
-                                            voidElement: s,
+                                            voidElement: i,
                                         };
                                     }
                                     for (
-                                        var a = new RegExp(E), o = null, r = !1;
-                                        !r;
+                                        var o = new RegExp(A), r = null, l = !1;
+                                        !l;
 
                                     )
-                                        if (null === (o = a.exec(t))) r = !0;
-                                        else if (o[0].trim())
-                                            if (o[1]) {
-                                                var l = o[1].trim(),
-                                                    d = [l, ""];
-                                                l.indexOf("=") > -1 &&
-                                                    (d = l.split("=")),
-                                                    (e.attributes[d[0]] = d[1]),
-                                                    a.lastIndex--;
+                                        if (null === (r = o.exec(t))) l = !0;
+                                        else if (r[0].trim())
+                                            if (r[1]) {
+                                                var d = r[1].trim(),
+                                                    c = [d, ""];
+                                                d.indexOf("=") > -1 &&
+                                                    (c = d.split("=")),
+                                                    (s.attributes[c[0]] = c[1]),
+                                                    o.lastIndex--;
                                             } else
-                                                o[2] &&
-                                                    (e.attributes[o[2]] = o[3]
+                                                r[2] &&
+                                                    (s.attributes[r[2]] = r[3]
                                                         .trim()
                                                         .substring(
                                                             1,
-                                                            o[3].length - 1
+                                                            r[3].length - 1
                                                         ));
                                     return {
                                         type: "tag",
-                                        node: e,
-                                        voidElement: s,
+                                        node: s,
+                                        voidElement: i,
                                     };
                                 },
-                                C = function (t, e) {
-                                    void 0 === e && (e = { valueDiffing: !0 });
+                                H = function (t, e) {
+                                    void 0 === e &&
+                                        (e = {
+                                            valueDiffing: !0,
+                                            caseSensitive: !1,
+                                        });
                                     var s,
                                         i = [],
                                         n = -1,
-                                        a = [];
+                                        a = [],
+                                        o = !1;
                                     if (0 !== t.indexOf("<")) {
-                                        var o = t.indexOf("<");
+                                        var r = t.indexOf("<");
                                         i.push({
                                             nodeName: "#text",
                                             data:
-                                                -1 === o
+                                                -1 === r
                                                     ? t
-                                                    : t.substring(0, o),
+                                                    : t.substring(0, r),
                                         });
                                     }
                                     return (
-                                        t.replace(O, function (o, r) {
-                                            var l = "/" !== o.charAt(1),
-                                                d = o.startsWith("\x3c!--"),
-                                                c = r + o.length,
-                                                h = t.charAt(c);
-                                            if (d) {
-                                                var u = S(o).node;
-                                                if (n < 0) return i.push(u), "";
-                                                var p = a[n];
+                                        t.replace(T, function (r, l) {
+                                            var d = "/" !== r.charAt(1),
+                                                c = r.startsWith("\x3c!--"),
+                                                h = l + r.length,
+                                                u = t.charAt(h);
+                                            if (c) {
+                                                var p = R(
+                                                    r,
+                                                    e.caseSensitive
+                                                ).node;
+                                                if (n < 0) return i.push(p), "";
+                                                var f = a[n];
                                                 return (
-                                                    p &&
-                                                        u.nodeName &&
-                                                        (p.node.childNodes ||
-                                                            (p.node.childNodes =
+                                                    f &&
+                                                        p.nodeName &&
+                                                        (f.node.childNodes ||
+                                                            (f.node.childNodes =
                                                                 []),
-                                                        p.node.childNodes.push(
-                                                            u
+                                                        f.node.childNodes.push(
+                                                            p
                                                         )),
                                                     ""
                                                 );
                                             }
-                                            if (l) {
+                                            if (d) {
                                                 if (
-                                                    ((s = S(o)),
+                                                    ("svg" ===
+                                                        (s = R(
+                                                            r,
+                                                            e.caseSensitive || o
+                                                        )).node.nodeName &&
+                                                        (o = !0),
                                                     n++,
                                                     !s.voidElement &&
-                                                        h &&
-                                                        "<" !== h)
+                                                        u &&
+                                                        "<" !== u)
                                                 ) {
                                                     s.node.childNodes ||
                                                         (s.node.childNodes =
                                                             []);
-                                                    var f = V(
+                                                    var m = L(
                                                         t.slice(
-                                                            c,
-                                                            t.indexOf("<", c)
+                                                            h,
+                                                            t.indexOf("<", h)
                                                         )
                                                     );
                                                     s.node.childNodes.push({
                                                         nodeName: "#text",
-                                                        data: f,
+                                                        data: m,
                                                     }),
                                                         e.valueDiffing &&
                                                             "TEXTAREA" ===
                                                                 s.node
                                                                     .nodeName &&
-                                                            (s.node.value = f);
+                                                            (s.node.value = m);
                                                 }
                                                 0 === n &&
                                                     s.node.nodeName &&
                                                     i.push(s.node);
-                                                var m = a[n - 1];
-                                                m &&
+                                                var g = a[n - 1];
+                                                g &&
                                                     s.node.nodeName &&
-                                                    (m.node.childNodes ||
-                                                        (m.node.childNodes =
+                                                    (g.node.childNodes ||
+                                                        (g.node.childNodes =
                                                             []),
-                                                    m.node.childNodes.push(
+                                                    g.node.childNodes.push(
                                                         s.node
                                                     )),
                                                     (a[n] = s);
                                             }
                                             if (
-                                                (!l || s.voidElement) &&
+                                                (!d || s.voidElement) &&
                                                 (n > -1 &&
                                                     (s.voidElement ||
-                                                        s.node.nodeName.toUpperCase() ===
-                                                            o
-                                                                .slice(2, -1)
-                                                                .toUpperCase()) &&
+                                                        (e.caseSensitive &&
+                                                            s.node.nodeName ===
+                                                                r.slice(
+                                                                    2,
+                                                                    -1
+                                                                )) ||
+                                                        (!e.caseSensitive &&
+                                                            s.node.nodeName.toUpperCase() ===
+                                                                r
+                                                                    .slice(
+                                                                        2,
+                                                                        -1
+                                                                    )
+                                                                    .toUpperCase())) &&
                                                     --n > -1 &&
-                                                    (s = a[n]),
-                                                "<" !== h && h)
+                                                    ("svg" ===
+                                                        s.node.nodeName &&
+                                                        (o = !1),
+                                                    (s = a[n])),
+                                                "<" !== u && u)
                                             ) {
-                                                var g =
+                                                var b =
                                                         -1 === n
                                                             ? i
                                                             : a[n].node
                                                                   .childNodes ||
                                                               [],
-                                                    b = t.indexOf("<", c);
-                                                f = V(
+                                                    v = t.indexOf("<", h);
+                                                m = L(
                                                     t.slice(
-                                                        c,
-                                                        -1 === b ? void 0 : b
+                                                        h,
+                                                        -1 === v ? void 0 : v
                                                     )
                                                 );
-                                                g.push({
+                                                b.push({
                                                     nodeName: "#text",
-                                                    data: f,
+                                                    data: m,
                                                 });
                                             }
                                             return "";
@@ -1622,24 +1744,24 @@
                                         i[0]
                                     );
                                 },
-                                T = (function () {
+                                I = (function () {
                                     function t(t, e, s) {
                                         (this.options = s),
                                             (this.t1 =
                                                 "undefined" != typeof Element &&
-                                                t instanceof Element
-                                                    ? M(t, this.options)
+                                                f(t, "Element")
+                                                    ? k(t, this.options)
                                                     : "string" == typeof t
-                                                    ? C(t, this.options)
+                                                    ? H(t, this.options)
                                                     : JSON.parse(
                                                           JSON.stringify(t)
                                                       )),
                                             (this.t2 =
                                                 "undefined" != typeof Element &&
-                                                e instanceof Element
-                                                    ? M(e, this.options)
+                                                f(e, "Element")
+                                                    ? k(e, this.options)
                                                     : "string" == typeof e
-                                                    ? C(e, this.options)
+                                                    ? H(e, this.options)
                                                     : JSON.parse(
                                                           JSON.stringify(e)
                                                       )),
@@ -1649,24 +1771,24 @@
                                                 ((this.t1Orig =
                                                     "undefined" !=
                                                         typeof Element &&
-                                                    t instanceof Element
-                                                        ? M(t, this.options)
+                                                    f(t, "Element")
+                                                        ? k(t, this.options)
                                                         : "string" == typeof t
-                                                        ? C(t, this.options)
+                                                        ? H(t, this.options)
                                                         : JSON.parse(
                                                               JSON.stringify(t)
                                                           )),
                                                 (this.t2Orig =
                                                     "undefined" !=
                                                         typeof Element &&
-                                                    e instanceof Element
-                                                        ? M(e, this.options)
+                                                    f(e, "Element")
+                                                        ? k(e, this.options)
                                                         : "string" == typeof e
-                                                        ? C(e, this.options)
+                                                        ? H(e, this.options)
                                                         : JSON.parse(
                                                               JSON.stringify(e)
                                                           ))),
-                                            (this.tracker = new y());
+                                            (this.tracker = new $());
                                     }
                                     return (
                                         (t.prototype.init = function () {
@@ -1707,14 +1829,14 @@
                                                         e,
                                                         []
                                                     )).length &&
-                                                    (b(t, e) ||
+                                                    (x(t, e) ||
                                                         (this.foundAll
                                                             ? console.error(
                                                                   "Could not find remaining diffs!"
                                                               )
                                                             : ((this.foundAll =
                                                                   !0),
-                                                              m(t),
+                                                              M(t),
                                                               (s =
                                                                   this.findNextDiff(
                                                                       t,
@@ -1724,7 +1846,7 @@
                                                     s.length > 0 &&
                                                         ((this.foundAll = !1),
                                                         this.tracker.add(s),
-                                                        D(t, s, this.options));
+                                                        S(t, s, this.options));
                                             } while (s.length > 0);
                                             return this.tracker.list;
                                         }),
@@ -1816,7 +1938,7 @@
                                                         "Top level nodes have to be of the same kind."
                                                     );
                                                 return [
-                                                    new x()
+                                                    new p()
                                                         .setValue(
                                                             this.options._const
                                                                 .action,
@@ -1826,12 +1948,12 @@
                                                         .setValue(
                                                             this.options._const
                                                                 .oldValue,
-                                                            g(t)
+                                                            N(t)
                                                         )
                                                         .setValue(
                                                             this.options._const
                                                                 .newValue,
-                                                            g(e)
+                                                            N(e)
                                                         )
                                                         .setValue(
                                                             this.options._const
@@ -1851,7 +1973,7 @@
                                                     )
                                             )
                                                 return [
-                                                    new x()
+                                                    new p()
                                                         .setValue(
                                                             this.options._const
                                                                 .action,
@@ -1861,12 +1983,12 @@
                                                         .setValue(
                                                             this.options._const
                                                                 .oldValue,
-                                                            g(t)
+                                                            N(t)
                                                         )
                                                         .setValue(
                                                             this.options._const
                                                                 .newValue,
-                                                            g(e)
+                                                            N(e)
                                                         )
                                                         .setValue(
                                                             this.options._const
@@ -1883,7 +2005,7 @@
                                             )
                                                 return "#text" === t.nodeName
                                                     ? [
-                                                          new x()
+                                                          new p()
                                                               .setValue(
                                                                   this.options
                                                                       ._const
@@ -1912,7 +2034,7 @@
                                                               ),
                                                       ]
                                                     : [
-                                                          new x()
+                                                          new p()
                                                               .setValue(
                                                                   this.options
                                                                       ._const
@@ -1959,7 +2081,7 @@
                                                 (i = n[l]),
                                                     -1 === (r = a.indexOf(i))
                                                         ? d.push(
-                                                              new x()
+                                                              new p()
                                                                   .setValue(
                                                                       this
                                                                           .options
@@ -1999,7 +2121,7 @@
                                                           t.attributes[i] !==
                                                               e.attributes[i] &&
                                                               d.push(
-                                                                  new x()
+                                                                  new p()
                                                                       .setValue(
                                                                           this
                                                                               .options
@@ -2052,7 +2174,7 @@
                                             )
                                                 (i = a[l]),
                                                     d.push(
-                                                        new x()
+                                                        new p()
                                                             .setValue(
                                                                 this.options
                                                                     ._const
@@ -2114,7 +2236,7 @@
                                                         ? t.subsets
                                                         : t.childNodes &&
                                                           e.childNodes
-                                                        ? _(t, e)
+                                                        ? V(t, e)
                                                         : [];
                                                 if (
                                                     c.length > 0 &&
@@ -2131,299 +2253,306 @@
                                             }
                                             for (var h = 0; h < a; h += 1) {
                                                 var u = i[h],
-                                                    p = n[h];
-                                                if (
-                                                    (o &&
-                                                        (u && !p
-                                                            ? "#text" ===
-                                                              u.nodeName
-                                                                ? (r.push(
-                                                                      new x()
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .action,
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .removeTextElement
+                                                    f = n[h];
+                                                o &&
+                                                    (u && !f
+                                                        ? "#text" === u.nodeName
+                                                            ? (r.push(
+                                                                  new p()
+                                                                      .setValue(
+                                                                          this
+                                                                              .options
+                                                                              ._const
+                                                                              .action,
+                                                                          this
+                                                                              .options
+                                                                              ._const
+                                                                              .removeTextElement
+                                                                      )
+                                                                      .setValue(
+                                                                          this
+                                                                              .options
+                                                                              ._const
+                                                                              .route,
+                                                                          s.concat(
+                                                                              l
                                                                           )
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .route,
-                                                                              s.concat(
-                                                                                  l
-                                                                              )
+                                                                      )
+                                                                      .setValue(
+                                                                          this
+                                                                              .options
+                                                                              ._const
+                                                                              .value,
+                                                                          u.data
+                                                                      )
+                                                              ),
+                                                              (l -= 1))
+                                                            : (r.push(
+                                                                  new p()
+                                                                      .setValue(
+                                                                          this
+                                                                              .options
+                                                                              ._const
+                                                                              .action,
+                                                                          this
+                                                                              .options
+                                                                              ._const
+                                                                              .removeElement
+                                                                      )
+                                                                      .setValue(
+                                                                          this
+                                                                              .options
+                                                                              ._const
+                                                                              .route,
+                                                                          s.concat(
+                                                                              l
                                                                           )
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .value,
-                                                                              u.data
-                                                                          )
-                                                                  ),
-                                                                  (l -= 1))
-                                                                : (r.push(
-                                                                      new x()
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .action,
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .removeElement
-                                                                          )
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .route,
-                                                                              s.concat(
-                                                                                  l
-                                                                              )
-                                                                          )
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .element,
-                                                                              g(
-                                                                                  u
-                                                                              )
-                                                                          )
-                                                                  ),
-                                                                  (l -= 1))
-                                                            : p &&
-                                                              !u &&
-                                                              ("#text" ===
-                                                              p.nodeName
-                                                                  ? r.push(
-                                                                        new x()
-                                                                            .setValue(
-                                                                                this
-                                                                                    .options
-                                                                                    ._const
-                                                                                    .action,
-                                                                                this
-                                                                                    .options
-                                                                                    ._const
-                                                                                    .addTextElement
+                                                                      )
+                                                                      .setValue(
+                                                                          this
+                                                                              .options
+                                                                              ._const
+                                                                              .element,
+                                                                          N(u)
+                                                                      )
+                                                              ),
+                                                              (l -= 1))
+                                                        : f &&
+                                                          !u &&
+                                                          ("#text" ===
+                                                          f.nodeName
+                                                              ? r.push(
+                                                                    new p()
+                                                                        .setValue(
+                                                                            this
+                                                                                .options
+                                                                                ._const
+                                                                                .action,
+                                                                            this
+                                                                                .options
+                                                                                ._const
+                                                                                .addTextElement
+                                                                        )
+                                                                        .setValue(
+                                                                            this
+                                                                                .options
+                                                                                ._const
+                                                                                .route,
+                                                                            s.concat(
+                                                                                l
                                                                             )
-                                                                            .setValue(
-                                                                                this
-                                                                                    .options
-                                                                                    ._const
-                                                                                    .route,
-                                                                                s.concat(
-                                                                                    l
-                                                                                )
+                                                                        )
+                                                                        .setValue(
+                                                                            this
+                                                                                .options
+                                                                                ._const
+                                                                                .value,
+                                                                            f.data
+                                                                        )
+                                                                )
+                                                              : r.push(
+                                                                    new p()
+                                                                        .setValue(
+                                                                            this
+                                                                                .options
+                                                                                ._const
+                                                                                .action,
+                                                                            this
+                                                                                .options
+                                                                                ._const
+                                                                                .addElement
+                                                                        )
+                                                                        .setValue(
+                                                                            this
+                                                                                .options
+                                                                                ._const
+                                                                                .route,
+                                                                            s.concat(
+                                                                                l
                                                                             )
-                                                                            .setValue(
-                                                                                this
-                                                                                    .options
-                                                                                    ._const
-                                                                                    .value,
-                                                                                p.data
-                                                                            )
-                                                                    )
-                                                                  : r.push(
-                                                                        new x()
-                                                                            .setValue(
-                                                                                this
-                                                                                    .options
-                                                                                    ._const
-                                                                                    .action,
-                                                                                this
-                                                                                    .options
-                                                                                    ._const
-                                                                                    .addElement
-                                                                            )
-                                                                            .setValue(
-                                                                                this
-                                                                                    .options
-                                                                                    ._const
-                                                                                    .route,
-                                                                                s.concat(
-                                                                                    l
-                                                                                )
-                                                                            )
-                                                                            .setValue(
-                                                                                this
-                                                                                    .options
-                                                                                    ._const
-                                                                                    .element,
-                                                                                g(
-                                                                                    p
-                                                                                )
-                                                                            )
-                                                                    ))),
-                                                    u && p)
-                                                )
-                                                    if (
-                                                        !this.options
+                                                                        )
+                                                                        .setValue(
+                                                                            this
+                                                                                .options
+                                                                                ._const
+                                                                                .element,
+                                                                            N(f)
+                                                                        )
+                                                                ))),
+                                                    u &&
+                                                        f &&
+                                                        (!this.options
                                                             .maxChildCount ||
                                                         a <
                                                             this.options
                                                                 .maxChildCount
-                                                    )
-                                                        r = r.concat(
-                                                            this.findNextDiff(
-                                                                u,
-                                                                p,
-                                                                s.concat(l)
-                                                            )
-                                                        );
-                                                    else if (!b(u, p))
-                                                        if (i.length > n.length)
-                                                            "#text" ===
-                                                            u.nodeName
-                                                                ? r.push(
-                                                                      new x()
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .action,
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .removeTextElement
-                                                                          )
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .route,
-                                                                              s.concat(
-                                                                                  l
-                                                                              )
-                                                                          )
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .value,
-                                                                              u.data
-                                                                          )
+                                                            ? (r = r.concat(
+                                                                  this.findNextDiff(
+                                                                      u,
+                                                                      f,
+                                                                      s.concat(
+                                                                          l
+                                                                      )
                                                                   )
-                                                                : r.push(
-                                                                      new x()
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .action,
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .removeElement
+                                                              ))
+                                                            : x(u, f) ||
+                                                              (i.length >
+                                                              n.length
+                                                                  ? ("#text" ===
+                                                                    u.nodeName
+                                                                        ? r.push(
+                                                                              new p()
+                                                                                  .setValue(
+                                                                                      this
+                                                                                          .options
+                                                                                          ._const
+                                                                                          .action,
+                                                                                      this
+                                                                                          .options
+                                                                                          ._const
+                                                                                          .removeTextElement
+                                                                                  )
+                                                                                  .setValue(
+                                                                                      this
+                                                                                          .options
+                                                                                          ._const
+                                                                                          .route,
+                                                                                      s.concat(
+                                                                                          l
+                                                                                      )
+                                                                                  )
+                                                                                  .setValue(
+                                                                                      this
+                                                                                          .options
+                                                                                          ._const
+                                                                                          .value,
+                                                                                      u.data
+                                                                                  )
                                                                           )
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .element,
-                                                                              g(
-                                                                                  u
-                                                                              )
-                                                                          )
-                                                                          .setValue(
-                                                                              this
-                                                                                  .options
-                                                                                  ._const
-                                                                                  .route,
-                                                                              s.concat(
-                                                                                  l
-                                                                              )
-                                                                          )
-                                                                  ),
-                                                                i.splice(h, 1),
-                                                                (h -= 1),
-                                                                (l -= 1),
-                                                                (o -= 1);
-                                                        else if (
-                                                            i.length < n.length
-                                                        ) {
-                                                            var f = g(p);
-                                                            (r = r.concat([
-                                                                new x()
-                                                                    .setValue(
-                                                                        this
-                                                                            .options
-                                                                            ._const
-                                                                            .action,
-                                                                        this
-                                                                            .options
-                                                                            ._const
-                                                                            .addElement
-                                                                    )
-                                                                    .setValue(
-                                                                        this
-                                                                            .options
-                                                                            ._const
-                                                                            .element,
-                                                                        f
-                                                                    )
-                                                                    .setValue(
-                                                                        this
-                                                                            .options
-                                                                            ._const
-                                                                            .route,
-                                                                        s.concat(
-                                                                            l
-                                                                        )
+                                                                        : r.push(
+                                                                              new p()
+                                                                                  .setValue(
+                                                                                      this
+                                                                                          .options
+                                                                                          ._const
+                                                                                          .action,
+                                                                                      this
+                                                                                          .options
+                                                                                          ._const
+                                                                                          .removeElement
+                                                                                  )
+                                                                                  .setValue(
+                                                                                      this
+                                                                                          .options
+                                                                                          ._const
+                                                                                          .element,
+                                                                                      N(
+                                                                                          u
+                                                                                      )
+                                                                                  )
+                                                                                  .setValue(
+                                                                                      this
+                                                                                          .options
+                                                                                          ._const
+                                                                                          .route,
+                                                                                      s.concat(
+                                                                                          l
+                                                                                      )
+                                                                                  )
+                                                                          ),
+                                                                    i.splice(
+                                                                        h,
+                                                                        1
                                                                     ),
-                                                            ])),
-                                                                i.splice(
-                                                                    h,
-                                                                    0,
-                                                                    f
-                                                                ),
-                                                                (o -= 1);
-                                                        } else
-                                                            r = r.concat([
-                                                                new x()
-                                                                    .setValue(
-                                                                        this
-                                                                            .options
-                                                                            ._const
-                                                                            .action,
-                                                                        this
-                                                                            .options
-                                                                            ._const
-                                                                            .replaceElement
-                                                                    )
-                                                                    .setValue(
-                                                                        this
-                                                                            .options
-                                                                            ._const
-                                                                            .oldValue,
-                                                                        g(u)
-                                                                    )
-                                                                    .setValue(
-                                                                        this
-                                                                            .options
-                                                                            ._const
-                                                                            .newValue,
-                                                                        g(p)
-                                                                    )
-                                                                    .setValue(
-                                                                        this
-                                                                            .options
-                                                                            ._const
-                                                                            .route,
-                                                                        s.concat(
-                                                                            l
-                                                                        )
+                                                                    (h -= 1),
+                                                                    (l -= 1),
+                                                                    (o -= 1))
+                                                                  : i.length <
+                                                                    n.length
+                                                                  ? ((r =
+                                                                        r.concat(
+                                                                            [
+                                                                                new p()
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .action,
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .addElement
+                                                                                    )
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .element,
+                                                                                        N(
+                                                                                            f
+                                                                                        )
+                                                                                    )
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .route,
+                                                                                        s.concat(
+                                                                                            l
+                                                                                        )
+                                                                                    ),
+                                                                            ]
+                                                                        )),
+                                                                    i.splice(
+                                                                        h,
+                                                                        0,
+                                                                        N(f)
                                                                     ),
-                                                            ]);
-                                                l += 1;
+                                                                    (o -= 1))
+                                                                  : (r =
+                                                                        r.concat(
+                                                                            [
+                                                                                new p()
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .action,
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .replaceElement
+                                                                                    )
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .oldValue,
+                                                                                        N(
+                                                                                            u
+                                                                                        )
+                                                                                    )
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .newValue,
+                                                                                        N(
+                                                                                            f
+                                                                                        )
+                                                                                    )
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .route,
+                                                                                        s.concat(
+                                                                                            l
+                                                                                        )
+                                                                                    ),
+                                                                            ]
+                                                                        )))),
+                                                    (l += 1);
                                             }
                                             return (t.innerDone = !0), r;
                                         }),
@@ -2435,14 +2564,13 @@
                                                         r,
                                                         l,
                                                         d,
-                                                        c,
-                                                        h = (function (
+                                                        c = (function (
                                                             t,
                                                             e,
                                                             s
                                                         ) {
                                                             var i = t.childNodes
-                                                                    ? w(
+                                                                    ? E(
                                                                           t
                                                                               .childNodes
                                                                               .length,
@@ -2450,7 +2578,7 @@
                                                                       )
                                                                     : [],
                                                                 n = e.childNodes
-                                                                    ? w(
+                                                                    ? E(
                                                                           e
                                                                               .childNodes
                                                                               .length,
@@ -2500,73 +2628,65 @@
                                                                 }
                                                             );
                                                         })(t, e, s),
-                                                        u = h.gaps1,
-                                                        p = h.gaps2,
-                                                        f = Math.min(
-                                                            u.length,
-                                                            p.length
+                                                        h = c.gaps1,
+                                                        u = c.gaps2,
+                                                        f =
+                                                            t.childNodes.slice(),
+                                                        m =
+                                                            e.childNodes.slice(),
+                                                        g = Math.min(
+                                                            h.length,
+                                                            u.length
                                                         ),
-                                                        m = [],
-                                                        b = 0,
+                                                        b = [],
+                                                        v = 0,
                                                         _ = 0;
-                                                    b < f;
-                                                    _ += 1, b += 1
+                                                    v < g;
+                                                    _ += 1, v += 1
                                                 )
                                                     if (
                                                         !n ||
-                                                        (!0 !== u[b] &&
-                                                            !0 !== p[b])
+                                                        (!0 !== h[v] &&
+                                                            !0 !== u[v])
                                                     ) {
-                                                        if (!0 === u[b])
+                                                        if (!0 === h[_])
                                                             if (
                                                                 "#text" ===
-                                                                (l =
-                                                                    t
-                                                                        .childNodes[
-                                                                        _
-                                                                    ]).nodeName
+                                                                (l = f[_])
+                                                                    .nodeName
                                                             )
                                                                 if (
                                                                     "#text" ===
-                                                                    e
-                                                                        .childNodes[
-                                                                        b
-                                                                    ].nodeName
+                                                                    m[v]
+                                                                        .nodeName
                                                                 ) {
                                                                     if (
                                                                         l.data !==
-                                                                        e
-                                                                            .childNodes[
-                                                                            b
-                                                                        ].data
+                                                                        m[v]
+                                                                            .data
                                                                     ) {
                                                                         for (
-                                                                            c =
+                                                                            var w =
                                                                                 _;
-                                                                            t
-                                                                                .childNodes
-                                                                                .length >
-                                                                                c +
+                                                                            f.length >
+                                                                                w +
                                                                                     1 &&
                                                                             "#text" ===
-                                                                                t
-                                                                                    .childNodes[
-                                                                                    c +
+                                                                                f[
+                                                                                    w +
                                                                                         1
                                                                                 ]
                                                                                     .nodeName;
 
                                                                         )
                                                                             if (
-                                                                                ((c += 1),
-                                                                                e
-                                                                                    .childNodes[
-                                                                                    b
+                                                                                ((w += 1),
+                                                                                m[
+                                                                                    v
                                                                                 ]
                                                                                     .data ===
-                                                                                    t
-                                                                                        .childNodes[
-                                                                                        c
+                                                                                    f[
+                                                                                        w
                                                                                     ]
                                                                                         .data)
                                                                             ) {
@@ -2574,54 +2694,50 @@
                                                                                     !0;
                                                                                 break;
                                                                             }
-                                                                        if (!d)
-                                                                            return (
-                                                                                m.push(
-                                                                                    new x()
-                                                                                        .setValue(
-                                                                                            this
-                                                                                                .options
-                                                                                                ._const
-                                                                                                .action,
-                                                                                            this
-                                                                                                .options
-                                                                                                ._const
-                                                                                                .modifyTextElement
+                                                                        d ||
+                                                                            b.push(
+                                                                                new p()
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .action,
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .modifyTextElement
+                                                                                    )
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .route,
+                                                                                        i.concat(
+                                                                                            _
                                                                                         )
-                                                                                        .setValue(
-                                                                                            this
-                                                                                                .options
-                                                                                                ._const
-                                                                                                .route,
-                                                                                            i.concat(
-                                                                                                b
-                                                                                            )
-                                                                                        )
-                                                                                        .setValue(
-                                                                                            this
-                                                                                                .options
-                                                                                                ._const
-                                                                                                .oldValue,
-                                                                                            l.data
-                                                                                        )
-                                                                                        .setValue(
-                                                                                            this
-                                                                                                .options
-                                                                                                ._const
-                                                                                                .newValue,
-                                                                                            e
-                                                                                                .childNodes[
-                                                                                                b
-                                                                                            ]
-                                                                                                .data
-                                                                                        )
-                                                                                ),
-                                                                                m
+                                                                                    )
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .oldValue,
+                                                                                        l.data
+                                                                                    )
+                                                                                    .setValue(
+                                                                                        this
+                                                                                            .options
+                                                                                            ._const
+                                                                                            .newValue,
+                                                                                        m[
+                                                                                            v
+                                                                                        ]
+                                                                                            .data
+                                                                                    )
                                                                             );
                                                                     }
                                                                 } else
-                                                                    m.push(
-                                                                        new x()
+                                                                    b.push(
+                                                                        new p()
                                                                             .setValue(
                                                                                 this
                                                                                     .options
@@ -2638,7 +2754,7 @@
                                                                                     ._const
                                                                                     .route,
                                                                                 i.concat(
-                                                                                    b
+                                                                                    _
                                                                                 )
                                                                             )
                                                                             .setValue(
@@ -2649,63 +2765,116 @@
                                                                                 l.data
                                                                             )
                                                                     ),
-                                                                        u.splice(
-                                                                            b,
+                                                                        h.splice(
+                                                                            _,
                                                                             1
                                                                         ),
-                                                                        (f =
+                                                                        f.splice(
+                                                                            _,
+                                                                            1
+                                                                        ),
+                                                                        (g =
                                                                             Math.min(
-                                                                                u.length,
-                                                                                p.length
+                                                                                h.length,
+                                                                                u.length
                                                                             )),
-                                                                        (b -= 1);
+                                                                        (_ -= 1),
+                                                                        (v -= 1);
                                                             else
-                                                                m.push(
-                                                                    new x()
-                                                                        .setValue(
-                                                                            this
-                                                                                .options
-                                                                                ._const
-                                                                                .action,
-                                                                            this
-                                                                                .options
-                                                                                ._const
-                                                                                .removeElement
-                                                                        )
-                                                                        .setValue(
-                                                                            this
-                                                                                .options
-                                                                                ._const
-                                                                                .route,
-                                                                            i.concat(
-                                                                                b
-                                                                            )
-                                                                        )
-                                                                        .setValue(
-                                                                            this
-                                                                                .options
-                                                                                ._const
-                                                                                .element,
-                                                                            g(l)
-                                                                        )
-                                                                ),
-                                                                    u.splice(
-                                                                        b,
-                                                                        1
-                                                                    ),
-                                                                    (f =
-                                                                        Math.min(
-                                                                            u.length,
-                                                                            p.length
-                                                                        )),
-                                                                    (b -= 1);
-                                                        else if (!0 === p[b])
+                                                                !0 === u[v]
+                                                                    ? b.push(
+                                                                          new p()
+                                                                              .setValue(
+                                                                                  this
+                                                                                      .options
+                                                                                      ._const
+                                                                                      .action,
+                                                                                  this
+                                                                                      .options
+                                                                                      ._const
+                                                                                      .replaceElement
+                                                                              )
+                                                                              .setValue(
+                                                                                  this
+                                                                                      .options
+                                                                                      ._const
+                                                                                      .oldValue,
+                                                                                  N(
+                                                                                      l
+                                                                                  )
+                                                                              )
+                                                                              .setValue(
+                                                                                  this
+                                                                                      .options
+                                                                                      ._const
+                                                                                      .newValue,
+                                                                                  N(
+                                                                                      m[
+                                                                                          v
+                                                                                      ]
+                                                                                  )
+                                                                              )
+                                                                              .setValue(
+                                                                                  this
+                                                                                      .options
+                                                                                      ._const
+                                                                                      .route,
+                                                                                  i.concat(
+                                                                                      _
+                                                                                  )
+                                                                              )
+                                                                      )
+                                                                    : (b.push(
+                                                                          new p()
+                                                                              .setValue(
+                                                                                  this
+                                                                                      .options
+                                                                                      ._const
+                                                                                      .action,
+                                                                                  this
+                                                                                      .options
+                                                                                      ._const
+                                                                                      .removeElement
+                                                                              )
+                                                                              .setValue(
+                                                                                  this
+                                                                                      .options
+                                                                                      ._const
+                                                                                      .route,
+                                                                                  i.concat(
+                                                                                      _
+                                                                                  )
+                                                                              )
+                                                                              .setValue(
+                                                                                  this
+                                                                                      .options
+                                                                                      ._const
+                                                                                      .element,
+                                                                                  N(
+                                                                                      l
+                                                                                  )
+                                                                              )
+                                                                      ),
+                                                                      h.splice(
+                                                                          _,
+                                                                          1
+                                                                      ),
+                                                                      f.splice(
+                                                                          _,
+                                                                          1
+                                                                      ),
+                                                                      (g =
+                                                                          Math.min(
+                                                                              h.length,
+                                                                              u.length
+                                                                          )),
+                                                                      (_ -= 1),
+                                                                      (v -= 1));
+                                                        else if (!0 === u[v])
                                                             "#text" ===
-                                                            (l =
-                                                                e.childNodes[b])
-                                                                .nodeName
-                                                                ? (m.push(
-                                                                      new x()
+                                                            (l = m[v]).nodeName
+                                                                ? (b.push(
+                                                                      new p()
                                                                           .setValue(
                                                                               this
                                                                                   .options
@@ -2722,7 +2891,7 @@
                                                                                   ._const
                                                                                   .route,
                                                                               i.concat(
-                                                                                  b
+                                                                                  _
                                                                               )
                                                                           )
                                                                           .setValue(
@@ -2733,18 +2902,26 @@
                                                                               l.data
                                                                           )
                                                                   ),
-                                                                  u.splice(
-                                                                      b,
+                                                                  h.splice(
+                                                                      _,
                                                                       0,
                                                                       !0
                                                                   ),
-                                                                  (f = Math.min(
-                                                                      u.length,
-                                                                      p.length
-                                                                  )),
-                                                                  (_ -= 1))
-                                                                : (m.push(
-                                                                      new x()
+                                                                  f.splice(
+                                                                      _,
+                                                                      0,
+                                                                      {
+                                                                          nodeName:
+                                                                              "#text",
+                                                                          data: l.data,
+                                                                      }
+                                                                  ),
+                                                                  (g = Math.min(
+                                                                      h.length,
+                                                                      u.length
+                                                                  )))
+                                                                : (b.push(
+                                                                      new p()
                                                                           .setValue(
                                                                               this
                                                                                   .options
@@ -2761,7 +2938,7 @@
                                                                                   ._const
                                                                                   .route,
                                                                               i.concat(
-                                                                                  b
+                                                                                  _
                                                                               )
                                                                           )
                                                                           .setValue(
@@ -2769,32 +2946,35 @@
                                                                                   .options
                                                                                   ._const
                                                                                   .element,
-                                                                              g(
+                                                                              N(
                                                                                   l
                                                                               )
                                                                           )
                                                                   ),
-                                                                  u.splice(
-                                                                      b,
+                                                                  h.splice(
+                                                                      _,
                                                                       0,
                                                                       !0
                                                                   ),
-                                                                  (f = Math.min(
-                                                                      u.length,
-                                                                      p.length
-                                                                  )),
-                                                                  (_ -= 1));
+                                                                  f.splice(
+                                                                      _,
+                                                                      0,
+                                                                      N(l)
+                                                                  ),
+                                                                  (g = Math.min(
+                                                                      h.length,
+                                                                      u.length
+                                                                  )));
                                                         else if (
-                                                            u[b] !== p[b]
+                                                            h[_] !== u[v]
                                                         ) {
-                                                            if (m.length > 0)
-                                                                return m;
+                                                            if (b.length > 0)
+                                                                return b;
                                                             if (
-                                                                ((r = s[u[b]]),
+                                                                ((r = s[h[_]]),
                                                                 (o = Math.min(
                                                                     r.newValue,
-                                                                    t.childNodes
-                                                                        .length -
+                                                                    f.length -
                                                                         r.length
                                                                 )) !==
                                                                     r.oldValue)
@@ -2806,14 +2986,12 @@
                                                                     r.length;
                                                                     y += 1
                                                                 )
-                                                                    v(
-                                                                        t
-                                                                            .childNodes[
+                                                                    O(
+                                                                        f[
                                                                             o +
                                                                                 y
                                                                         ],
-                                                                        t
-                                                                            .childNodes[
+                                                                        f[
                                                                             r.oldValue +
                                                                                 y
                                                                         ],
@@ -2825,7 +3003,7 @@
                                                                             !0);
                                                                 if (a)
                                                                     return [
-                                                                        new x()
+                                                                        new p()
                                                                             .setValue(
                                                                                 this
                                                                                     .options
@@ -2868,7 +3046,7 @@
                                                             }
                                                         }
                                                     } else;
-                                                return m;
+                                                return b;
                                             }),
                                         (t.prototype.findValueDiff = function (
                                             t,
@@ -2879,7 +3057,7 @@
                                             return (
                                                 t.selected !== e.selected &&
                                                     i.push(
-                                                        new x()
+                                                        new p()
                                                             .setValue(
                                                                 this.options
                                                                     ._const
@@ -2911,7 +3089,7 @@
                                                     t.value !== e.value &&
                                                     "OPTION" !== t.nodeName &&
                                                     i.push(
-                                                        new x()
+                                                        new p()
                                                             .setValue(
                                                                 this.options
                                                                     ._const
@@ -2941,7 +3119,7 @@
                                                     ),
                                                 t.checked !== e.checked &&
                                                     i.push(
-                                                        new x()
+                                                        new p()
                                                             .setValue(
                                                                 this.options
                                                                     ._const
@@ -2975,7 +3153,7 @@
                                         t
                                     );
                                 })(),
-                                k = {
+                                Y = {
                                     debug: !1,
                                     diffcap: 10,
                                     maxDepth: !1,
@@ -2998,11 +3176,11 @@
                                         ) && window.document,
                                     components: [],
                                 },
-                                L = (function () {
+                                j = (function () {
                                     function t(t) {
                                         if (
                                             (void 0 === t && (t = {}),
-                                            Object.entries(k).forEach(function (
+                                            Object.entries(Y).forEach(function (
                                                 e
                                             ) {
                                                 var s = e[0],
@@ -3063,15 +3241,15 @@
                                         (t.prototype.apply = function (t, e) {
                                             return (function (t, e, s) {
                                                 return e.every(function (e) {
-                                                    return d(t, e, s);
+                                                    return b(t, e, s);
                                                 });
                                             })(t, e, this.options);
                                         }),
                                         (t.prototype.undo = function (t, e) {
-                                            return h(t, e, this.options);
+                                            return _(t, e, this.options);
                                         }),
                                         (t.prototype.diff = function (t, e) {
-                                            return new T(
+                                            return new I(
                                                 t,
                                                 e,
                                                 this.options
@@ -3080,7 +3258,7 @@
                                         t
                                     );
                                 })();
-                            const A = (
+                            const F = (
                                     t,
                                     e,
                                     s,
@@ -3092,58 +3270,62 @@
                                         scrollY: r,
                                         type: l,
                                     },
-                                    { noColumnWidths: d, unhideHeader: c }
+                                    { noColumnWidths: d, unhideHeader: h }
                                 ) => ({
                                     nodeName: "TR",
                                     childNodes: t
-                                        .map((t, h) => {
-                                            const u = e[h] || {
+                                        .map((t, u) => {
+                                            const p = e[u] || {
                                                 type: l,
                                                 format: n,
                                                 sortable: !0,
                                                 searchable: !0,
                                             };
-                                            if (u.hidden) return;
-                                            const p = {};
+                                            if (p.hidden) return;
+                                            const f = t.attributes
+                                                ? { ...t.attributes }
+                                                : {};
                                             if (
-                                                (u.sortable &&
+                                                (p.sortable &&
                                                     o &&
-                                                    (!r.length || c) &&
-                                                    (u.filter
-                                                        ? (p[
+                                                    (!r.length || h) &&
+                                                    (p.filter
+                                                        ? (f[
                                                               "data-filterable"
                                                           ] = "true")
-                                                        : (p["data-sortable"] =
+                                                        : (f["data-sortable"] =
                                                               "true")),
-                                                u.headerClass &&
-                                                    (p.class = u.headerClass),
-                                                s.sort && s.sort.column === h)
+                                                p.headerClass &&
+                                                    (f.class = c(
+                                                        f.class,
+                                                        p.headerClass
+                                                    )),
+                                                s.sort && s.sort.column === u)
                                             ) {
                                                 const t =
                                                     "asc" === s.sort.dir
                                                         ? i.ascending
                                                         : i.descending;
-                                                (p.class = p.class
-                                                    ? `${p.class} ${t}`
-                                                    : t),
-                                                    (p["aria-sort"] =
+                                                (f.class = c(f.class, t)),
+                                                    (f["aria-sort"] =
                                                         "asc" === s.sort.dir
                                                             ? "ascending"
                                                             : "descending");
                                             } else
-                                                s.filters[h] &&
-                                                    (p.class = p.class
-                                                        ? `${p.class} ${i.filterActive}`
-                                                        : i.filterActive);
-                                            let f = "";
-                                            s.widths[h] &&
-                                                !d &&
-                                                (f += `width: ${s.widths[h]}%;`),
-                                                r.length &&
-                                                    !c &&
-                                                    (f +=
-                                                        "padding-bottom: 0;padding-top: 0;border: 0;"),
-                                                f.length && (p.style = f);
+                                                s.filters[u] &&
+                                                    (f.class = c(
+                                                        f.class,
+                                                        i.filterActive
+                                                    ));
+                                            if (s.widths[u] && !d) {
+                                                const t = `width: ${s.widths[u]}%;`;
+                                                f.style = c(f.style, t);
+                                            }
+                                            if (r.length && !h) {
+                                                const t =
+                                                    "padding-bottom: 0;padding-top: 0;border: 0;";
+                                                f.style = c(f.style, t);
+                                            }
                                             const m =
                                                 "html" === t.type
                                                     ? t.data
@@ -3159,17 +3341,17 @@
                                                       ];
                                             return {
                                                 nodeName: "TH",
-                                                attributes: p,
+                                                attributes: f,
                                                 childNodes:
-                                                    (!a && !r.length) || c
-                                                        ? u.sortable && o
+                                                    (!a && !r.length) || h
+                                                        ? p.sortable && o
                                                             ? [
                                                                   {
                                                                       nodeName:
                                                                           "BUTTON",
                                                                       attributes:
                                                                           {
-                                                                              class: u.filter
+                                                                              class: p.filter
                                                                                   ? i.filter
                                                                                   : i.sorter,
                                                                           },
@@ -3189,32 +3371,34 @@
                                         })
                                         .filter((t) => t),
                                 }),
-                                P = (
+                                q = (
                                     t,
                                     e,
                                     s,
                                     i,
-                                    n,
                                     a,
+                                    o,
                                     {
-                                        classes: o,
-                                        hiddenHeader: r,
-                                        header: l,
-                                        footer: d,
-                                        format: c,
-                                        sortable: h,
-                                        scrollY: u,
-                                        type: p,
-                                        rowRender: f,
-                                        tabIndex: m,
+                                        classes: r,
+                                        hiddenHeader: l,
+                                        header: d,
+                                        footer: h,
+                                        format: u,
+                                        sortable: p,
+                                        scrollY: f,
+                                        type: m,
+                                        rowRender: g,
+                                        tabIndex: b,
                                     },
                                     {
-                                        noColumnWidths: g,
-                                        unhideHeader: b,
-                                        renderHeader: v,
-                                    }
+                                        noColumnWidths: v,
+                                        unhideHeader: _,
+                                        renderHeader: w,
+                                    },
+                                    y,
+                                    D
                                 ) => {
-                                    const w = {
+                                    const M = {
                                         nodeName: "TABLE",
                                         attributes: { ...t },
                                         childNodes: [
@@ -3225,74 +3409,78 @@
                                                         const s = {
                                                             nodeName: "TR",
                                                             attributes: {
+                                                                ...t.attributes,
                                                                 "data-index":
                                                                     String(e),
                                                             },
-                                                            childNodes: t
+                                                            childNodes: t.cells
                                                                 .map((t, s) => {
-                                                                    const a = i[
+                                                                    const o = i[
                                                                         s
                                                                     ] || {
-                                                                        type: p,
-                                                                        format: c,
+                                                                        type: m,
+                                                                        format: u,
                                                                         sortable:
                                                                             !0,
                                                                         searchable:
                                                                             !0,
                                                                     };
                                                                     if (
-                                                                        a.hidden
+                                                                        o.hidden
                                                                     )
                                                                         return;
-                                                                    const o =
-                                                                        "html" ===
-                                                                        a.type
-                                                                            ? {
-                                                                                  nodeName:
-                                                                                      "TD",
-                                                                                  childNodes:
-                                                                                      t.data,
-                                                                              }
-                                                                            : {
-                                                                                  nodeName:
-                                                                                      "TD",
-                                                                                  childNodes:
-                                                                                      [
-                                                                                          {
-                                                                                              nodeName:
-                                                                                                  "#text",
-                                                                                              data:
-                                                                                                  t.text ??
-                                                                                                  String(
-                                                                                                      t.data
-                                                                                                  ),
-                                                                                          },
-                                                                                      ],
-                                                                              };
+                                                                    const r = {
+                                                                        nodeName:
+                                                                            "TD",
+                                                                        attributes:
+                                                                            t.attributes
+                                                                                ? {
+                                                                                      ...t.attributes,
+                                                                                  }
+                                                                                : {},
+                                                                        childNodes:
+                                                                            "html" ===
+                                                                            o.type
+                                                                                ? t.data
+                                                                                : [
+                                                                                      {
+                                                                                          nodeName:
+                                                                                              "#text",
+                                                                                          data: n(
+                                                                                              t
+                                                                                          ),
+                                                                                      },
+                                                                                  ],
+                                                                    };
                                                                     if (
-                                                                        (l ||
-                                                                            d ||
-                                                                            !n
+                                                                        (d ||
+                                                                            h ||
+                                                                            !a
                                                                                 .widths[
                                                                                 s
                                                                             ] ||
-                                                                            g ||
-                                                                            (o.attributes =
-                                                                                {
-                                                                                    style: `width: ${n.widths[s]}%;`,
-                                                                                }),
-                                                                        a.cellClass &&
-                                                                            (o.attributes ||
-                                                                                (o.attributes =
-                                                                                    {}),
-                                                                            (o.attributes.class =
-                                                                                a.cellClass)),
-                                                                        a.render)
+                                                                            v ||
+                                                                            (r.attributes.style =
+                                                                                c(
+                                                                                    r
+                                                                                        .attributes
+                                                                                        .style,
+                                                                                    `width: ${a.widths[s]}%;`
+                                                                                )),
+                                                                        o.cellClass &&
+                                                                            (r.attributes.class =
+                                                                                c(
+                                                                                    r
+                                                                                        .attributes
+                                                                                        .class,
+                                                                                    o.cellClass
+                                                                                )),
+                                                                        o.render)
                                                                     ) {
                                                                         const i =
-                                                                            a.render(
+                                                                            o.render(
                                                                                 t.data,
-                                                                                o,
+                                                                                r,
                                                                                 e,
                                                                                 s
                                                                             );
@@ -3304,7 +3492,7 @@
                                                                                 return i;
                                                                             {
                                                                                 const t =
-                                                                                    C(
+                                                                                    H(
                                                                                         `<td>${i}</td>`
                                                                                     );
                                                                                 1 ===
@@ -3319,26 +3507,31 @@
                                                                                         .childNodes[0]
                                                                                         .nodeName
                                                                                 )
-                                                                                    ? (o.childNodes[0].data =
+                                                                                    ? (r.childNodes[0].data =
                                                                                           i)
-                                                                                    : (o.childNodes =
+                                                                                    : (r.childNodes =
                                                                                           t.childNodes);
                                                                             }
                                                                         }
                                                                     }
-                                                                    return o;
+                                                                    return r;
                                                                 })
                                                                 .filter(
                                                                     (t) => t
                                                                 ),
                                                         };
                                                         if (
-                                                            (e === a &&
+                                                            (e === o &&
                                                                 (s.attributes.class =
-                                                                    o.cursor),
-                                                            f)
+                                                                    c(
+                                                                        s
+                                                                            .attributes
+                                                                            .class,
+                                                                        r.cursor
+                                                                    )),
+                                                            g)
                                                         ) {
-                                                            const i = f(
+                                                            const i = g(
                                                                 t,
                                                                 s,
                                                                 e
@@ -3350,7 +3543,7 @@
                                                                 )
                                                                     return i;
                                                                 {
-                                                                    const t = C(
+                                                                    const t = H(
                                                                         `<tr>${i}</tr>`
                                                                     );
                                                                     !t.childNodes ||
@@ -3380,58 +3573,60 @@
                                         ],
                                     };
                                     if (
-                                        ((w.attributes.class = w.attributes
-                                            .class
-                                            ? `${w.attributes.class} ${o.table}`
-                                            : o.table),
-                                        l || d || v)
+                                        ((M.attributes.class = c(
+                                            M.attributes.class,
+                                            r.table
+                                        )),
+                                        d || h || w)
                                     ) {
-                                        const t = A(
+                                        const t = F(
                                             e,
                                             i,
-                                            n,
+                                            a,
                                             {
-                                                classes: o,
-                                                hiddenHeader: r,
-                                                sortable: h,
-                                                scrollY: u,
+                                                classes: r,
+                                                hiddenHeader: l,
+                                                sortable: p,
+                                                scrollY: f,
                                             },
                                             {
-                                                noColumnWidths: g,
-                                                unhideHeader: b,
+                                                noColumnWidths: v,
+                                                unhideHeader: _,
                                             }
                                         );
-                                        if (l || v) {
+                                        if (d || w) {
                                             const e = {
                                                 nodeName: "THEAD",
                                                 childNodes: [t],
                                             };
-                                            (!u.length && !r) ||
-                                                b ||
+                                            (!f.length && !l) ||
+                                                _ ||
                                                 (e.attributes = {
                                                     style: "height: 0px;",
                                                 }),
-                                                w.childNodes.unshift(e);
+                                                M.childNodes.unshift(e);
                                         }
-                                        if (d) {
+                                        if (h) {
                                             const e = {
                                                 nodeName: "TFOOT",
                                                 childNodes: [
-                                                    l ? structuredClone(t) : t,
+                                                    d ? structuredClone(t) : t,
                                                 ],
                                             };
-                                            (!u.length && !r) ||
-                                                b ||
+                                            (!f.length && !l) ||
+                                                _ ||
                                                 (e.attributes = {
                                                     style: "height: 0px;",
                                                 }),
-                                                w.childNodes.push(e);
+                                                M.childNodes.push(e);
                                         }
                                     }
                                     return (
-                                        !1 !== m &&
-                                            (w.attributes.tabindex = String(m)),
-                                        w
+                                        y.forEach((t) => M.childNodes.push(t)),
+                                        D.forEach((t) => M.childNodes.push(t)),
+                                        !1 !== b &&
+                                            (M.attributes.tabindex = String(b)),
+                                        M
                                     );
                                 };
                             "undefined" != typeof globalThis
@@ -3441,1060 +3636,1424 @@
                                 : "undefined" != typeof global
                                 ? global
                                 : "undefined" != typeof self && self;
-                            var R = {};
-                            ({
-                                get exports() {
-                                    return R;
-                                },
-                                set exports(t) {
-                                    R = t;
-                                },
-                            }).exports = (function () {
-                                var t = 1e3,
-                                    e = 6e4,
-                                    s = 36e5,
-                                    i = "millisecond",
-                                    n = "second",
-                                    a = "minute",
-                                    o = "hour",
-                                    r = "day",
-                                    l = "week",
-                                    d = "month",
-                                    c = "quarter",
-                                    h = "year",
-                                    u = "date",
-                                    p = "Invalid Date",
-                                    f =
-                                        /^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,
-                                    m =
-                                        /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,
-                                    g = {
-                                        name: "en",
-                                        weekdays:
-                                            "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split(
-                                                "_"
-                                            ),
-                                        months: "January_February_March_April_May_June_July_August_September_October_November_December".split(
-                                            "_"
-                                        ),
-                                        ordinal: function (t) {
-                                            var e = ["th", "st", "nd", "rd"],
-                                                s = t % 100;
-                                            return (
-                                                "[" +
-                                                t +
-                                                (e[(s - 20) % 10] ||
-                                                    e[s] ||
-                                                    e[0]) +
-                                                "]"
-                                            );
-                                        },
-                                    },
-                                    b = function (t, e, s) {
-                                        var i = String(t);
-                                        return !i || i.length >= e
-                                            ? t
-                                            : "" +
-                                                  Array(e + 1 - i.length).join(
-                                                      s
-                                                  ) +
-                                                  t;
-                                    },
-                                    v = {
-                                        s: b,
-                                        z: function (t) {
-                                            var e = -t.utcOffset(),
-                                                s = Math.abs(e),
-                                                i = Math.floor(s / 60),
-                                                n = s % 60;
-                                            return (
-                                                (e <= 0 ? "+" : "-") +
-                                                b(i, 2, "0") +
-                                                ":" +
-                                                b(n, 2, "0")
-                                            );
-                                        },
-                                        m: function t(e, s) {
-                                            if (e.date() < s.date())
-                                                return -t(s, e);
-                                            var i =
-                                                    12 * (s.year() - e.year()) +
-                                                    (s.month() - e.month()),
-                                                n = e.clone().add(i, d),
-                                                a = s - n < 0,
-                                                o = e
-                                                    .clone()
-                                                    .add(i + (a ? -1 : 1), d);
-                                            return +(
-                                                -(
-                                                    i +
-                                                    (s - n) /
-                                                        (a ? n - o : o - n)
-                                                ) || 0
-                                            );
-                                        },
-                                        a: function (t) {
-                                            return t < 0
-                                                ? Math.ceil(t) || 0
-                                                : Math.floor(t);
-                                        },
-                                        p: function (t) {
-                                            return (
-                                                {
-                                                    M: d,
-                                                    y: h,
-                                                    w: l,
-                                                    d: r,
-                                                    D: u,
-                                                    h: o,
-                                                    m: a,
-                                                    s: n,
-                                                    ms: i,
-                                                    Q: c,
-                                                }[t] ||
-                                                String(t || "")
-                                                    .toLowerCase()
-                                                    .replace(/s$/, "")
-                                            );
-                                        },
-                                        u: function (t) {
-                                            return void 0 === t;
-                                        },
-                                    },
-                                    w = "en",
-                                    _ = {};
-                                _[w] = g;
-                                var y = function (t) {
-                                        return t instanceof M;
-                                    },
-                                    x = function t(e, s, i) {
-                                        var n;
-                                        if (!e) return w;
-                                        if ("string" == typeof e) {
-                                            var a = e.toLowerCase();
-                                            _[a] && (n = a),
-                                                s && ((_[a] = s), (n = a));
-                                            var o = e.split("-");
-                                            if (!n && o.length > 1)
-                                                return t(o[0]);
-                                        } else {
-                                            var r = e.name;
-                                            (_[r] = e), (n = r);
-                                        }
-                                        return (
-                                            !i && n && (w = n), n || (!i && w)
-                                        );
-                                    },
-                                    N = function (t, e) {
-                                        if (y(t)) return t.clone();
-                                        var s = "object" == typeof e ? e : {};
-                                        return (
-                                            (s.date = t),
-                                            (s.args = arguments),
-                                            new M(s)
-                                        );
-                                    },
-                                    D = v;
-                                (D.l = x),
-                                    (D.i = y),
-                                    (D.w = function (t, e) {
-                                        return N(t, {
-                                            locale: e.$L,
-                                            utc: e.$u,
-                                            x: e.$x,
-                                            $offset: e.$offset,
-                                        });
-                                    });
-                                var M = (function () {
-                                        function g(t) {
-                                            (this.$L = x(t.locale, null, !0)),
-                                                this.parse(t);
-                                        }
-                                        var b = g.prototype;
-                                        return (
-                                            (b.parse = function (t) {
-                                                (this.$d = (function (t) {
-                                                    var e = t.date,
-                                                        s = t.utc;
-                                                    if (null === e)
-                                                        return new Date(NaN);
-                                                    if (D.u(e))
-                                                        return new Date();
-                                                    if (e instanceof Date)
-                                                        return new Date(e);
-                                                    if (
-                                                        "string" == typeof e &&
-                                                        !/Z$/i.test(e)
-                                                    ) {
-                                                        var i = e.match(f);
-                                                        if (i) {
-                                                            var n =
-                                                                    i[2] - 1 ||
-                                                                    0,
-                                                                a = (
-                                                                    i[7] || "0"
-                                                                ).substring(
-                                                                    0,
-                                                                    3
-                                                                );
-                                                            return s
-                                                                ? new Date(
-                                                                      Date.UTC(
-                                                                          i[1],
-                                                                          n,
-                                                                          i[3] ||
-                                                                              1,
-                                                                          i[4] ||
-                                                                              0,
-                                                                          i[5] ||
-                                                                              0,
-                                                                          i[6] ||
-                                                                              0,
-                                                                          a
-                                                                      )
-                                                                  )
-                                                                : new Date(
-                                                                      i[1],
-                                                                      n,
-                                                                      i[3] || 1,
-                                                                      i[4] || 0,
-                                                                      i[5] || 0,
-                                                                      i[6] || 0,
-                                                                      a
-                                                                  );
-                                                        }
-                                                    }
-                                                    return new Date(e);
-                                                })(t)),
-                                                    (this.$x = t.x || {}),
-                                                    this.init();
-                                            }),
-                                            (b.init = function () {
-                                                var t = this.$d;
-                                                (this.$y = t.getFullYear()),
-                                                    (this.$M = t.getMonth()),
-                                                    (this.$D = t.getDate()),
-                                                    (this.$W = t.getDay()),
-                                                    (this.$H = t.getHours()),
-                                                    (this.$m = t.getMinutes()),
-                                                    (this.$s = t.getSeconds()),
-                                                    (this.$ms =
-                                                        t.getMilliseconds());
-                                            }),
-                                            (b.$utils = function () {
-                                                return D;
-                                            }),
-                                            (b.isValid = function () {
-                                                return !(
-                                                    this.$d.toString() === p
-                                                );
-                                            }),
-                                            (b.isSame = function (t, e) {
-                                                var s = N(t);
-                                                return (
-                                                    this.startOf(e) <= s &&
-                                                    s <= this.endOf(e)
-                                                );
-                                            }),
-                                            (b.isAfter = function (t, e) {
-                                                return N(t) < this.startOf(e);
-                                            }),
-                                            (b.isBefore = function (t, e) {
-                                                return this.endOf(e) < N(t);
-                                            }),
-                                            (b.$g = function (t, e, s) {
-                                                return D.u(t)
-                                                    ? this[e]
-                                                    : this.set(s, t);
-                                            }),
-                                            (b.unix = function () {
-                                                return Math.floor(
-                                                    this.valueOf() / 1e3
-                                                );
-                                            }),
-                                            (b.valueOf = function () {
-                                                return this.$d.getTime();
-                                            }),
-                                            (b.startOf = function (t, e) {
-                                                var s = this,
-                                                    i = !!D.u(e) || e,
-                                                    c = D.p(t),
-                                                    p = function (t, e) {
-                                                        var n = D.w(
-                                                            s.$u
-                                                                ? Date.UTC(
-                                                                      s.$y,
-                                                                      e,
-                                                                      t
-                                                                  )
-                                                                : new Date(
-                                                                      s.$y,
-                                                                      e,
-                                                                      t
-                                                                  ),
-                                                            s
-                                                        );
-                                                        return i
-                                                            ? n
-                                                            : n.endOf(r);
-                                                    },
-                                                    f = function (t, e) {
-                                                        return D.w(
-                                                            s
-                                                                .toDate()
-                                                                [t].apply(
-                                                                    s.toDate(
-                                                                        "s"
-                                                                    ),
-                                                                    (i
-                                                                        ? [
-                                                                              0,
-                                                                              0,
-                                                                              0,
-                                                                              0,
-                                                                          ]
-                                                                        : [
-                                                                              23,
-                                                                              59,
-                                                                              59,
-                                                                              999,
-                                                                          ]
-                                                                    ).slice(e)
-                                                                ),
-                                                            s
-                                                        );
-                                                    },
-                                                    m = this.$W,
-                                                    g = this.$M,
-                                                    b = this.$D,
-                                                    v =
-                                                        "set" +
-                                                        (this.$u ? "UTC" : "");
-                                                switch (c) {
-                                                    case h:
-                                                        return i
-                                                            ? p(1, 0)
-                                                            : p(31, 11);
-                                                    case d:
-                                                        return i
-                                                            ? p(1, g)
-                                                            : p(0, g + 1);
-                                                    case l:
-                                                        var w =
-                                                                this.$locale()
-                                                                    .weekStart ||
-                                                                0,
-                                                            _ =
-                                                                (m < w
-                                                                    ? m + 7
-                                                                    : m) - w;
-                                                        return p(
-                                                            i
-                                                                ? b - _
-                                                                : b + (6 - _),
-                                                            g
-                                                        );
-                                                    case r:
-                                                    case u:
-                                                        return f(
-                                                            v + "Hours",
-                                                            0
-                                                        );
-                                                    case o:
-                                                        return f(
-                                                            v + "Minutes",
-                                                            1
-                                                        );
-                                                    case a:
-                                                        return f(
-                                                            v + "Seconds",
-                                                            2
-                                                        );
-                                                    case n:
-                                                        return f(
-                                                            v + "Milliseconds",
-                                                            3
-                                                        );
-                                                    default:
-                                                        return this.clone();
-                                                }
-                                            }),
-                                            (b.endOf = function (t) {
-                                                return this.startOf(t, !1);
-                                            }),
-                                            (b.$set = function (t, e) {
-                                                var s,
-                                                    l = D.p(t),
-                                                    c =
-                                                        "set" +
-                                                        (this.$u ? "UTC" : ""),
-                                                    p = ((s = {}),
-                                                    (s[r] = c + "Date"),
-                                                    (s[u] = c + "Date"),
-                                                    (s[d] = c + "Month"),
-                                                    (s[h] = c + "FullYear"),
-                                                    (s[o] = c + "Hours"),
-                                                    (s[a] = c + "Minutes"),
-                                                    (s[n] = c + "Seconds"),
-                                                    (s[i] = c + "Milliseconds"),
-                                                    s)[l],
-                                                    f =
-                                                        l === r
-                                                            ? this.$D +
-                                                              (e - this.$W)
-                                                            : e;
-                                                if (l === d || l === h) {
-                                                    var m = this.clone().set(
-                                                        u,
-                                                        1
+                            function B(t) {
+                                return t &&
+                                    t.__esModule &&
+                                    Object.prototype.hasOwnProperty.call(
+                                        t,
+                                        "default"
+                                    )
+                                    ? t.default
+                                    : t;
+                            }
+                            var z = { exports: {} },
+                                U = B(
+                                    (z.exports = (function () {
+                                        var t = 1e3,
+                                            e = 6e4,
+                                            s = 36e5,
+                                            i = "millisecond",
+                                            n = "second",
+                                            a = "minute",
+                                            o = "hour",
+                                            r = "day",
+                                            l = "week",
+                                            d = "month",
+                                            c = "quarter",
+                                            h = "year",
+                                            u = "date",
+                                            p = "Invalid Date",
+                                            f =
+                                                /^(\d{4})[-/]?(\d{1,2})?[-/]?(\d{0,2})[Tt\s]*(\d{1,2})?:?(\d{1,2})?:?(\d{1,2})?[.:]?(\d+)?$/,
+                                            m =
+                                                /\[([^\]]+)]|Y{1,4}|M{1,4}|D{1,2}|d{1,4}|H{1,2}|h{1,2}|a|A|m{1,2}|s{1,2}|Z{1,2}|SSS/g,
+                                            g = {
+                                                name: "en",
+                                                weekdays:
+                                                    "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split(
+                                                        "_"
+                                                    ),
+                                                months: "January_February_March_April_May_June_July_August_September_October_November_December".split(
+                                                    "_"
+                                                ),
+                                                ordinal: function (t) {
+                                                    var e = [
+                                                            "th",
+                                                            "st",
+                                                            "nd",
+                                                            "rd",
+                                                        ],
+                                                        s = t % 100;
+                                                    return (
+                                                        "[" +
+                                                        t +
+                                                        (e[(s - 20) % 10] ||
+                                                            e[s] ||
+                                                            e[0]) +
+                                                        "]"
                                                     );
-                                                    m.$d[p](f),
-                                                        m.init(),
-                                                        (this.$d = m.set(
-                                                            u,
-                                                            Math.min(
-                                                                this.$D,
-                                                                m.daysInMonth()
+                                                },
+                                            },
+                                            b = function (t, e, s) {
+                                                var i = String(t);
+                                                return !i || i.length >= e
+                                                    ? t
+                                                    : "" +
+                                                          Array(
+                                                              e + 1 - i.length
+                                                          ).join(s) +
+                                                          t;
+                                            },
+                                            v = {
+                                                s: b,
+                                                z: function (t) {
+                                                    var e = -t.utcOffset(),
+                                                        s = Math.abs(e),
+                                                        i = Math.floor(s / 60),
+                                                        n = s % 60;
+                                                    return (
+                                                        (e <= 0 ? "+" : "-") +
+                                                        b(i, 2, "0") +
+                                                        ":" +
+                                                        b(n, 2, "0")
+                                                    );
+                                                },
+                                                m: function t(e, s) {
+                                                    if (e.date() < s.date())
+                                                        return -t(s, e);
+                                                    var i =
+                                                            12 *
+                                                                (s.year() -
+                                                                    e.year()) +
+                                                            (s.month() -
+                                                                e.month()),
+                                                        n = e.clone().add(i, d),
+                                                        a = s - n < 0,
+                                                        o = e
+                                                            .clone()
+                                                            .add(
+                                                                i +
+                                                                    (a
+                                                                        ? -1
+                                                                        : 1),
+                                                                d
+                                                            );
+                                                    return +(
+                                                        -(
+                                                            i +
+                                                            (s - n) /
+                                                                (a
+                                                                    ? n - o
+                                                                    : o - n)
+                                                        ) || 0
+                                                    );
+                                                },
+                                                a: function (t) {
+                                                    return t < 0
+                                                        ? Math.ceil(t) || 0
+                                                        : Math.floor(t);
+                                                },
+                                                p: function (t) {
+                                                    return (
+                                                        {
+                                                            M: d,
+                                                            y: h,
+                                                            w: l,
+                                                            d: r,
+                                                            D: u,
+                                                            h: o,
+                                                            m: a,
+                                                            s: n,
+                                                            ms: i,
+                                                            Q: c,
+                                                        }[t] ||
+                                                        String(t || "")
+                                                            .toLowerCase()
+                                                            .replace(/s$/, "")
+                                                    );
+                                                },
+                                                u: function (t) {
+                                                    return void 0 === t;
+                                                },
+                                            },
+                                            _ = "en",
+                                            w = {};
+                                        w[_] = g;
+                                        var y = "$isDayjsObject",
+                                            D = function (t) {
+                                                return (
+                                                    t instanceof O ||
+                                                    !(!t || !t[y])
+                                                );
+                                            },
+                                            M = function t(e, s, i) {
+                                                var n;
+                                                if (!e) return _;
+                                                if ("string" == typeof e) {
+                                                    var a = e.toLowerCase();
+                                                    w[a] && (n = a),
+                                                        s &&
+                                                            ((w[a] = s),
+                                                            (n = a));
+                                                    var o = e.split("-");
+                                                    if (!n && o.length > 1)
+                                                        return t(o[0]);
+                                                } else {
+                                                    var r = e.name;
+                                                    (w[r] = e), (n = r);
+                                                }
+                                                return (
+                                                    !i && n && (_ = n),
+                                                    n || (!i && _)
+                                                );
+                                            },
+                                            N = function (t, e) {
+                                                if (D(t)) return t.clone();
+                                                var s =
+                                                    "object" == typeof e
+                                                        ? e
+                                                        : {};
+                                                return (
+                                                    (s.date = t),
+                                                    (s.args = arguments),
+                                                    new O(s)
+                                                );
+                                            },
+                                            x = v;
+                                        (x.l = M),
+                                            (x.i = D),
+                                            (x.w = function (t, e) {
+                                                return N(t, {
+                                                    locale: e.$L,
+                                                    utc: e.$u,
+                                                    x: e.$x,
+                                                    $offset: e.$offset,
+                                                });
+                                            });
+                                        var O = (function () {
+                                                function g(t) {
+                                                    (this.$L = M(
+                                                        t.locale,
+                                                        null,
+                                                        !0
+                                                    )),
+                                                        this.parse(t),
+                                                        (this.$x =
+                                                            this.$x ||
+                                                            t.x ||
+                                                            {}),
+                                                        (this[y] = !0);
+                                                }
+                                                var b = g.prototype;
+                                                return (
+                                                    (b.parse = function (t) {
+                                                        (this.$d = (function (
+                                                            t
+                                                        ) {
+                                                            var e = t.date,
+                                                                s = t.utc;
+                                                            if (null === e)
+                                                                return new Date(
+                                                                    NaN
+                                                                );
+                                                            if (x.u(e))
+                                                                return new Date();
+                                                            if (
+                                                                e instanceof
+                                                                Date
                                                             )
-                                                        ).$d);
-                                                } else p && this.$d[p](f);
-                                                return this.init(), this;
-                                            }),
-                                            (b.set = function (t, e) {
-                                                return this.clone().$set(t, e);
-                                            }),
-                                            (b.get = function (t) {
-                                                return this[D.p(t)]();
-                                            }),
-                                            (b.add = function (i, c) {
-                                                var u,
-                                                    p = this;
-                                                i = Number(i);
-                                                var f = D.p(c),
-                                                    m = function (t) {
-                                                        var e = N(p);
-                                                        return D.w(
-                                                            e.date(
-                                                                e.date() +
-                                                                    Math.round(
-                                                                        t * i
-                                                                    )
-                                                            ),
+                                                                return new Date(
+                                                                    e
+                                                                );
+                                                            if (
+                                                                "string" ==
+                                                                    typeof e &&
+                                                                !/Z$/i.test(e)
+                                                            ) {
+                                                                var i =
+                                                                    e.match(f);
+                                                                if (i) {
+                                                                    var n =
+                                                                            i[2] -
+                                                                                1 ||
+                                                                            0,
+                                                                        a = (
+                                                                            i[7] ||
+                                                                            "0"
+                                                                        ).substring(
+                                                                            0,
+                                                                            3
+                                                                        );
+                                                                    return s
+                                                                        ? new Date(
+                                                                              Date.UTC(
+                                                                                  i[1],
+                                                                                  n,
+                                                                                  i[3] ||
+                                                                                      1,
+                                                                                  i[4] ||
+                                                                                      0,
+                                                                                  i[5] ||
+                                                                                      0,
+                                                                                  i[6] ||
+                                                                                      0,
+                                                                                  a
+                                                                              )
+                                                                          )
+                                                                        : new Date(
+                                                                              i[1],
+                                                                              n,
+                                                                              i[3] ||
+                                                                                  1,
+                                                                              i[4] ||
+                                                                                  0,
+                                                                              i[5] ||
+                                                                                  0,
+                                                                              i[6] ||
+                                                                                  0,
+                                                                              a
+                                                                          );
+                                                                }
+                                                            }
+                                                            return new Date(e);
+                                                        })(t)),
+                                                            this.init();
+                                                    }),
+                                                    (b.init = function () {
+                                                        var t = this.$d;
+                                                        (this.$y =
+                                                            t.getFullYear()),
+                                                            (this.$M =
+                                                                t.getMonth()),
+                                                            (this.$D =
+                                                                t.getDate()),
+                                                            (this.$W =
+                                                                t.getDay()),
+                                                            (this.$H =
+                                                                t.getHours()),
+                                                            (this.$m =
+                                                                t.getMinutes()),
+                                                            (this.$s =
+                                                                t.getSeconds()),
+                                                            (this.$ms =
+                                                                t.getMilliseconds());
+                                                    }),
+                                                    (b.$utils = function () {
+                                                        return x;
+                                                    }),
+                                                    (b.isValid = function () {
+                                                        return !(
+                                                            this.$d.toString() ===
                                                             p
                                                         );
-                                                    };
-                                                if (f === d)
-                                                    return this.set(
-                                                        d,
-                                                        this.$M + i
-                                                    );
-                                                if (f === h)
-                                                    return this.set(
-                                                        h,
-                                                        this.$y + i
-                                                    );
-                                                if (f === r) return m(1);
-                                                if (f === l) return m(7);
-                                                var g =
-                                                        ((u = {}),
-                                                        (u[a] = e),
-                                                        (u[o] = s),
-                                                        (u[n] = t),
-                                                        u)[f] || 1,
-                                                    b =
-                                                        this.$d.getTime() +
-                                                        i * g;
-                                                return D.w(b, this);
-                                            }),
-                                            (b.subtract = function (t, e) {
-                                                return this.add(-1 * t, e);
-                                            }),
-                                            (b.format = function (t) {
-                                                var e = this,
-                                                    s = this.$locale();
-                                                if (!this.isValid())
-                                                    return s.invalidDate || p;
-                                                var i =
-                                                        t ||
-                                                        "YYYY-MM-DDTHH:mm:ssZ",
-                                                    n = D.z(this),
-                                                    a = this.$H,
-                                                    o = this.$m,
-                                                    r = this.$M,
-                                                    l = s.weekdays,
-                                                    d = s.months,
-                                                    c = function (t, s, n, a) {
+                                                    }),
+                                                    (b.isSame = function (
+                                                        t,
+                                                        e
+                                                    ) {
+                                                        var s = N(t);
                                                         return (
-                                                            (t &&
-                                                                (t[s] ||
-                                                                    t(e, i))) ||
-                                                            n[s].slice(0, a)
+                                                            this.startOf(e) <=
+                                                                s &&
+                                                            s <= this.endOf(e)
                                                         );
-                                                    },
-                                                    h = function (t) {
-                                                        return D.s(
-                                                            a % 12 || 12,
-                                                            t,
-                                                            "0"
-                                                        );
-                                                    },
-                                                    u =
-                                                        s.meridiem ||
-                                                        function (t, e, s) {
-                                                            var i =
-                                                                t < 12
-                                                                    ? "AM"
-                                                                    : "PM";
-                                                            return s
-                                                                ? i.toLowerCase()
-                                                                : i;
-                                                        },
-                                                    f = {
-                                                        YY: String(
-                                                            this.$y
-                                                        ).slice(-2),
-                                                        YYYY: this.$y,
-                                                        M: r + 1,
-                                                        MM: D.s(r + 1, 2, "0"),
-                                                        MMM: c(
-                                                            s.monthsShort,
-                                                            r,
-                                                            d,
-                                                            3
-                                                        ),
-                                                        MMMM: c(d, r),
-                                                        D: this.$D,
-                                                        DD: D.s(
-                                                            this.$D,
-                                                            2,
-                                                            "0"
-                                                        ),
-                                                        d: String(this.$W),
-                                                        dd: c(
-                                                            s.weekdaysMin,
-                                                            this.$W,
-                                                            l,
-                                                            2
-                                                        ),
-                                                        ddd: c(
-                                                            s.weekdaysShort,
-                                                            this.$W,
-                                                            l,
-                                                            3
-                                                        ),
-                                                        dddd: l[this.$W],
-                                                        H: String(a),
-                                                        HH: D.s(a, 2, "0"),
-                                                        h: h(1),
-                                                        hh: h(2),
-                                                        a: u(a, o, !0),
-                                                        A: u(a, o, !1),
-                                                        m: String(o),
-                                                        mm: D.s(o, 2, "0"),
-                                                        s: String(this.$s),
-                                                        ss: D.s(
-                                                            this.$s,
-                                                            2,
-                                                            "0"
-                                                        ),
-                                                        SSS: D.s(
-                                                            this.$ms,
-                                                            3,
-                                                            "0"
-                                                        ),
-                                                        Z: n,
-                                                    };
-                                                return i.replace(
-                                                    m,
-                                                    function (t, e) {
+                                                    }),
+                                                    (b.isAfter = function (
+                                                        t,
+                                                        e
+                                                    ) {
                                                         return (
-                                                            e ||
-                                                            f[t] ||
-                                                            n.replace(":", "")
+                                                            N(t) <
+                                                            this.startOf(e)
                                                         );
-                                                    }
-                                                );
-                                            }),
-                                            (b.utcOffset = function () {
-                                                return (
-                                                    15 *
-                                                    -Math.round(
-                                                        this.$d.getTimezoneOffset() /
-                                                            15
-                                                    )
-                                                );
-                                            }),
-                                            (b.diff = function (i, u, p) {
-                                                var f,
-                                                    m = D.p(u),
-                                                    g = N(i),
-                                                    b =
-                                                        (g.utcOffset() -
-                                                            this.utcOffset()) *
-                                                        e,
-                                                    v = this - g,
-                                                    w = D.m(this, g);
-                                                return (
-                                                    (w =
-                                                        ((f = {}),
-                                                        (f[h] = w / 12),
-                                                        (f[d] = w),
-                                                        (f[c] = w / 3),
-                                                        (f[l] =
-                                                            (v - b) / 6048e5),
-                                                        (f[r] =
-                                                            (v - b) / 864e5),
-                                                        (f[o] = v / s),
-                                                        (f[a] = v / e),
-                                                        (f[n] = v / t),
-                                                        f)[m] || v),
-                                                    p ? w : D.a(w)
-                                                );
-                                            }),
-                                            (b.daysInMonth = function () {
-                                                return this.endOf(d).$D;
-                                            }),
-                                            (b.$locale = function () {
-                                                return _[this.$L];
-                                            }),
-                                            (b.locale = function (t, e) {
-                                                if (!t) return this.$L;
-                                                var s = this.clone(),
-                                                    i = x(t, e, !0);
-                                                return i && (s.$L = i), s;
-                                            }),
-                                            (b.clone = function () {
-                                                return D.w(this.$d, this);
-                                            }),
-                                            (b.toDate = function () {
-                                                return new Date(this.valueOf());
-                                            }),
-                                            (b.toJSON = function () {
-                                                return this.isValid()
-                                                    ? this.toISOString()
-                                                    : null;
-                                            }),
-                                            (b.toISOString = function () {
-                                                return this.$d.toISOString();
-                                            }),
-                                            (b.toString = function () {
-                                                return this.$d.toUTCString();
-                                            }),
-                                            g
-                                        );
-                                    })(),
-                                    O = M.prototype;
-                                return (
-                                    (N.prototype = O),
-                                    [
-                                        ["$ms", i],
-                                        ["$s", n],
-                                        ["$m", a],
-                                        ["$H", o],
-                                        ["$W", r],
-                                        ["$M", d],
-                                        ["$y", h],
-                                        ["$D", u],
-                                    ].forEach(function (t) {
-                                        O[t[1]] = function (e) {
-                                            return this.$g(e, t[0], t[1]);
-                                        };
-                                    }),
-                                    (N.extend = function (t, e) {
-                                        return (
-                                            t.$i || (t(e, M, N), (t.$i = !0)), N
-                                        );
-                                    }),
-                                    (N.locale = x),
-                                    (N.isDayjs = y),
-                                    (N.unix = function (t) {
-                                        return N(1e3 * t);
-                                    }),
-                                    (N.en = _[w]),
-                                    (N.Ls = _),
-                                    (N.p = {}),
-                                    N
-                                );
-                            })();
-                            var H = R,
-                                I = {};
-                            ({
-                                get exports() {
-                                    return I;
-                                },
-                                set exports(t) {
-                                    I = t;
-                                },
-                            }).exports = (function () {
-                                var t = {
-                                        LTS: "h:mm:ss A",
-                                        LT: "h:mm A",
-                                        L: "MM/DD/YYYY",
-                                        LL: "MMMM D, YYYY",
-                                        LLL: "MMMM D, YYYY h:mm A",
-                                        LLLL: "dddd, MMMM D, YYYY h:mm A",
-                                    },
-                                    e =
-                                        /(\[[^[]*\])|([-_:/.,()\s]+)|(A|a|YYYY|YY?|MM?M?M?|Do|DD?|hh?|HH?|mm?|ss?|S{1,3}|z|ZZ?)/g,
-                                    s = /\d\d/,
-                                    i = /\d\d?/,
-                                    n = /\d*[^-_:/,()\s\d]+/,
-                                    a = {},
-                                    o = function (t) {
-                                        return (t = +t) + (t > 68 ? 1900 : 2e3);
-                                    },
-                                    r = function (t) {
-                                        return function (e) {
-                                            this[t] = +e;
-                                        };
-                                    },
-                                    l = [
-                                        /[+-]\d\d:?(\d\d)?|Z/,
-                                        function (t) {
-                                            (
-                                                this.zone || (this.zone = {})
-                                            ).offset = (function (t) {
-                                                if (!t) return 0;
-                                                if ("Z" === t) return 0;
-                                                var e = t.match(/([+-]|\d\d)/g),
-                                                    s =
-                                                        60 * e[1] +
-                                                        (+e[2] || 0);
-                                                return 0 === s
-                                                    ? 0
-                                                    : "+" === e[0]
-                                                    ? -s
-                                                    : s;
-                                            })(t);
-                                        },
-                                    ],
-                                    d = function (t) {
-                                        var e = a[t];
-                                        return (
-                                            e &&
-                                            (e.indexOf ? e : e.s.concat(e.f))
-                                        );
-                                    },
-                                    c = function (t, e) {
-                                        var s,
-                                            i = a.meridiem;
-                                        if (i) {
-                                            for (var n = 1; n <= 24; n += 1)
-                                                if (
-                                                    t.indexOf(i(n, 0, e)) > -1
-                                                ) {
-                                                    s = n > 12;
-                                                    break;
-                                                }
-                                        } else s = t === (e ? "pm" : "PM");
-                                        return s;
-                                    },
-                                    h = {
-                                        A: [
-                                            n,
-                                            function (t) {
-                                                this.afternoon = c(t, !1);
-                                            },
-                                        ],
-                                        a: [
-                                            n,
-                                            function (t) {
-                                                this.afternoon = c(t, !0);
-                                            },
-                                        ],
-                                        S: [
-                                            /\d/,
-                                            function (t) {
-                                                this.milliseconds = 100 * +t;
-                                            },
-                                        ],
-                                        SS: [
-                                            s,
-                                            function (t) {
-                                                this.milliseconds = 10 * +t;
-                                            },
-                                        ],
-                                        SSS: [
-                                            /\d{3}/,
-                                            function (t) {
-                                                this.milliseconds = +t;
-                                            },
-                                        ],
-                                        s: [i, r("seconds")],
-                                        ss: [i, r("seconds")],
-                                        m: [i, r("minutes")],
-                                        mm: [i, r("minutes")],
-                                        H: [i, r("hours")],
-                                        h: [i, r("hours")],
-                                        HH: [i, r("hours")],
-                                        hh: [i, r("hours")],
-                                        D: [i, r("day")],
-                                        DD: [s, r("day")],
-                                        Do: [
-                                            n,
-                                            function (t) {
-                                                var e = a.ordinal,
-                                                    s = t.match(/\d+/);
-                                                if (((this.day = s[0]), e))
-                                                    for (
-                                                        var i = 1;
-                                                        i <= 31;
-                                                        i += 1
-                                                    )
-                                                        e(i).replace(
-                                                            /\[|\]/g,
-                                                            ""
-                                                        ) === t &&
-                                                            (this.day = i);
-                                            },
-                                        ],
-                                        M: [i, r("month")],
-                                        MM: [s, r("month")],
-                                        MMM: [
-                                            n,
-                                            function (t) {
-                                                var e = d("months"),
-                                                    s =
-                                                        (
-                                                            d("monthsShort") ||
-                                                            e.map(function (t) {
-                                                                return t.slice(
-                                                                    0,
+                                                    }),
+                                                    (b.isBefore = function (
+                                                        t,
+                                                        e
+                                                    ) {
+                                                        return (
+                                                            this.endOf(e) < N(t)
+                                                        );
+                                                    }),
+                                                    (b.$g = function (t, e, s) {
+                                                        return x.u(t)
+                                                            ? this[e]
+                                                            : this.set(s, t);
+                                                    }),
+                                                    (b.unix = function () {
+                                                        return Math.floor(
+                                                            this.valueOf() / 1e3
+                                                        );
+                                                    }),
+                                                    (b.valueOf = function () {
+                                                        return this.$d.getTime();
+                                                    }),
+                                                    (b.startOf = function (
+                                                        t,
+                                                        e
+                                                    ) {
+                                                        var s = this,
+                                                            i = !!x.u(e) || e,
+                                                            c = x.p(t),
+                                                            p = function (
+                                                                t,
+                                                                e
+                                                            ) {
+                                                                var n = x.w(
+                                                                    s.$u
+                                                                        ? Date.UTC(
+                                                                              s.$y,
+                                                                              e,
+                                                                              t
+                                                                          )
+                                                                        : new Date(
+                                                                              s.$y,
+                                                                              e,
+                                                                              t
+                                                                          ),
+                                                                    s
+                                                                );
+                                                                return i
+                                                                    ? n
+                                                                    : n.endOf(
+                                                                          r
+                                                                      );
+                                                            },
+                                                            f = function (
+                                                                t,
+                                                                e
+                                                            ) {
+                                                                return x.w(
+                                                                    s
+                                                                        .toDate()
+                                                                        [
+                                                                            t
+                                                                        ].apply(
+                                                                            s.toDate(
+                                                                                "s"
+                                                                            ),
+                                                                            (i
+                                                                                ? [
+                                                                                      0,
+                                                                                      0,
+                                                                                      0,
+                                                                                      0,
+                                                                                  ]
+                                                                                : [
+                                                                                      23,
+                                                                                      59,
+                                                                                      59,
+                                                                                      999,
+                                                                                  ]
+                                                                            ).slice(
+                                                                                e
+                                                                            )
+                                                                        ),
+                                                                    s
+                                                                );
+                                                            },
+                                                            m = this.$W,
+                                                            g = this.$M,
+                                                            b = this.$D,
+                                                            v =
+                                                                "set" +
+                                                                (this.$u
+                                                                    ? "UTC"
+                                                                    : "");
+                                                        switch (c) {
+                                                            case h:
+                                                                return i
+                                                                    ? p(1, 0)
+                                                                    : p(31, 11);
+                                                            case d:
+                                                                return i
+                                                                    ? p(1, g)
+                                                                    : p(
+                                                                          0,
+                                                                          g + 1
+                                                                      );
+                                                            case l:
+                                                                var _ =
+                                                                        this.$locale()
+                                                                            .weekStart ||
+                                                                        0,
+                                                                    w =
+                                                                        (m < _
+                                                                            ? m +
+                                                                              7
+                                                                            : m) -
+                                                                        _;
+                                                                return p(
+                                                                    i
+                                                                        ? b - w
+                                                                        : b +
+                                                                              (6 -
+                                                                                  w),
+                                                                    g
+                                                                );
+                                                            case r:
+                                                            case u:
+                                                                return f(
+                                                                    v + "Hours",
+                                                                    0
+                                                                );
+                                                            case o:
+                                                                return f(
+                                                                    v +
+                                                                        "Minutes",
+                                                                    1
+                                                                );
+                                                            case a:
+                                                                return f(
+                                                                    v +
+                                                                        "Seconds",
+                                                                    2
+                                                                );
+                                                            case n:
+                                                                return f(
+                                                                    v +
+                                                                        "Milliseconds",
                                                                     3
                                                                 );
-                                                            })
-                                                        ).indexOf(t) + 1;
-                                                if (s < 1) throw new Error();
-                                                this.month = s % 12 || s;
-                                            },
-                                        ],
-                                        MMMM: [
-                                            n,
-                                            function (t) {
-                                                var e =
-                                                    d("months").indexOf(t) + 1;
-                                                if (e < 1) throw new Error();
-                                                this.month = e % 12 || e;
-                                            },
-                                        ],
-                                        Y: [/[+-]?\d+/, r("year")],
-                                        YY: [
-                                            s,
-                                            function (t) {
-                                                this.year = o(t);
-                                            },
-                                        ],
-                                        YYYY: [/\d{4}/, r("year")],
-                                        Z: l,
-                                        ZZ: l,
-                                    };
-                                function u(s) {
-                                    var i, n;
-                                    (i = s), (n = a && a.formats);
-                                    for (
-                                        var o = (s = i.replace(
-                                                /(\[[^\]]+])|(LTS?|l{1,4}|L{1,4})/g,
-                                                function (e, s, i) {
-                                                    var a =
-                                                        i && i.toUpperCase();
-                                                    return (
-                                                        s ||
-                                                        n[i] ||
-                                                        t[i] ||
-                                                        n[a].replace(
-                                                            /(\[[^\]]+])|(MMMM|MM|DD|dddd)/g,
-                                                            function (t, e, s) {
+                                                            default:
+                                                                return this.clone();
+                                                        }
+                                                    }),
+                                                    (b.endOf = function (t) {
+                                                        return this.startOf(
+                                                            t,
+                                                            !1
+                                                        );
+                                                    }),
+                                                    (b.$set = function (t, e) {
+                                                        var s,
+                                                            l = x.p(t),
+                                                            c =
+                                                                "set" +
+                                                                (this.$u
+                                                                    ? "UTC"
+                                                                    : ""),
+                                                            p = ((s = {}),
+                                                            (s[r] = c + "Date"),
+                                                            (s[u] = c + "Date"),
+                                                            (s[d] =
+                                                                c + "Month"),
+                                                            (s[h] =
+                                                                c + "FullYear"),
+                                                            (s[o] =
+                                                                c + "Hours"),
+                                                            (s[a] =
+                                                                c + "Minutes"),
+                                                            (s[n] =
+                                                                c + "Seconds"),
+                                                            (s[i] =
+                                                                c +
+                                                                "Milliseconds"),
+                                                            s)[l],
+                                                            f =
+                                                                l === r
+                                                                    ? this.$D +
+                                                                      (e -
+                                                                          this
+                                                                              .$W)
+                                                                    : e;
+                                                        if (
+                                                            l === d ||
+                                                            l === h
+                                                        ) {
+                                                            var m =
+                                                                this.clone().set(
+                                                                    u,
+                                                                    1
+                                                                );
+                                                            m.$d[p](f),
+                                                                m.init(),
+                                                                (this.$d =
+                                                                    m.set(
+                                                                        u,
+                                                                        Math.min(
+                                                                            this
+                                                                                .$D,
+                                                                            m.daysInMonth()
+                                                                        )
+                                                                    ).$d);
+                                                        } else
+                                                            p && this.$d[p](f);
+                                                        return (
+                                                            this.init(), this
+                                                        );
+                                                    }),
+                                                    (b.set = function (t, e) {
+                                                        return this.clone().$set(
+                                                            t,
+                                                            e
+                                                        );
+                                                    }),
+                                                    (b.get = function (t) {
+                                                        return this[x.p(t)]();
+                                                    }),
+                                                    (b.add = function (i, c) {
+                                                        var u,
+                                                            p = this;
+                                                        i = Number(i);
+                                                        var f = x.p(c),
+                                                            m = function (t) {
+                                                                var e = N(p);
+                                                                return x.w(
+                                                                    e.date(
+                                                                        e.date() +
+                                                                            Math.round(
+                                                                                t *
+                                                                                    i
+                                                                            )
+                                                                    ),
+                                                                    p
+                                                                );
+                                                            };
+                                                        if (f === d)
+                                                            return this.set(
+                                                                d,
+                                                                this.$M + i
+                                                            );
+                                                        if (f === h)
+                                                            return this.set(
+                                                                h,
+                                                                this.$y + i
+                                                            );
+                                                        if (f === r)
+                                                            return m(1);
+                                                        if (f === l)
+                                                            return m(7);
+                                                        var g =
+                                                                ((u = {}),
+                                                                (u[a] = e),
+                                                                (u[o] = s),
+                                                                (u[n] = t),
+                                                                u)[f] || 1,
+                                                            b =
+                                                                this.$d.getTime() +
+                                                                i * g;
+                                                        return x.w(b, this);
+                                                    }),
+                                                    (b.subtract = function (
+                                                        t,
+                                                        e
+                                                    ) {
+                                                        return this.add(
+                                                            -1 * t,
+                                                            e
+                                                        );
+                                                    }),
+                                                    (b.format = function (t) {
+                                                        var e = this,
+                                                            s = this.$locale();
+                                                        if (!this.isValid())
+                                                            return (
+                                                                s.invalidDate ||
+                                                                p
+                                                            );
+                                                        var i =
+                                                                t ||
+                                                                "YYYY-MM-DDTHH:mm:ssZ",
+                                                            n = x.z(this),
+                                                            a = this.$H,
+                                                            o = this.$m,
+                                                            r = this.$M,
+                                                            l = s.weekdays,
+                                                            d = s.months,
+                                                            c = s.meridiem,
+                                                            h = function (
+                                                                t,
+                                                                s,
+                                                                n,
+                                                                a
+                                                            ) {
                                                                 return (
-                                                                    e ||
-                                                                    s.slice(1)
+                                                                    (t &&
+                                                                        (t[s] ||
+                                                                            t(
+                                                                                e,
+                                                                                i
+                                                                            ))) ||
+                                                                    n[s].slice(
+                                                                        0,
+                                                                        a
+                                                                    )
+                                                                );
+                                                            },
+                                                            u = function (t) {
+                                                                return x.s(
+                                                                    a % 12 ||
+                                                                        12,
+                                                                    t,
+                                                                    "0"
+                                                                );
+                                                            },
+                                                            f =
+                                                                c ||
+                                                                function (
+                                                                    t,
+                                                                    e,
+                                                                    s
+                                                                ) {
+                                                                    var i =
+                                                                        t < 12
+                                                                            ? "AM"
+                                                                            : "PM";
+                                                                    return s
+                                                                        ? i.toLowerCase()
+                                                                        : i;
+                                                                };
+                                                        return i.replace(
+                                                            m,
+                                                            function (t, i) {
+                                                                return (
+                                                                    i ||
+                                                                    (function (
+                                                                        t
+                                                                    ) {
+                                                                        switch (
+                                                                            t
+                                                                        ) {
+                                                                            case "YY":
+                                                                                return String(
+                                                                                    e.$y
+                                                                                ).slice(
+                                                                                    -2
+                                                                                );
+                                                                            case "YYYY":
+                                                                                return x.s(
+                                                                                    e.$y,
+                                                                                    4,
+                                                                                    "0"
+                                                                                );
+                                                                            case "M":
+                                                                                return (
+                                                                                    r +
+                                                                                    1
+                                                                                );
+                                                                            case "MM":
+                                                                                return x.s(
+                                                                                    r +
+                                                                                        1,
+                                                                                    2,
+                                                                                    "0"
+                                                                                );
+                                                                            case "MMM":
+                                                                                return h(
+                                                                                    s.monthsShort,
+                                                                                    r,
+                                                                                    d,
+                                                                                    3
+                                                                                );
+                                                                            case "MMMM":
+                                                                                return h(
+                                                                                    d,
+                                                                                    r
+                                                                                );
+                                                                            case "D":
+                                                                                return e.$D;
+                                                                            case "DD":
+                                                                                return x.s(
+                                                                                    e.$D,
+                                                                                    2,
+                                                                                    "0"
+                                                                                );
+                                                                            case "d":
+                                                                                return String(
+                                                                                    e.$W
+                                                                                );
+                                                                            case "dd":
+                                                                                return h(
+                                                                                    s.weekdaysMin,
+                                                                                    e.$W,
+                                                                                    l,
+                                                                                    2
+                                                                                );
+                                                                            case "ddd":
+                                                                                return h(
+                                                                                    s.weekdaysShort,
+                                                                                    e.$W,
+                                                                                    l,
+                                                                                    3
+                                                                                );
+                                                                            case "dddd":
+                                                                                return l[
+                                                                                    e
+                                                                                        .$W
+                                                                                ];
+                                                                            case "H":
+                                                                                return String(
+                                                                                    a
+                                                                                );
+                                                                            case "HH":
+                                                                                return x.s(
+                                                                                    a,
+                                                                                    2,
+                                                                                    "0"
+                                                                                );
+                                                                            case "h":
+                                                                                return u(
+                                                                                    1
+                                                                                );
+                                                                            case "hh":
+                                                                                return u(
+                                                                                    2
+                                                                                );
+                                                                            case "a":
+                                                                                return f(
+                                                                                    a,
+                                                                                    o,
+                                                                                    !0
+                                                                                );
+                                                                            case "A":
+                                                                                return f(
+                                                                                    a,
+                                                                                    o,
+                                                                                    !1
+                                                                                );
+                                                                            case "m":
+                                                                                return String(
+                                                                                    o
+                                                                                );
+                                                                            case "mm":
+                                                                                return x.s(
+                                                                                    o,
+                                                                                    2,
+                                                                                    "0"
+                                                                                );
+                                                                            case "s":
+                                                                                return String(
+                                                                                    e.$s
+                                                                                );
+                                                                            case "ss":
+                                                                                return x.s(
+                                                                                    e.$s,
+                                                                                    2,
+                                                                                    "0"
+                                                                                );
+                                                                            case "SSS":
+                                                                                return x.s(
+                                                                                    e.$ms,
+                                                                                    3,
+                                                                                    "0"
+                                                                                );
+                                                                            case "Z":
+                                                                                return n;
+                                                                        }
+                                                                        return null;
+                                                                    })(t) ||
+                                                                    n.replace(
+                                                                        ":",
+                                                                        ""
+                                                                    )
                                                                 );
                                                             }
-                                                        )
-                                                    );
-                                                }
-                                            )).match(e),
-                                            r = o.length,
-                                            l = 0;
-                                        l < r;
-                                        l += 1
-                                    ) {
-                                        var d = o[l],
-                                            c = h[d],
-                                            u = c && c[0],
-                                            p = c && c[1];
-                                        o[l] = p
-                                            ? { regex: u, parser: p }
-                                            : d.replace(/^\[|\]$/g, "");
-                                    }
-                                    return function (t) {
-                                        for (
-                                            var e = {}, s = 0, i = 0;
-                                            s < r;
-                                            s += 1
-                                        ) {
-                                            var n = o[s];
-                                            if ("string" == typeof n)
-                                                i += n.length;
-                                            else {
-                                                var a = n.regex,
-                                                    l = n.parser,
-                                                    d = t.slice(i),
-                                                    c = a.exec(d)[0];
-                                                l.call(e, c),
-                                                    (t = t.replace(c, ""));
-                                            }
-                                        }
+                                                        );
+                                                    }),
+                                                    (b.utcOffset = function () {
+                                                        return (
+                                                            15 *
+                                                            -Math.round(
+                                                                this.$d.getTimezoneOffset() /
+                                                                    15
+                                                            )
+                                                        );
+                                                    }),
+                                                    (b.diff = function (
+                                                        i,
+                                                        u,
+                                                        p
+                                                    ) {
+                                                        var f,
+                                                            m = this,
+                                                            g = x.p(u),
+                                                            b = N(i),
+                                                            v =
+                                                                (b.utcOffset() -
+                                                                    this.utcOffset()) *
+                                                                e,
+                                                            _ = this - b,
+                                                            w = function () {
+                                                                return x.m(
+                                                                    m,
+                                                                    b
+                                                                );
+                                                            };
+                                                        switch (g) {
+                                                            case h:
+                                                                f = w() / 12;
+                                                                break;
+                                                            case d:
+                                                                f = w();
+                                                                break;
+                                                            case c:
+                                                                f = w() / 3;
+                                                                break;
+                                                            case l:
+                                                                f =
+                                                                    (_ - v) /
+                                                                    6048e5;
+                                                                break;
+                                                            case r:
+                                                                f =
+                                                                    (_ - v) /
+                                                                    864e5;
+                                                                break;
+                                                            case o:
+                                                                f = _ / s;
+                                                                break;
+                                                            case a:
+                                                                f = _ / e;
+                                                                break;
+                                                            case n:
+                                                                f = _ / t;
+                                                                break;
+                                                            default:
+                                                                f = _;
+                                                        }
+                                                        return p ? f : x.a(f);
+                                                    }),
+                                                    (b.daysInMonth =
+                                                        function () {
+                                                            return this.endOf(d)
+                                                                .$D;
+                                                        }),
+                                                    (b.$locale = function () {
+                                                        return w[this.$L];
+                                                    }),
+                                                    (b.locale = function (
+                                                        t,
+                                                        e
+                                                    ) {
+                                                        if (!t) return this.$L;
+                                                        var s = this.clone(),
+                                                            i = M(t, e, !0);
+                                                        return (
+                                                            i && (s.$L = i), s
+                                                        );
+                                                    }),
+                                                    (b.clone = function () {
+                                                        return x.w(
+                                                            this.$d,
+                                                            this
+                                                        );
+                                                    }),
+                                                    (b.toDate = function () {
+                                                        return new Date(
+                                                            this.valueOf()
+                                                        );
+                                                    }),
+                                                    (b.toJSON = function () {
+                                                        return this.isValid()
+                                                            ? this.toISOString()
+                                                            : null;
+                                                    }),
+                                                    (b.toISOString =
+                                                        function () {
+                                                            return this.$d.toISOString();
+                                                        }),
+                                                    (b.toString = function () {
+                                                        return this.$d.toUTCString();
+                                                    }),
+                                                    g
+                                                );
+                                            })(),
+                                            E = O.prototype;
                                         return (
-                                            (function (t) {
-                                                var e = t.afternoon;
-                                                if (void 0 !== e) {
-                                                    var s = t.hours;
-                                                    e
-                                                        ? s < 12 &&
-                                                          (t.hours += 12)
-                                                        : 12 === s &&
-                                                          (t.hours = 0),
-                                                        delete t.afternoon;
-                                                }
-                                            })(e),
-                                            e
+                                            (N.prototype = E),
+                                            [
+                                                ["$ms", i],
+                                                ["$s", n],
+                                                ["$m", a],
+                                                ["$H", o],
+                                                ["$W", r],
+                                                ["$M", d],
+                                                ["$y", h],
+                                                ["$D", u],
+                                            ].forEach(function (t) {
+                                                E[t[1]] = function (e) {
+                                                    return this.$g(
+                                                        e,
+                                                        t[0],
+                                                        t[1]
+                                                    );
+                                                };
+                                            }),
+                                            (N.extend = function (t, e) {
+                                                return (
+                                                    t.$i ||
+                                                        (t(e, O, N),
+                                                        (t.$i = !0)),
+                                                    N
+                                                );
+                                            }),
+                                            (N.locale = M),
+                                            (N.isDayjs = D),
+                                            (N.unix = function (t) {
+                                                return N(1e3 * t);
+                                            }),
+                                            (N.en = w[_]),
+                                            (N.Ls = w),
+                                            (N.p = {}),
+                                            N
                                         );
-                                    };
-                                }
-                                return function (t, e, s) {
-                                    (s.p.customParseFormat = !0),
-                                        t &&
-                                            t.parseTwoDigitYear &&
-                                            (o = t.parseTwoDigitYear);
-                                    var i = e.prototype,
-                                        n = i.parse;
-                                    i.parse = function (t) {
-                                        var e = t.date,
-                                            i = t.utc,
-                                            o = t.args;
-                                        this.$u = i;
-                                        var r = o[1];
-                                        if ("string" == typeof r) {
-                                            var l = !0 === o[2],
-                                                d = !0 === o[3],
-                                                c = l || d,
-                                                h = o[2];
-                                            d && (h = o[2]),
-                                                (a = this.$locale()),
-                                                !l && h && (a = s.Ls[h]),
-                                                (this.$d = (function (t, e, s) {
-                                                    try {
+                                    })())
+                                ),
+                                J = { exports: {} },
+                                W = B(
+                                    (J.exports = (function () {
+                                        var t = {
+                                                LTS: "h:mm:ss A",
+                                                LT: "h:mm A",
+                                                L: "MM/DD/YYYY",
+                                                LL: "MMMM D, YYYY",
+                                                LLL: "MMMM D, YYYY h:mm A",
+                                                LLLL: "dddd, MMMM D, YYYY h:mm A",
+                                            },
+                                            e =
+                                                /(\[[^[]*\])|([-_:/.,()\s]+)|(A|a|YYYY|YY?|MM?M?M?|Do|DD?|hh?|HH?|mm?|ss?|S{1,3}|z|ZZ?)/g,
+                                            s = /\d\d/,
+                                            i = /\d\d?/,
+                                            n = /\d*[^-_:/,()\s\d]+/,
+                                            a = {},
+                                            o = function (t) {
+                                                return (
+                                                    (t = +t) +
+                                                    (t > 68 ? 1900 : 2e3)
+                                                );
+                                            },
+                                            r = function (t) {
+                                                return function (e) {
+                                                    this[t] = +e;
+                                                };
+                                            },
+                                            l = [
+                                                /[+-]\d\d:?(\d\d)?|Z/,
+                                                function (t) {
+                                                    (
+                                                        this.zone ||
+                                                        (this.zone = {})
+                                                    ).offset = (function (t) {
+                                                        if (!t) return 0;
+                                                        if ("Z" === t) return 0;
+                                                        var e =
+                                                                t.match(
+                                                                    /([+-]|\d\d)/g
+                                                                ),
+                                                            s =
+                                                                60 * e[1] +
+                                                                (+e[2] || 0);
+                                                        return 0 === s
+                                                            ? 0
+                                                            : "+" === e[0]
+                                                            ? -s
+                                                            : s;
+                                                    })(t);
+                                                },
+                                            ],
+                                            d = function (t) {
+                                                var e = a[t];
+                                                return (
+                                                    e &&
+                                                    (e.indexOf
+                                                        ? e
+                                                        : e.s.concat(e.f))
+                                                );
+                                            },
+                                            c = function (t, e) {
+                                                var s,
+                                                    i = a.meridiem;
+                                                if (i) {
+                                                    for (
+                                                        var n = 1;
+                                                        n <= 24;
+                                                        n += 1
+                                                    )
                                                         if (
-                                                            ["x", "X"].indexOf(
-                                                                e
+                                                            t.indexOf(
+                                                                i(n, 0, e)
                                                             ) > -1
+                                                        ) {
+                                                            s = n > 12;
+                                                            break;
+                                                        }
+                                                } else
+                                                    s = t === (e ? "pm" : "PM");
+                                                return s;
+                                            },
+                                            h = {
+                                                A: [
+                                                    n,
+                                                    function (t) {
+                                                        this.afternoon = c(
+                                                            t,
+                                                            !1
+                                                        );
+                                                    },
+                                                ],
+                                                a: [
+                                                    n,
+                                                    function (t) {
+                                                        this.afternoon = c(
+                                                            t,
+                                                            !0
+                                                        );
+                                                    },
+                                                ],
+                                                S: [
+                                                    /\d/,
+                                                    function (t) {
+                                                        this.milliseconds =
+                                                            100 * +t;
+                                                    },
+                                                ],
+                                                SS: [
+                                                    s,
+                                                    function (t) {
+                                                        this.milliseconds =
+                                                            10 * +t;
+                                                    },
+                                                ],
+                                                SSS: [
+                                                    /\d{3}/,
+                                                    function (t) {
+                                                        this.milliseconds = +t;
+                                                    },
+                                                ],
+                                                s: [i, r("seconds")],
+                                                ss: [i, r("seconds")],
+                                                m: [i, r("minutes")],
+                                                mm: [i, r("minutes")],
+                                                H: [i, r("hours")],
+                                                h: [i, r("hours")],
+                                                HH: [i, r("hours")],
+                                                hh: [i, r("hours")],
+                                                D: [i, r("day")],
+                                                DD: [s, r("day")],
+                                                Do: [
+                                                    n,
+                                                    function (t) {
+                                                        var e = a.ordinal,
+                                                            s = t.match(/\d+/);
+                                                        if (
+                                                            ((this.day = s[0]),
+                                                            e)
                                                         )
-                                                            return new Date(
-                                                                ("X" === e
-                                                                    ? 1e3
-                                                                    : 1) * t
-                                                            );
-                                                        var i = u(e)(t),
-                                                            n = i.year,
-                                                            a = i.month,
-                                                            o = i.day,
-                                                            r = i.hours,
-                                                            l = i.minutes,
-                                                            d = i.seconds,
-                                                            c = i.milliseconds,
-                                                            h = i.zone,
-                                                            p = new Date(),
-                                                            f =
-                                                                o ||
-                                                                (n || a
-                                                                    ? 1
-                                                                    : p.getDate()),
-                                                            m =
-                                                                n ||
-                                                                p.getFullYear(),
-                                                            g = 0;
-                                                        (n && !a) ||
-                                                            (g =
-                                                                a > 0
-                                                                    ? a - 1
-                                                                    : p.getMonth());
-                                                        var b = r || 0,
-                                                            v = l || 0,
-                                                            w = d || 0,
-                                                            _ = c || 0;
-                                                        return h
-                                                            ? new Date(
-                                                                  Date.UTC(
-                                                                      m,
-                                                                      g,
-                                                                      f,
-                                                                      b,
-                                                                      v,
-                                                                      w,
-                                                                      _ +
-                                                                          60 *
-                                                                              h.offset *
-                                                                              1e3
-                                                                  )
-                                                              )
-                                                            : s
-                                                            ? new Date(
-                                                                  Date.UTC(
-                                                                      m,
-                                                                      g,
-                                                                      f,
-                                                                      b,
-                                                                      v,
-                                                                      w,
-                                                                      _
-                                                                  )
-                                                              )
-                                                            : new Date(
-                                                                  m,
-                                                                  g,
-                                                                  f,
-                                                                  b,
-                                                                  v,
-                                                                  w,
-                                                                  _
-                                                              );
-                                                    } catch (t) {
-                                                        return new Date("");
-                                                    }
-                                                })(e, r, i)),
-                                                this.init(),
-                                                h &&
-                                                    !0 !== h &&
-                                                    (this.$L =
-                                                        this.locale(h).$L),
-                                                c &&
-                                                    e != this.format(r) &&
-                                                    (this.$d = new Date("")),
-                                                (a = {});
-                                        } else if (r instanceof Array)
+                                                            for (
+                                                                var i = 1;
+                                                                i <= 31;
+                                                                i += 1
+                                                            )
+                                                                e(i).replace(
+                                                                    /\[|\]/g,
+                                                                    ""
+                                                                ) === t &&
+                                                                    (this.day =
+                                                                        i);
+                                                    },
+                                                ],
+                                                M: [i, r("month")],
+                                                MM: [s, r("month")],
+                                                MMM: [
+                                                    n,
+                                                    function (t) {
+                                                        var e = d("months"),
+                                                            s =
+                                                                (
+                                                                    d(
+                                                                        "monthsShort"
+                                                                    ) ||
+                                                                    e.map(
+                                                                        function (
+                                                                            t
+                                                                        ) {
+                                                                            return t.slice(
+                                                                                0,
+                                                                                3
+                                                                            );
+                                                                        }
+                                                                    )
+                                                                ).indexOf(t) +
+                                                                1;
+                                                        if (s < 1)
+                                                            throw new Error();
+                                                        this.month =
+                                                            s % 12 || s;
+                                                    },
+                                                ],
+                                                MMMM: [
+                                                    n,
+                                                    function (t) {
+                                                        var e =
+                                                            d("months").indexOf(
+                                                                t
+                                                            ) + 1;
+                                                        if (e < 1)
+                                                            throw new Error();
+                                                        this.month =
+                                                            e % 12 || e;
+                                                    },
+                                                ],
+                                                Y: [/[+-]?\d+/, r("year")],
+                                                YY: [
+                                                    s,
+                                                    function (t) {
+                                                        this.year = o(t);
+                                                    },
+                                                ],
+                                                YYYY: [/\d{4}/, r("year")],
+                                                Z: l,
+                                                ZZ: l,
+                                            };
+                                        function u(s) {
+                                            var i, n;
+                                            (i = s), (n = a && a.formats);
                                             for (
-                                                var p = r.length, f = 1;
-                                                f <= p;
-                                                f += 1
+                                                var o = (s = i.replace(
+                                                        /(\[[^\]]+])|(LTS?|l{1,4}|L{1,4})/g,
+                                                        function (e, s, i) {
+                                                            var a =
+                                                                i &&
+                                                                i.toUpperCase();
+                                                            return (
+                                                                s ||
+                                                                n[i] ||
+                                                                t[i] ||
+                                                                n[a].replace(
+                                                                    /(\[[^\]]+])|(MMMM|MM|DD|dddd)/g,
+                                                                    function (
+                                                                        t,
+                                                                        e,
+                                                                        s
+                                                                    ) {
+                                                                        return (
+                                                                            e ||
+                                                                            s.slice(
+                                                                                1
+                                                                            )
+                                                                        );
+                                                                    }
+                                                                )
+                                                            );
+                                                        }
+                                                    )).match(e),
+                                                    r = o.length,
+                                                    l = 0;
+                                                l < r;
+                                                l += 1
                                             ) {
-                                                o[1] = r[f - 1];
-                                                var m = s.apply(this, o);
-                                                if (m.isValid()) {
-                                                    (this.$d = m.$d),
-                                                        (this.$L = m.$L),
-                                                        this.init();
-                                                    break;
-                                                }
-                                                f === p &&
-                                                    (this.$d = new Date(""));
+                                                var d = o[l],
+                                                    c = h[d],
+                                                    u = c && c[0],
+                                                    p = c && c[1];
+                                                o[l] = p
+                                                    ? { regex: u, parser: p }
+                                                    : d.replace(/^\[|\]$/g, "");
                                             }
-                                        else n.call(this, t);
-                                    };
-                                };
-                            })();
-                            var Y = I;
-                            H.extend(Y);
-                            const j = (t, e) => {
+                                            return function (t) {
+                                                for (
+                                                    var e = {}, s = 0, i = 0;
+                                                    s < r;
+                                                    s += 1
+                                                ) {
+                                                    var n = o[s];
+                                                    if ("string" == typeof n)
+                                                        i += n.length;
+                                                    else {
+                                                        var a = n.regex,
+                                                            l = n.parser,
+                                                            d = t.slice(i),
+                                                            c = a.exec(d)[0];
+                                                        l.call(e, c),
+                                                            (t = t.replace(
+                                                                c,
+                                                                ""
+                                                            ));
+                                                    }
+                                                }
+                                                return (
+                                                    (function (t) {
+                                                        var e = t.afternoon;
+                                                        if (void 0 !== e) {
+                                                            var s = t.hours;
+                                                            e
+                                                                ? s < 12 &&
+                                                                  (t.hours += 12)
+                                                                : 12 === s &&
+                                                                  (t.hours = 0),
+                                                                delete t.afternoon;
+                                                        }
+                                                    })(e),
+                                                    e
+                                                );
+                                            };
+                                        }
+                                        return function (t, e, s) {
+                                            (s.p.customParseFormat = !0),
+                                                t &&
+                                                    t.parseTwoDigitYear &&
+                                                    (o = t.parseTwoDigitYear);
+                                            var i = e.prototype,
+                                                n = i.parse;
+                                            i.parse = function (t) {
+                                                var e = t.date,
+                                                    i = t.utc,
+                                                    o = t.args;
+                                                this.$u = i;
+                                                var r = o[1];
+                                                if ("string" == typeof r) {
+                                                    var l = !0 === o[2],
+                                                        d = !0 === o[3],
+                                                        c = l || d,
+                                                        h = o[2];
+                                                    d && (h = o[2]),
+                                                        (a = this.$locale()),
+                                                        !l &&
+                                                            h &&
+                                                            (a = s.Ls[h]),
+                                                        (this.$d = (function (
+                                                            t,
+                                                            e,
+                                                            s
+                                                        ) {
+                                                            try {
+                                                                if (
+                                                                    [
+                                                                        "x",
+                                                                        "X",
+                                                                    ].indexOf(
+                                                                        e
+                                                                    ) > -1
+                                                                )
+                                                                    return new Date(
+                                                                        ("X" ===
+                                                                        e
+                                                                            ? 1e3
+                                                                            : 1) *
+                                                                            t
+                                                                    );
+                                                                var i = u(e)(t),
+                                                                    n = i.year,
+                                                                    a = i.month,
+                                                                    o = i.day,
+                                                                    r = i.hours,
+                                                                    l =
+                                                                        i.minutes,
+                                                                    d =
+                                                                        i.seconds,
+                                                                    c =
+                                                                        i.milliseconds,
+                                                                    h = i.zone,
+                                                                    p =
+                                                                        new Date(),
+                                                                    f =
+                                                                        o ||
+                                                                        (n || a
+                                                                            ? 1
+                                                                            : p.getDate()),
+                                                                    m =
+                                                                        n ||
+                                                                        p.getFullYear(),
+                                                                    g = 0;
+                                                                (n && !a) ||
+                                                                    (g =
+                                                                        a > 0
+                                                                            ? a -
+                                                                              1
+                                                                            : p.getMonth());
+                                                                var b = r || 0,
+                                                                    v = l || 0,
+                                                                    _ = d || 0,
+                                                                    w = c || 0;
+                                                                return h
+                                                                    ? new Date(
+                                                                          Date.UTC(
+                                                                              m,
+                                                                              g,
+                                                                              f,
+                                                                              b,
+                                                                              v,
+                                                                              _,
+                                                                              w +
+                                                                                  60 *
+                                                                                      h.offset *
+                                                                                      1e3
+                                                                          )
+                                                                      )
+                                                                    : s
+                                                                    ? new Date(
+                                                                          Date.UTC(
+                                                                              m,
+                                                                              g,
+                                                                              f,
+                                                                              b,
+                                                                              v,
+                                                                              _,
+                                                                              w
+                                                                          )
+                                                                      )
+                                                                    : new Date(
+                                                                          m,
+                                                                          g,
+                                                                          f,
+                                                                          b,
+                                                                          v,
+                                                                          _,
+                                                                          w
+                                                                      );
+                                                            } catch (t) {
+                                                                return new Date(
+                                                                    ""
+                                                                );
+                                                            }
+                                                        })(e, r, i)),
+                                                        this.init(),
+                                                        h &&
+                                                            !0 !== h &&
+                                                            (this.$L =
+                                                                this.locale(
+                                                                    h
+                                                                ).$L),
+                                                        c &&
+                                                            e !=
+                                                                this.format(
+                                                                    r
+                                                                ) &&
+                                                            (this.$d = new Date(
+                                                                ""
+                                                            )),
+                                                        (a = {});
+                                                } else if (r instanceof Array)
+                                                    for (
+                                                        var p = r.length, f = 1;
+                                                        f <= p;
+                                                        f += 1
+                                                    ) {
+                                                        o[1] = r[f - 1];
+                                                        var m = s.apply(
+                                                            this,
+                                                            o
+                                                        );
+                                                        if (m.isValid()) {
+                                                            (this.$d = m.$d),
+                                                                (this.$L =
+                                                                    m.$L),
+                                                                this.init();
+                                                            break;
+                                                        }
+                                                        f === p &&
+                                                            (this.$d = new Date(
+                                                                ""
+                                                            ));
+                                                    }
+                                                else n.call(this, t);
+                                            };
+                                        };
+                                    })())
+                                );
+                            U.extend(W);
+                            const Q = (t, e) => {
                                     let s;
                                     if (e)
                                         switch (e) {
@@ -4502,26 +5061,26 @@
                                                 s = t;
                                                 break;
                                             case "RFC_2822":
-                                                s = H(
+                                                s = U(
                                                     t.slice(5),
                                                     "DD MMM YYYY HH:mm:ss ZZ"
                                                 ).unix();
                                                 break;
                                             case "MYSQL":
-                                                s = H(
+                                                s = U(
                                                     t,
                                                     "YYYY-MM-DD hh:mm:ss"
                                                 ).unix();
                                                 break;
                                             case "UNIX":
-                                                s = H(t).unix();
+                                                s = U(t).unix();
                                                 break;
                                             default:
-                                                s = H(t, e, !0).valueOf();
+                                                s = U(t, e, !0).valueOf();
                                         }
                                     return s;
                                 },
-                                q = (t, e) => {
+                                X = (t, e) => {
                                     if (
                                         t?.constructor === Object &&
                                         Object.prototype.hasOwnProperty.call(
@@ -4534,6 +5093,7 @@
                                                     "text",
                                                     "order",
                                                     "data",
+                                                    "attributes",
                                                 ].includes(t)
                                         )
                                     )
@@ -4547,14 +5107,15 @@
                                             break;
                                         case "date":
                                             e.format &&
-                                                (s.order = j(
+                                                (s.order = Q(
                                                     String(s.data),
                                                     e.format
                                                 ));
                                             break;
                                         case "number":
                                             (s.text = String(s.data)),
-                                                (s.data = parseInt(s.data, 10));
+                                                (s.data = parseFloat(s.data)),
+                                                (s.order = s.data);
                                             break;
                                         case "html": {
                                             const t = Array.isArray(s.data)
@@ -4562,7 +5123,7 @@
                                                       nodeName: "TD",
                                                       childNodes: s.data,
                                                   }
-                                                : C(
+                                                : H(
                                                       `<td>${String(
                                                           s.data
                                                       )}</td>`
@@ -4595,7 +5156,7 @@
                                     }
                                     return s;
                                 },
-                                B = (t) => {
+                                Z = (t) => {
                                     if (
                                         t instanceof Object &&
                                         t.constructor === Object &&
@@ -4607,7 +5168,7 @@
                                     const e = { data: t };
                                     if ("string" == typeof t) {
                                         if (t.length) {
-                                            const s = C(`<th>${t}</th>`);
+                                            const s = H(`<th>${t}</th>`);
                                             if (
                                                 s.childNodes &&
                                                 (1 !== s.childNodes.length ||
@@ -4627,103 +5188,104 @@
                                             : (e.text = JSON.stringify(t));
                                     return e;
                                 },
-                                F = (t, e, s, n, a) => {
+                                G = (t, e = void 0, s, n, a) => {
                                     const o = { data: [], headings: [] };
-                                    t.headings
-                                        ? (o.headings = t.headings.map((t) =>
-                                              B(t)
-                                          ))
-                                        : e?.tHead
-                                        ? (o.headings = Array.from(
-                                              e.tHead.querySelectorAll("th")
-                                          ).map((t, e) => {
-                                              const o = ((t) => {
-                                                  const e = M(t, {
-                                                      valueDiffing: !1,
-                                                  });
-                                                  let s;
-                                                  return (
-                                                      (s =
-                                                          !e.childNodes ||
-                                                          (1 ===
-                                                              e.childNodes
-                                                                  .length &&
-                                                              "#text" ===
-                                                                  e
-                                                                      .childNodes[0]
-                                                                      .nodeName)
-                                                              ? {
-                                                                    data: t.innerText,
-                                                                    type: "string",
-                                                                }
-                                                              : {
-                                                                    data: e.childNodes,
-                                                                    type: "html",
-                                                                    text: i(e),
-                                                                }),
-                                                      s
-                                                  );
-                                              })(t);
-                                              s[e] ||
-                                                  (s[e] = {
-                                                      type: n,
-                                                      format: a,
-                                                      searchable: !0,
-                                                      sortable: !0,
-                                                  });
-                                              const r = s[e];
-                                              return (
-                                                  ("false" !==
-                                                      t.dataset.sortable
-                                                          ?.trim()
-                                                          .toLowerCase() &&
-                                                      "false" !==
-                                                          t.dataset.sort
-                                                              ?.trim()
-                                                              .toLowerCase()) ||
-                                                      (r.sortable = !1),
-                                                  "false" ===
-                                                      t.dataset.searchable
-                                                          ?.trim()
-                                                          .toLowerCase() &&
-                                                      (r.searchable = !1),
-                                                  ("true" !==
-                                                      t.dataset.hidden
-                                                          ?.trim()
-                                                          .toLowerCase() &&
-                                                      "true" !==
-                                                          t
-                                                              .getAttribute(
-                                                                  "hidden"
-                                                              )
-                                                              ?.trim()
-                                                              .toLowerCase()) ||
-                                                      (r.hidden = !0),
-                                                  [
-                                                      "number",
-                                                      "string",
-                                                      "html",
-                                                      "date",
-                                                      "boolean",
-                                                      "other",
-                                                  ].includes(t.dataset.type) &&
-                                                      ((r.type =
-                                                          t.dataset.type),
-                                                      "date" === r.type &&
-                                                          t.dataset.format &&
-                                                          (r.format =
-                                                              t.dataset.format)),
-                                                  o
-                                              );
-                                          }))
-                                        : t.data?.length
-                                        ? (o.headings = t.data[0].map((t) =>
-                                              B("")
-                                          ))
-                                        : e?.tBodies.length &&
-                                          (o.headings = Array.from(
-                                              e.tBodies[0].rows[0].cells
-                                          ).map((t) => B("")));
+                                    if (t.headings)
+                                        o.headings = t.headings.map((t) =>
+                                            Z(t)
+                                        );
+                                    else if (e?.tHead)
+                                        o.headings = Array.from(
+                                            e.tHead.querySelectorAll("th")
+                                        ).map((t, e) => {
+                                            const o = ((t) => {
+                                                const e = k(t, {
+                                                    valueDiffing: !1,
+                                                });
+                                                let s;
+                                                return (
+                                                    (s =
+                                                        !e.childNodes ||
+                                                        (1 ===
+                                                            e.childNodes
+                                                                .length &&
+                                                            "#text" ===
+                                                                e.childNodes[0]
+                                                                    .nodeName)
+                                                            ? {
+                                                                  data: t.innerText,
+                                                                  type: "string",
+                                                              }
+                                                            : {
+                                                                  data: e.childNodes,
+                                                                  type: "html",
+                                                                  text: i(e),
+                                                              }),
+                                                    (s.attributes =
+                                                        e.attributes),
+                                                    s
+                                                );
+                                            })(t);
+                                            s[e] ||
+                                                (s[e] = {
+                                                    type: n,
+                                                    format: a,
+                                                    searchable: !0,
+                                                    sortable: !0,
+                                                });
+                                            const r = s[e];
+                                            return (
+                                                ("false" !==
+                                                    t.dataset.sortable
+                                                        ?.trim()
+                                                        .toLowerCase() &&
+                                                    "false" !==
+                                                        t.dataset.sort
+                                                            ?.trim()
+                                                            .toLowerCase()) ||
+                                                    (r.sortable = !1),
+                                                "false" ===
+                                                    t.dataset.searchable
+                                                        ?.trim()
+                                                        .toLowerCase() &&
+                                                    (r.searchable = !1),
+                                                ("true" !==
+                                                    t.dataset.hidden
+                                                        ?.trim()
+                                                        .toLowerCase() &&
+                                                    "true" !==
+                                                        t
+                                                            .getAttribute(
+                                                                "hidden"
+                                                            )
+                                                            ?.trim()
+                                                            .toLowerCase()) ||
+                                                    (r.hidden = !0),
+                                                [
+                                                    "number",
+                                                    "string",
+                                                    "html",
+                                                    "date",
+                                                    "boolean",
+                                                    "other",
+                                                ].includes(t.dataset.type) &&
+                                                    ((r.type = t.dataset.type),
+                                                    "date" === r.type &&
+                                                        t.dataset.format &&
+                                                        (r.format =
+                                                            t.dataset.format)),
+                                                o
+                                            );
+                                        });
+                                    else if (t.data?.length) {
+                                        const e = t.data[0],
+                                            s = Array.isArray(e) ? e : e.cells;
+                                        o.headings = s.map((t) => Z(""));
+                                    } else
+                                        e?.tBodies.length &&
+                                            (o.headings = Array.from(
+                                                e.tBodies[0].rows[0].cells
+                                            ).map((t) => Z("")));
                                     for (let t = 0; t < o.headings.length; t++)
                                         s[t] ||
                                             (s[t] = {
@@ -4732,134 +5294,177 @@
                                                 sortable: !0,
                                                 searchable: !0,
                                             });
-                                    if (
-                                        (t.data
-                                            ? (o.data = t.data.map((t) =>
-                                                  t.map((t, e) => q(t, s[e]))
-                                              ))
-                                            : e?.tBodies?.length &&
-                                              (o.data = Array.from(
-                                                  e.tBodies[0].rows
-                                              ).map((t) =>
-                                                  Array.from(t.cells).map(
-                                                      (t, e) => {
-                                                          const i = t.dataset
-                                                              .content
-                                                              ? q(
-                                                                    t.dataset
-                                                                        .content,
-                                                                    s[e]
-                                                                )
-                                                              : ((t, e) => {
-                                                                    let s;
-                                                                    switch (
-                                                                        e.type
-                                                                    ) {
-                                                                        case "string":
-                                                                            s =
-                                                                                {
-                                                                                    data: t.innerText,
-                                                                                };
-                                                                            break;
-                                                                        case "date": {
-                                                                            const i =
-                                                                                t.innerText;
-                                                                            s =
-                                                                                {
-                                                                                    data: i,
-                                                                                    order: j(
-                                                                                        i,
-                                                                                        e.format
-                                                                                    ),
-                                                                                };
-                                                                            break;
-                                                                        }
-                                                                        case "number":
-                                                                            s =
-                                                                                {
-                                                                                    data: parseInt(
-                                                                                        t.innerText,
-                                                                                        10
-                                                                                    ),
-                                                                                    text: t.innerText,
-                                                                                };
-                                                                            break;
-                                                                        case "boolean": {
-                                                                            const e =
-                                                                                ![
-                                                                                    "false",
-                                                                                    "0",
-                                                                                    "null",
-                                                                                    "undefined",
-                                                                                ].includes(
-                                                                                    t.innerText
-                                                                                        .toLowerCase()
-                                                                                        .trim()
-                                                                                );
-                                                                            s =
-                                                                                {
-                                                                                    data: e,
-                                                                                    order: e
-                                                                                        ? 1
-                                                                                        : 0,
-                                                                                    text: e
-                                                                                        ? "1"
-                                                                                        : "0",
-                                                                                };
-                                                                            break;
-                                                                        }
-                                                                        default:
-                                                                            s =
-                                                                                {
-                                                                                    data:
-                                                                                        M(
-                                                                                            t,
-                                                                                            {
-                                                                                                valueDiffing:
-                                                                                                    !1,
-                                                                                            }
-                                                                                        )
-                                                                                            .childNodes ||
-                                                                                        [],
-                                                                                    text: t.innerText,
-                                                                                    order: t.innerText,
-                                                                                };
-                                                                    }
-                                                                    return s;
-                                                                })(t, s[e]);
-                                                          return (
-                                                              t.dataset.order &&
-                                                                  (i.order =
-                                                                      isNaN(
-                                                                          parseFloat(
+                                    if (t.data) {
+                                        const e = o.headings.map((t) =>
+                                            t.data ? String(t.data) : t.text
+                                        );
+                                        o.data = t.data.map((t) => {
+                                            let i, n;
+                                            return (
+                                                Array.isArray(t)
+                                                    ? ((i = {}), (n = t))
+                                                    : t.hasOwnProperty(
+                                                          "cells"
+                                                      ) &&
+                                                      Object.keys(t).every(
+                                                          (t) =>
+                                                              [
+                                                                  "cells",
+                                                                  "attributes",
+                                                              ].includes(t)
+                                                      )
+                                                    ? ((i = t.attributes),
+                                                      (n = t.cells))
+                                                    : ((i = {}),
+                                                      (n = []),
+                                                      Object.entries(t).forEach(
+                                                          ([t, s]) => {
+                                                              const i =
+                                                                  e.indexOf(t);
+                                                              i > -1 &&
+                                                                  (n[i] = s);
+                                                          }
+                                                      )),
+                                                {
+                                                    attributes: i,
+                                                    cells: n.map((t, e) =>
+                                                        X(t, s[e])
+                                                    ),
+                                                }
+                                            );
+                                        });
+                                    } else
+                                        e?.tBodies?.length &&
+                                            (o.data = Array.from(
+                                                e.tBodies[0].rows
+                                            ).map((t) => ({
+                                                attributes: r(t.attributes),
+                                                cells: Array.from(t.cells).map(
+                                                    (t, e) => {
+                                                        const i = t.dataset
+                                                            .content
+                                                            ? X(
+                                                                  t.dataset
+                                                                      .content,
+                                                                  s[e]
+                                                              )
+                                                            : ((t, e) => {
+                                                                  let s;
+                                                                  switch (
+                                                                      e.type
+                                                                  ) {
+                                                                      case "string":
+                                                                          s = {
+                                                                              data: t.innerText,
+                                                                          };
+                                                                          break;
+                                                                      case "date": {
+                                                                          const i =
+                                                                              t.innerText;
+                                                                          s = {
+                                                                              data: i,
+                                                                              order: Q(
+                                                                                  i,
+                                                                                  e.format
+                                                                              ),
+                                                                          };
+                                                                          break;
+                                                                      }
+                                                                      case "number": {
+                                                                          const e =
+                                                                              parseFloat(
+                                                                                  t.innerText
+                                                                              );
+                                                                          s = {
+                                                                              data: e,
+                                                                              order: e,
+                                                                              text: t.innerText,
+                                                                          };
+                                                                          break;
+                                                                      }
+                                                                      case "boolean": {
+                                                                          const e =
+                                                                              ![
+                                                                                  "false",
+                                                                                  "0",
+                                                                                  "null",
+                                                                                  "undefined",
+                                                                              ].includes(
+                                                                                  t.innerText
+                                                                                      .toLowerCase()
+                                                                                      .trim()
+                                                                              );
+                                                                          s = {
+                                                                              data: e,
+                                                                              text: e
+                                                                                  ? "1"
+                                                                                  : "0",
+                                                                              order: e
+                                                                                  ? 1
+                                                                                  : 0,
+                                                                          };
+                                                                          break;
+                                                                      }
+                                                                      default:
+                                                                          s = {
+                                                                              data:
+                                                                                  k(
+                                                                                      t,
+                                                                                      {
+                                                                                          valueDiffing:
+                                                                                              !1,
+                                                                                      }
+                                                                                  )
+                                                                                      .childNodes ||
+                                                                                  [],
+                                                                              text: t.innerText,
+                                                                              order: t.innerText,
+                                                                          };
+                                                                  }
+                                                                  return (
+                                                                      (s.attributes =
+                                                                          r(
+                                                                              t.attributes
+                                                                          )),
+                                                                      s
+                                                                  );
+                                                              })(t, s[e]);
+                                                        return (
+                                                            t.dataset.order &&
+                                                                (i.order =
+                                                                    isNaN(
+                                                                        parseFloat(
+                                                                            t
+                                                                                .dataset
+                                                                                .order
+                                                                        )
+                                                                    )
+                                                                        ? t
+                                                                              .dataset
+                                                                              .order
+                                                                        : parseFloat(
                                                                               t
                                                                                   .dataset
                                                                                   .order
-                                                                          )
-                                                                      )
-                                                                          ? t
-                                                                                .dataset
-                                                                                .order
-                                                                          : parseFloat(
-                                                                                t
-                                                                                    .dataset
-                                                                                    .order
-                                                                            )),
-                                                              i
-                                                          );
-                                                      }
-                                                  )
-                                              )),
+                                                                          )),
+                                                            i
+                                                        );
+                                                    }
+                                                ),
+                                            })));
+                                    if (
                                         o.data.length &&
-                                            o.data[0].length !==
-                                                o.headings.length)
+                                        o.data[0].cells.length !==
+                                            o.headings.length
                                     )
                                         throw new Error(
                                             "Data heading length mismatch."
                                         );
                                     return o;
                                 };
-                            class z {
+                            class K {
+                                cursor;
+                                dt;
                                 constructor(t) {
                                     (this.dt = t), (this.cursor = !1);
                                 }
@@ -4871,11 +5476,14 @@
                                         this.dt._renderTable(),
                                         !1 !== t && this.dt.options.scrollY)
                                     ) {
-                                        const t = this.dt.dom.querySelector(
-                                            `tr.${this.dt.options.classes.cursor}`
-                                        );
-                                        t &&
-                                            t.scrollIntoView({
+                                        const t = l(
+                                                this.dt.options.classes.cursor
+                                            ),
+                                            e = this.dt.dom.querySelector(
+                                                `tr${t}`
+                                            );
+                                        e &&
+                                            e.scrollIntoView({
                                                 block: "nearest",
                                             });
                                     }
@@ -4886,13 +5494,17 @@
                                     );
                                 }
                                 add(t) {
-                                    const e = t.map((t, e) => {
-                                        const s = this.dt.columns.settings[e];
-                                        return q(t, s);
-                                    });
+                                    if (!Array.isArray(t) || t.length < 1)
+                                        return;
+                                    const e = {
+                                        cells: t.map((t, e) => {
+                                            const s =
+                                                this.dt.columns.settings[e];
+                                            return X(t, s);
+                                        }),
+                                    };
                                     this.dt.data.data.push(e),
-                                        this.dt.data.data.length &&
-                                            (this.dt.hasRows = !0),
+                                        (this.dt.hasRows = !0),
                                         this.dt.update(!0);
                                 }
                                 remove(t) {
@@ -4907,11 +5519,12 @@
                                         this.dt.update(!0);
                                 }
                                 findRowIndex(t, e) {
-                                    return this.dt.data.data.findIndex((s) =>
-                                        (s[t].text ?? String(s[t].data))
+                                    return this.dt.data.data.findIndex((s) => {
+                                        const i = s.cells[t];
+                                        return n(i)
                                             .toLowerCase()
-                                            .includes(String(e).toLowerCase())
-                                    );
+                                            .includes(String(e).toLowerCase());
+                                    });
                                 }
                                 findRow(t, e) {
                                     const s = this.findRowIndex(t, e);
@@ -4922,19 +5535,25 @@
                                             cols: [],
                                         };
                                     const i = this.dt.data.data[s],
-                                        n = i.map((t) => t.data);
+                                        n = i.cells.map((t) => t.data);
                                     return { index: s, row: i, cols: n };
                                 }
                                 updateRow(t, e) {
-                                    const s = e.map((t, e) => {
-                                        const s = this.dt.columns.settings[e];
-                                        return q(t, s);
-                                    });
+                                    const s = {
+                                        cells: e.map((t, e) => {
+                                            const s =
+                                                this.dt.columns.settings[e];
+                                            return X(t, s);
+                                        }),
+                                    };
                                     this.dt.data.data.splice(t, 1, s),
                                         this.dt.update(!0);
                                 }
                             }
-                            class U {
+                            class tt {
+                                dt;
+                                settings;
+                                _state;
                                 constructor(t) {
                                     (this.dt = t), this.init();
                                 }
@@ -4953,12 +5572,14 @@
                                                     ? t.select
                                                     : [t.select]
                                                 ).forEach((o) => {
-                                                    i[o] ||
-                                                        (i[o] = {
-                                                            type: t.type || e,
-                                                            sortable: !0,
-                                                            searchable: !0,
-                                                        });
+                                                    i[o]
+                                                        ? t.type &&
+                                                          (i[o].type = t.type)
+                                                        : (i[o] = {
+                                                              type: t.type || e,
+                                                              sortable: !0,
+                                                              searchable: !0,
+                                                          });
                                                     const r = i[o];
                                                     t.render &&
                                                         (r.render = t.render),
@@ -5046,6 +5667,14 @@
                                         this.dt.options.format
                                     );
                                 }
+                                get(t) {
+                                    return t < 0 || t >= this.size()
+                                        ? null
+                                        : { ...this.settings[t] };
+                                }
+                                size() {
+                                    return this.settings.length;
+                                }
                                 swap(t) {
                                     if (2 === t.length) {
                                         const e = this.dt.data.headings.map(
@@ -5065,37 +5694,41 @@
                                     (this.dt.data.headings = t.map(
                                         (t) => this.dt.data.headings[t]
                                     )),
-                                        (this.dt.data.data =
-                                            this.dt.data.data.map((e) =>
-                                                t.map((t) => e[t])
-                                            )),
+                                        this.dt.data.data.forEach(
+                                            (e) =>
+                                                (e.cells = t.map(
+                                                    (t) => e.cells[t]
+                                                ))
+                                        ),
                                         (this.settings = t.map(
                                             (t) => this.settings[t]
                                         )),
                                         this.dt.update();
                                 }
                                 hide(t) {
-                                    t.length &&
-                                        (t.forEach((t) => {
-                                            this.settings[t] ||
-                                                (this.settings[t] = {
-                                                    type: "string",
-                                                });
-                                            this.settings[t].hidden = !0;
-                                        }),
-                                        this.dt.update());
+                                    Array.isArray(t) || (t = [t]),
+                                        t.length &&
+                                            (t.forEach((t) => {
+                                                this.settings[t] ||
+                                                    (this.settings[t] = {
+                                                        type: "string",
+                                                    });
+                                                this.settings[t].hidden = !0;
+                                            }),
+                                            this.dt.update());
                                 }
                                 show(t) {
-                                    t.length &&
-                                        (t.forEach((t) => {
-                                            this.settings[t] ||
-                                                (this.settings[t] = {
-                                                    type: "string",
-                                                    sortable: !0,
-                                                });
-                                            delete this.settings[t].hidden;
-                                        }),
-                                        this.dt.update());
+                                    Array.isArray(t) || (t = [t]),
+                                        t.length &&
+                                            (t.forEach((t) => {
+                                                this.settings[t] ||
+                                                    (this.settings[t] = {
+                                                        type: "string",
+                                                        sortable: !0,
+                                                    });
+                                                delete this.settings[t].hidden;
+                                            }),
+                                            this.dt.update());
                                 }
                                 visible(t) {
                                     return (
@@ -5118,12 +5751,13 @@
                                     if (
                                         ((this.dt.data.headings =
                                             this.dt.data.headings.concat([
-                                                B(t.heading),
+                                                Z(t.heading),
                                             ])),
-                                        (this.dt.data.data =
-                                            this.dt.data.data.map((e, s) =>
-                                                e.concat([q(t.data[s], t)])
-                                            )),
+                                        this.dt.data.data.forEach((e, s) => {
+                                            e.cells = e.cells.concat([
+                                                X(t.data[s], t),
+                                            ]);
+                                        }),
                                         (this.settings[e] = {
                                             type: t.type || "string",
                                             sortable: !0,
@@ -5168,18 +5802,17 @@
                                     this.dt.update(!0);
                                 }
                                 remove(t) {
-                                    if (!Array.isArray(t))
-                                        return this.remove([t]);
-                                    (this.dt.data.headings =
-                                        this.dt.data.headings.filter(
-                                            (e, s) => !t.includes(s)
-                                        )),
-                                        (this.dt.data.data =
-                                            this.dt.data.data.map((e) =>
-                                                e.filter(
-                                                    (e, s) => !t.includes(s)
-                                                )
+                                    Array.isArray(t) || (t = [t]),
+                                        (this.dt.data.headings =
+                                            this.dt.data.headings.filter(
+                                                (e, s) => !t.includes(s)
                                             )),
+                                        this.dt.data.data.forEach(
+                                            (e) =>
+                                                (e.cells = e.cells.filter(
+                                                    (e, s) => !t.includes(s)
+                                                ))
+                                        ),
                                         this.dt.update(!0);
                                 }
                                 filter(t, e = !1) {
@@ -5210,7 +5843,7 @@
                                                 i
                                             );
                                 }
-                                sort(t, e, s = !1) {
+                                sort(t, e = void 0, s = !1) {
                                     const i = this.settings[t];
                                     if (
                                         (s ||
@@ -5241,7 +5874,7 @@
                                                     : n[t + 1];
                                         } else e = n.length ? n[0] : "asc";
                                     }
-                                    const n =
+                                    const a =
                                         !!["string", "html"].includes(i.type) &&
                                         new Intl.Collator(
                                             i.locale || this.dt.options.locale,
@@ -5260,17 +5893,19 @@
                                             }
                                         );
                                     this.dt.data.data.sort((s, i) => {
-                                        let a = s[t].order || s[t].data,
-                                            o = i[t].order || i[t].data;
+                                        const o = s.cells[t],
+                                            r = i.cells[t];
+                                        let l = o.order ?? n(o),
+                                            d = r.order ?? n(r);
                                         if ("desc" === e) {
-                                            const t = a;
-                                            (a = o), (o = t);
+                                            const t = l;
+                                            (l = d), (d = t);
                                         }
-                                        return n
-                                            ? n.compare(String(a), String(o))
-                                            : a < o
+                                        return a
+                                            ? a.compare(String(l), String(d))
+                                            : l < d
                                             ? -1
-                                            : a > o
+                                            : l > d
                                             ? 1
                                             : 0;
                                     }),
@@ -5385,7 +6020,7 @@
                                     }
                                 }
                             }
-                            const J = {
+                            const et = {
                                     sortable: !0,
                                     locale: "en",
                                     numeric: !0,
@@ -5402,9 +6037,8 @@
                                     format: "YYYY-MM-DD",
                                     columns: [],
                                     paging: !0,
-                                    // jumlah data per page
                                     perPage: 25,
-                                    perPageSelect: [10, 15, 20, 25, 50],
+                                    perPageSelect: [10, 25, 50, 100],
                                     nextPrev: !0,
                                     firstLast: !1,
                                     prevText: "‹",
@@ -5420,19 +6054,19 @@
                                     footer: !1,
                                     header: !0,
                                     hiddenHeader: !1,
+                                    caption: void 0,
                                     rowNavigation: !1,
                                     tabIndex: !1,
                                     pagerRender: !1,
                                     rowRender: !1,
                                     tableRender: !1,
                                     diffDomOptions: { valueDiffing: !1 },
-                                    // Label
                                     labels: {
-                                        placeholder: "Cari Data ...",
+                                        placeholder: "Cari Data ....",
                                         searchTitle: "Search within table",
                                         perPage: "",
                                         pageTitle: "Page {page}",
-                                        noRows: "Belum Ada Data.",
+                                        noRows: "Belum ada data.",
                                         noResults:
                                             "Tidak ada hasil yang cocok dengan pencarian anda!",
                                         info: "Menampilkan {start} hingga {end} dari {rows} data",
@@ -5440,7 +6074,7 @@
                                     template: (t, e) =>
                                         `<div class='${t.classes.top}'>\n    ${
                                             t.paging && t.perPageSelect
-                                                ? `<div class='${t.classes.dropdown}'>\n            <label>\n                <select class='${t.classes.selector}'></select> ${t.labels.perPage}\n            </label>\n        </div>`
+                                                ? `<div class='${t.classes.dropdown}'>\n            <label>\n                <select class='${t.classes.selector}' name="per-page"></select> ${t.labels.perPage}\n            </label>\n        </div>`
                                                 : ""
                                         }\n    ${
                                             t.searchable
@@ -5450,7 +6084,7 @@
                                                       t.classes.input
                                                   }' placeholder='${
                                                       t.labels.placeholder
-                                                  }' type='search' title='${
+                                                  }' type='search' name="search" title='${
                                                       t.labels.searchTitle
                                                   }'${
                                                       e.id
@@ -5507,7 +6141,7 @@
                                         wrapper: "datatable-wrapper",
                                     },
                                 },
-                                W = (t, e, s, i = {}) => ({
+                                st = (t, e, s, i = {}) => ({
                                     nodeName: "LI",
                                     attributes: {
                                         class:
@@ -5536,20 +6170,20 @@
                                         },
                                     ],
                                 }),
-                                Q = (t, e, s, i, n) => {
+                                it = (t, e, s, i, n) => {
                                     let a = [];
                                     if (
                                         (n.firstLast &&
-                                            a.push(W(1, n.firstText, n)),
+                                            a.push(st(1, n.firstText, n)),
                                         n.nextPrev)
                                     ) {
                                         const e = t ? 1 : s - 1;
                                         a.push(
-                                            W(e, n.prevText, n, { hidden: t })
+                                            st(e, n.prevText, n, { hidden: t })
                                         );
                                     }
                                     let o = [...Array(i).keys()].map((t) =>
-                                        W(t + 1, String(t + 1), n, {
+                                        st(t + 1, String(t + 1), n, {
                                             active: t === s - 1,
                                         })
                                     );
@@ -5641,10 +6275,10 @@
                                     ) {
                                         const t = e ? i : s + 1;
                                         a.push(
-                                            W(t, n.nextText, n, { hidden: e })
+                                            st(t, n.nextText, n, { hidden: e })
                                         );
                                     }
-                                    n.firstLast && a.push(W(i, n.lastText, n));
+                                    n.firstLast && a.push(st(i, n.lastText, n));
                                     return {
                                         nodeName: "UL",
                                         attributes: {
@@ -5653,7 +6287,7 @@
                                         childNodes: o.length > 1 ? a : [],
                                     };
                                 };
-                            const X = {
+                            const nt = {
                                 classes: {
                                     row: "datatable-editor-row",
                                     form: "datatable-editor-form",
@@ -5745,16 +6379,38 @@
                                     },
                                 ],
                             };
-                            class Z {
+                            class at {
+                                menuOpen;
+                                containerDOM;
+                                data;
+                                disabled;
+                                dt;
+                                editing;
+                                editingCell;
+                                editingRow;
+                                event;
+                                events;
+                                initialized;
+                                limits;
+                                menuDOM;
+                                modalDOM;
+                                options;
+                                originalRowRender;
+                                rect;
+                                wrapperDOM;
                                 constructor(t, e = {}) {
                                     (this.dt = t),
-                                        (this.options = { ...X, ...e });
+                                        (this.options = { ...nt, ...e });
                                 }
                                 init() {
                                     this.initialized ||
-                                        (this.dt.wrapperDOM.classList.add(
-                                            this.options.classes.editable
-                                        ),
+                                        (this.options.classes.editable
+                                            ?.split(" ")
+                                            .forEach((t) =>
+                                                this.dt.wrapperDOM.classList.add(
+                                                    t
+                                                )
+                                            ),
                                         this.options.inline &&
                                             ((this.originalRowRender =
                                                 this.dt.options.rowRender),
@@ -5936,14 +6592,17 @@
                                             this.data &&
                                             this.editingCell
                                         ) {
-                                            const t = this.modalDOM
-                                                ? this.modalDOM.querySelector(
-                                                      `input.${this.options.classes.input}[type=text]`
-                                                  )
-                                                : this.dt.wrapperDOM.querySelector(
-                                                      `input.${this.options.classes.input}[type=text]`
-                                                  );
-                                            this.saveCell(t.value);
+                                            const t = l(
+                                                    this.options.classes.input
+                                                ),
+                                                e = this.modalDOM
+                                                    ? this.modalDOM.querySelector(
+                                                          `input${t}[type=text]`
+                                                      )
+                                                    : this.dt.wrapperDOM.querySelector(
+                                                          `input${t}[type=text]`
+                                                      );
+                                            this.saveCell(e.value);
                                         } else if (!this.editing) {
                                             const s = e.closest("tbody td");
                                             s &&
@@ -5952,6 +6611,7 @@
                                         }
                                 }
                                 keydown(t) {
+                                    const e = l(this.options.classes.input);
                                     if (this.modalDOM) {
                                         if ("Escape" === t.key)
                                             this.options.cancelModal(this) &&
@@ -5960,42 +6620,32 @@
                                             if (this.editingCell) {
                                                 const t =
                                                     this.modalDOM.querySelector(
-                                                        `input.${this.options.classes.input}[type=text]`
+                                                        `input${e}[type=text]`
                                                     );
                                                 this.saveCell(t.value);
                                             } else {
                                                 const t = Array.from(
                                                     this.modalDOM.querySelectorAll(
-                                                        `input.${this.options.classes.input}[type=text]`
+                                                        `input${e}[type=text]`
                                                     )
-                                                );
-                                                this.saveRow(
-                                                    t.map((t) =>
-                                                        t.value.trim()
-                                                    ),
-                                                    this.data.row
-                                                );
+                                                ).map((t) => t.value.trim());
+                                                this.saveRow(t, this.data.row);
                                             }
                                     } else if (this.editing && this.data)
                                         if ("Enter" === t.key) {
                                             if (this.editingCell) {
                                                 const t =
                                                     this.dt.wrapperDOM.querySelector(
-                                                        `input.${this.options.classes.input}[type=text]`
+                                                        `input${e}[type=text]`
                                                     );
                                                 this.saveCell(t.value);
                                             } else if (this.editingRow) {
                                                 const t = Array.from(
                                                     this.dt.wrapperDOM.querySelectorAll(
-                                                        `input.${this.options.classes.input}[type=text]`
+                                                        `input${e}[type=text]`
                                                     )
-                                                );
-                                                this.saveRow(
-                                                    t.map((t) =>
-                                                        t.value.trim()
-                                                    ),
-                                                    this.data.row
-                                                );
+                                                ).map((t) => t.value.trim());
+                                                this.saveRow(t, this.data.row);
                                             }
                                         } else
                                             "Escape" === t.key &&
@@ -6010,7 +6660,7 @@
                                                       ));
                                 }
                                 editCell(t) {
-                                    const e = a(
+                                    const e = o(
                                         t.cellIndex,
                                         this.dt.columns.settings
                                     );
@@ -6020,12 +6670,12 @@
                                             t.parentElement.dataset.index,
                                             10
                                         ),
-                                        i = this.dt.data.data[s][e];
+                                        i = this.dt.data.data[s].cells[e];
                                     (this.data = {
                                         cell: i,
                                         rowIndex: s,
                                         columnIndex: e,
-                                        content: i.text || String(i.data),
+                                        content: n(i),
                                     }),
                                         (this.editing = !0),
                                         (this.editingCell = !0),
@@ -6042,7 +6692,7 @@
                                             String(
                                                 this.dt.data.headings[e].data
                                             ),
-                                        a = [
+                                        o = [
                                             `<div class='${this.options.classes.inner}'>`,
                                             `<div class='${this.options.classes.header}'>`,
                                             `<h4>${this.options.labels.editCell}</h4>`,
@@ -6053,12 +6703,10 @@
                                             `<div class='${this.options.classes.row}'>`,
                                             `<label class='${
                                                 this.options.classes.label
-                                            }'>${n(i)}</label>`,
+                                            }'>${a(i)}</label>`,
                                             `<input class='${
                                                 this.options.classes.input
-                                            }' value='${n(
-                                                t.text || String(t.data) || ""
-                                            )}' type='text'>`,
+                                            }' value='${a(n(t))}' type='text'>`,
                                             "</div>",
                                             `<div class='${this.options.classes.row}'>`,
                                             `<button class='${this.options.classes.cancel}' type='button' data-editor-cancel>${this.options.labels.cancel}</button>`,
@@ -6068,18 +6716,19 @@
                                             "</div>",
                                             "</div>",
                                         ].join(""),
-                                        o = s("div", {
+                                        r = s("div", {
                                             class: this.options.classes.modal,
-                                            html: a,
+                                            html: o,
                                         });
-                                    (this.modalDOM = o), this.openModal();
-                                    const r = o.querySelector(
-                                        `input.${this.options.classes.input}[type=text]`
-                                    );
-                                    r.focus(),
-                                        (r.selectionStart = r.selectionEnd =
-                                            r.value.length),
-                                        o.addEventListener("click", (t) => {
+                                    (this.modalDOM = r), this.openModal();
+                                    const d = l(this.options.classes.input),
+                                        c = r.querySelector(
+                                            `input${d}[type=text]`
+                                        );
+                                    c.focus(),
+                                        (c.selectionStart = c.selectionEnd =
+                                            c.value.length),
+                                        r.addEventListener("click", (t) => {
                                             const e = t.target;
                                             e instanceof Element &&
                                                 (e.hasAttribute(
@@ -6093,7 +6742,7 @@
                                                           "data-editor-save"
                                                       ) &&
                                                       (t.preventDefault(),
-                                                      this.saveCell(r.value)));
+                                                      this.saveCell(c.value)));
                                         });
                                 }
                                 saveCell(t) {
@@ -6132,11 +6781,11 @@
                                             this.dt.columns.settings[
                                                 this.data.columnIndex
                                             ].format || this.dt.options.format;
-                                        n = { data: t, order: j(String(t), e) };
+                                        n = { data: t, order: Q(String(t), e) };
                                     } else n = { data: t };
-                                    (this.dt.data.data[this.data.rowIndex][
-                                        this.data.columnIndex
-                                    ] = n),
+                                    (this.dt.data.data[
+                                        this.data.rowIndex
+                                    ].cells[this.data.columnIndex] = n),
                                         this.closeModal();
                                     const a = this.data.rowIndex,
                                         o = this.data.columnIndex;
@@ -6161,7 +6810,7 @@
                                         return;
                                     const e = parseInt(t.dataset.index, 10),
                                         s = this.dt.data.data[e];
-                                    (this.data = { row: s, rowIndex: e }),
+                                    (this.data = { row: s.cells, rowIndex: e }),
                                         (this.editing = !0),
                                         (this.editingRow = !0),
                                         this.options.inline
@@ -6191,11 +6840,11 @@
                                             class: this.options.classes.modal,
                                             html: e,
                                         }),
-                                        a = i.firstElementChild;
-                                    if (!a) return;
-                                    const o =
-                                        a.lastElementChild?.firstElementChild;
+                                        o = i.firstElementChild;
                                     if (!o) return;
+                                    const r =
+                                        o.lastElementChild?.firstElementChild;
+                                    if (!r) return;
                                     t.forEach((t, e) => {
                                         const i = this.dt.columns.settings[e];
                                         if (
@@ -6213,7 +6862,7 @@
                                                     this.dt.data.headings[e]
                                                         .data
                                                 );
-                                            o.insertBefore(
+                                            r.insertBefore(
                                                 s("div", {
                                                     class: this.options.classes
                                                         .row,
@@ -6222,138 +6871,124 @@
                                                         `<label class='${
                                                             this.options.classes
                                                                 .label
-                                                        }'>${n(i)}</label>`,
+                                                        }'>${a(i)}</label>`,
                                                         `<input class='${
                                                             this.options.classes
                                                                 .input
-                                                        }' value='${n(
-                                                            t.text ||
-                                                                String(
-                                                                    t.data
-                                                                ) ||
-                                                                ""
+                                                        }' value='${a(
+                                                            n(t)
                                                         )}' type='text'>`,
                                                         "</div>",
                                                     ].join(""),
                                                 }),
-                                                o.lastElementChild
+                                                r.lastElementChild
                                             );
                                         }
                                     }),
                                         (this.modalDOM = i),
                                         this.openModal();
-                                    const r = Array.from(
-                                        o.querySelectorAll(
-                                            `input.${this.options.classes.input}[type=text]`
-                                        )
-                                    );
-                                    r.pop(),
-                                        i.addEventListener("click", (t) => {
-                                            const e = t.target;
-                                            e instanceof Element &&
-                                                (e.hasAttribute(
+                                    const d = l(this.options.classes.input),
+                                        c = Array.from(
+                                            r.querySelectorAll(
+                                                `input${d}[type=text]`
+                                            )
+                                        );
+                                    i.addEventListener("click", (t) => {
+                                        const e = t.target;
+                                        if (e instanceof Element)
+                                            if (
+                                                e.hasAttribute(
                                                     "data-editor-cancel"
                                                 )
-                                                    ? this.options.cancelModal(
-                                                          this
-                                                      ) && this.closeModal()
-                                                    : e.hasAttribute(
-                                                          "data-editor-save"
-                                                      ) &&
-                                                      this.saveRow(
-                                                          r.map((t) =>
-                                                              t.value.trim()
-                                                          ),
-                                                          this.data.row
-                                                      ));
-                                        });
+                                            )
+                                                this.options.cancelModal(
+                                                    this
+                                                ) && this.closeModal();
+                                            else if (
+                                                e.hasAttribute(
+                                                    "data-editor-save"
+                                                )
+                                            ) {
+                                                const t = c.map((t) =>
+                                                    t.value.trim()
+                                                );
+                                                this.saveRow(t, this.data.row);
+                                            }
+                                    });
                                 }
                                 saveRow(t, e) {
-                                    const s = e.map(
-                                        (t) => t.text ?? String(t.data)
-                                    );
-                                    t &&
-                                        (this.dt.data.data[this.data.rowIndex] =
+                                    const s = e.map((t) => n(t)),
+                                        i =
                                             this.dt.data.data[
                                                 this.data.rowIndex
-                                            ].map((e, s) => {
-                                                if (
-                                                    this.dt.columns.settings[s]
-                                                        .hidden ||
-                                                    this.options.excludeColumns.includes(
-                                                        s
-                                                    )
+                                            ];
+                                    if (t) {
+                                        let s = 0;
+                                        i.cells = e.map((e, i) => {
+                                            if (
+                                                this.options.excludeColumns.includes(
+                                                    i
+                                                ) ||
+                                                this.dt.columns.settings[i]
+                                                    .hidden
+                                            )
+                                                return e;
+                                            const n =
+                                                    this.dt.columns.settings[i]
+                                                        .type ||
+                                                    this.dt.options.type,
+                                                a = t[s++];
+                                            let o;
+                                            if ("number" === n)
+                                                o = { data: parseFloat(a) };
+                                            else if ("boolean" === n)
+                                                o = ["", "false", "0"].includes(
+                                                    a
                                                 )
-                                                    return e;
-                                                const i =
-                                                        this.dt.columns
-                                                            .settings[s].type ||
-                                                        this.dt.options.type,
-                                                    n =
-                                                        t[
-                                                            o(
-                                                                s,
-                                                                this.dt.columns
-                                                                    .settings
-                                                            )
-                                                        ],
-                                                    a = n.trim();
-                                                let r;
-                                                if ("number" === i)
-                                                    r = { data: parseFloat(a) };
-                                                else if ("boolean" === i)
-                                                    r = [
-                                                        "",
-                                                        "false",
-                                                        "0",
-                                                    ].includes(a)
-                                                        ? {
-                                                              data: !1,
-                                                              text: "false",
-                                                              order: 0,
-                                                          }
-                                                        : {
-                                                              data: !0,
-                                                              text: "true",
-                                                              order: 1,
-                                                          };
-                                                else if ("html" === i)
-                                                    r = {
-                                                        data: [
-                                                            {
-                                                                nodeName:
-                                                                    "#text",
-                                                                data: n,
-                                                            },
-                                                        ],
-                                                        text: n,
-                                                        order: n,
-                                                    };
-                                                else if ("string" === i)
-                                                    r = { data: n };
-                                                else if ("date" === i) {
-                                                    const t =
-                                                        this.dt.columns
-                                                            .settings[s]
-                                                            .format ||
-                                                        this.dt.options.format;
-                                                    r = {
-                                                        data: n,
-                                                        order: j(String(n), t),
-                                                    };
-                                                } else r = { data: n };
-                                                return r;
-                                            }));
-                                    const i = this.dt.data.data[
-                                        this.data.rowIndex
-                                    ].map((t) => t.text ?? String(t.data));
+                                                    ? {
+                                                          data: !1,
+                                                          text: "false",
+                                                          order: 0,
+                                                      }
+                                                    : {
+                                                          data: !0,
+                                                          text: "true",
+                                                          order: 1,
+                                                      };
+                                            else if ("html" === n)
+                                                o = {
+                                                    data: [
+                                                        {
+                                                            nodeName: "#text",
+                                                            data: a,
+                                                        },
+                                                    ],
+                                                    text: a,
+                                                    order: a,
+                                                };
+                                            else if ("string" === n)
+                                                o = { data: a };
+                                            else if ("date" === n) {
+                                                const t =
+                                                    this.dt.columns.settings[i]
+                                                        .format ||
+                                                    this.dt.options.format;
+                                                o = {
+                                                    data: a,
+                                                    order: Q(String(a), t),
+                                                };
+                                            } else o = { data: a };
+                                            return o;
+                                        });
+                                    }
+                                    const a = i.cells.map((t) => n(t));
                                     (this.data = {}),
                                         this.dt.update(!0),
                                         this.closeModal(),
                                         (this.editing = !1),
                                         this.dt.emit(
                                             "editable.save.row",
-                                            i,
+                                            a,
                                             s,
                                             e
                                         );
@@ -6414,11 +7049,11 @@
                                     )
                                         return;
                                     let s = !0;
-                                    this.editing &&
-                                        (s = !e.matches(
-                                            `input.${this.options.classes.input}[type=text]`
-                                        )),
-                                        s && this.closeMenu();
+                                    if (this.editing) {
+                                        const t = l(this.options.classes.input);
+                                        s = !e.matches(`input${t}[type=text]`);
+                                    }
+                                    s && this.closeMenu();
                                 }
                                 openMenu() {
                                     if (
@@ -6426,14 +7061,15 @@
                                         this.data &&
                                         this.editingCell
                                     ) {
-                                        const t = this.modalDOM
-                                            ? this.modalDOM.querySelector(
-                                                  `input.${this.options.classes.input}[type=text]`
-                                              )
-                                            : this.dt.wrapperDOM.querySelector(
-                                                  `input.${this.options.classes.input}[type=text]`
-                                              );
-                                        this.saveCell(t.value);
+                                        const t = l(this.options.classes.input),
+                                            e = this.modalDOM
+                                                ? this.modalDOM.querySelector(
+                                                      `input${t}[type=text]`
+                                                  )
+                                                : this.dt.wrapperDOM.querySelector(
+                                                      `input${t}[type=text]`
+                                                  );
+                                        this.saveCell(e.value);
                                     }
                                     document.body.appendChild(
                                         this.containerDOM
@@ -6490,7 +7126,14 @@
                                         return e;
                                     if (this.editingCell) {
                                         e.childNodes[
-                                            o(
+                                            (function (t, e) {
+                                                let s = t,
+                                                    i = 0;
+                                                for (; i < t; )
+                                                    e[i].hidden && (s -= 1),
+                                                        i++;
+                                                return s;
+                                            })(
                                                 this.data.columnIndex,
                                                 this.dt.columns.settings
                                             )
@@ -6507,14 +7150,14 @@
                                         ];
                                     } else
                                         e.childNodes.forEach((s, i) => {
-                                            const o = a(
+                                            const n = o(
                                                     i,
                                                     this.dt.columns.settings
                                                 ),
-                                                r = t[o];
+                                                r = t[n];
                                             if (
                                                 !this.options.excludeColumns.includes(
-                                                    o
+                                                    n
                                                 )
                                             ) {
                                                 e.childNodes[i].childNodes = [
@@ -6522,7 +7165,7 @@
                                                         nodeName: "INPUT",
                                                         attributes: {
                                                             type: "text",
-                                                            value: n(
+                                                            value: a(
                                                                 r.text ||
                                                                     String(
                                                                         r.data
@@ -6539,7 +7182,7 @@
                                     return e;
                                 }
                             }
-                            const G = {
+                            const ot = {
                                 classes: {
                                     button: "datatable-column-filter-button",
                                     menu: "datatable-column-filter-menu",
@@ -6552,31 +7195,46 @@
                                 },
                                 hiddenColumns: [],
                             };
-                            class K {
+                            class rt {
+                                addedButtonDOM;
+                                menuOpen;
+                                buttonDOM;
+                                dt;
+                                events;
+                                initialized;
+                                options;
+                                menuDOM;
+                                containerDOM;
+                                wrapperDOM;
+                                limits;
+                                rect;
+                                event;
                                 constructor(t, e = {}) {
                                     (this.dt = t),
-                                        (this.options = { ...G, ...e });
+                                        (this.options = { ...ot, ...e });
                                 }
                                 init() {
                                     if (this.initialized) return;
-                                    let t = this.dt.wrapperDOM.querySelector(
-                                        `.${this.options.classes.button}`
-                                    );
-                                    if (!t) {
-                                        t = s("button", {
+                                    const t = l(this.options.classes.button);
+                                    let e = this.dt.wrapperDOM.querySelector(t);
+                                    if (!e) {
+                                        e = s("button", {
                                             class: this.options.classes.button,
                                             html: "▦",
                                         });
-                                        const e =
-                                            this.dt.wrapperDOM.querySelector(
-                                                `.${this.dt.options.classes.search}`
-                                            );
-                                        e
-                                            ? e.appendChild(t)
-                                            : this.dt.wrapperDOM.appendChild(t),
+                                        const t = l(
+                                                this.dt.options.classes.search
+                                            ),
+                                            i =
+                                                this.dt.wrapperDOM.querySelector(
+                                                    t
+                                                );
+                                        i
+                                            ? i.appendChild(e)
+                                            : this.dt.wrapperDOM.appendChild(e),
                                             (this.addedButtonDOM = !0);
                                     }
-                                    (this.buttonDOM = t),
+                                    (this.buttonDOM = e),
                                         (this.containerDOM = s("div", {
                                             id: this.options.classes.container,
                                         })),
@@ -6696,24 +7354,57 @@
                                                 (this.wrapperDOM.style.top = `${s}px`),
                                                 (this.wrapperDOM.style.left = `${e}px`);
                                         } else if (this.menuDOM.contains(e)) {
-                                            const t = e.closest(
-                                                `.${this.options.classes.menu} > li`
-                                            );
-                                            if (!t) return;
-                                            const s = t.querySelector(
+                                            const t = l(
+                                                    this.options.classes.menu
+                                                ),
+                                                s = e.closest(`${t} > li`);
+                                            if (!s) return;
+                                            const i = s.querySelector(
                                                 "input[type=checkbox]"
                                             );
-                                            s.contains(e) ||
-                                                (s.checked = !s.checked);
-                                            const i = Number(t.dataset.column);
-                                            s.checked
-                                                ? this.dt.columns.show([i])
-                                                : this.dt.columns.hide([i]);
+                                            i.contains(e) ||
+                                                (i.checked = !i.checked);
+                                            const n = Number(s.dataset.column);
+                                            i.checked
+                                                ? this.dt.columns.show([n])
+                                                : this.dt.columns.hide([n]);
                                         } else
                                             this.menuOpen && this._closeMenu();
                                 }
                             }
                             (exports.DataTable = class {
+                                columns;
+                                containerDOM;
+                                _currentPage;
+                                data;
+                                _dd;
+                                dom;
+                                _events;
+                                hasHeadings;
+                                hasRows;
+                                headerDOM;
+                                _initialHTML;
+                                initialized;
+                                _label;
+                                lastPage;
+                                _listeners;
+                                onFirstPage;
+                                onLastPage;
+                                options;
+                                _pagerDOMs;
+                                _virtualPagerDOM;
+                                pages;
+                                _rect;
+                                rows;
+                                _searchData;
+                                _searchQueries;
+                                _tableAttributes;
+                                _tableFooters;
+                                _tableCaptions;
+                                totalPages;
+                                _virtualDOM;
+                                _virtualHeaderDOM;
+                                wrapperDOM;
                                 constructor(t, e = {}) {
                                     const s =
                                         "string" == typeof t
@@ -6725,21 +7416,21 @@
                                               document.createElement("table")),
                                           s.appendChild(this.dom));
                                     const i = {
-                                            ...J.diffDomOptions,
+                                            ...et.diffDomOptions,
                                             ...e.diffDomOptions,
                                         },
-                                        n = { ...J.labels, ...e.labels },
-                                        a = { ...J.classes, ...e.classes };
+                                        n = { ...et.labels, ...e.labels },
+                                        a = { ...et.classes, ...e.classes };
                                     (this.options = {
-                                        ...J,
+                                        ...et,
                                         ...e,
                                         diffDomOptions: i,
                                         labels: n,
                                         classes: a,
                                     }),
-                                        (this._initialInnerHTML = this.options
+                                        (this._initialHTML = this.options
                                             .destroyable
-                                            ? this.dom.innerHTML
+                                            ? s.outerHTML
                                             : ""),
                                         this.options.tabIndex
                                             ? (this.dom.tabIndex =
@@ -6750,7 +7441,7 @@
                                         (this._listeners = {
                                             onResize: () => this._onResize(),
                                         }),
-                                        (this._dd = new L(
+                                        (this._dd = new j(
                                             this.options.diffDomOptions || {}
                                         )),
                                         (this.initialized = !1),
@@ -6765,21 +7456,38 @@
                                 init() {
                                     if (
                                         this.initialized ||
-                                        this.dom.classList.contains(
-                                            this.options.classes.table
-                                        )
+                                        d(this.dom, this.options.classes.table)
                                     )
                                         return !1;
-                                    (this._virtualDOM = M(
+                                    (this._virtualDOM = k(
                                         this.dom,
                                         this.options.diffDomOptions || {}
                                     )),
                                         (this._tableAttributes = {
                                             ...this._virtualDOM.attributes,
                                         }),
-                                        (this.rows = new z(this)),
-                                        (this.columns = new U(this)),
-                                        (this.data = F(
+                                        (this._tableFooters =
+                                            this._virtualDOM.childNodes?.filter(
+                                                (t) => "TFOOT" === t.nodeName
+                                            ) ?? []),
+                                        (this._tableCaptions =
+                                            this._virtualDOM.childNodes?.filter(
+                                                (t) => "CAPTION" === t.nodeName
+                                            ) ?? []),
+                                        void 0 !== this.options.caption &&
+                                            this._tableCaptions.push({
+                                                nodeName: "CAPTION",
+                                                childNodes: [
+                                                    {
+                                                        nodeName: "#text",
+                                                        data: this.options
+                                                            .caption,
+                                                    },
+                                                ],
+                                            }),
+                                        (this.rows = new K(this)),
+                                        (this.columns = new tt(this)),
+                                        (this.data = G(
                                             this.options.data,
                                             this.dom,
                                             this.columns.settings,
@@ -6801,19 +7509,20 @@
                                                 this.options,
                                                 this.dom
                                             ));
-                                    const t = this.wrapperDOM.querySelector(
-                                        `select.${this.options.classes.selector}`
-                                    );
-                                    t &&
+                                    const t = l(this.options.classes.selector),
+                                        e = this.wrapperDOM.querySelector(
+                                            `select${t}`
+                                        );
+                                    e &&
                                     this.options.paging &&
                                     this.options.perPageSelect
                                         ? this.options.perPageSelect.forEach(
-                                              (e) => {
+                                              (t) => {
                                                   const [s, i] = Array.isArray(
-                                                          e
+                                                          t
                                                       )
-                                                          ? [e[0], e[1]]
-                                                          : [String(e), e],
+                                                          ? [t[0], t[1]]
+                                                          : [String(t), t],
                                                       n =
                                                           i ===
                                                           this.options.perPage,
@@ -6823,37 +7532,36 @@
                                                           n,
                                                           n
                                                       );
-                                                  t.appendChild(a);
+                                                  e.appendChild(a);
                                               }
                                           )
-                                        : t && t.parentElement.removeChild(t),
-                                        (this.containerDOM =
-                                            this.wrapperDOM.querySelector(
-                                                `.${this.options.classes.container}`
-                                            )),
-                                        (this._pagerDOMs = []),
-                                        Array.from(
-                                            this.wrapperDOM.querySelectorAll(
-                                                `.${this.options.classes.pagination}`
-                                            )
-                                        ).forEach((t) => {
-                                            t instanceof HTMLElement &&
-                                                ((t.innerHTML = `<ul class="${this.options.classes.paginationList}"></ul>`),
-                                                this._pagerDOMs.push(
-                                                    t.firstElementChild
-                                                ));
-                                        }),
+                                        : e && e.parentElement.removeChild(e);
+                                    const i = l(this.options.classes.container);
+                                    (this.containerDOM =
+                                        this.wrapperDOM.querySelector(i)),
+                                        (this._pagerDOMs = []);
+                                    const n = l(
+                                        this.options.classes.pagination
+                                    );
+                                    Array.from(
+                                        this.wrapperDOM.querySelectorAll(n)
+                                    ).forEach((t) => {
+                                        t instanceof HTMLElement &&
+                                            ((t.innerHTML = `<ul class="${this.options.classes.paginationList}"></ul>`),
+                                            this._pagerDOMs.push(
+                                                t.firstElementChild
+                                            ));
+                                    }),
                                         (this._virtualPagerDOM = {
                                             nodeName: "UL",
                                             attributes: {
                                                 class: this.options.classes
                                                     .paginationList,
                                             },
-                                        }),
-                                        (this._label =
-                                            this.wrapperDOM.querySelector(
-                                                `.${this.options.classes.info}`
-                                            )),
+                                        });
+                                    const a = l(this.options.classes.info);
+                                    (this._label =
+                                        this.wrapperDOM.querySelector(a)),
                                         this.dom.parentElement.replaceChild(
                                             this.wrapperDOM,
                                             this.dom
@@ -6896,41 +7604,46 @@
                                         this.update(!0);
                                 }
                                 _renderTable(t = {}) {
-                                    let e = P(
-                                        this._tableAttributes,
-                                        this.data.headings,
+                                    let e;
+                                    e =
                                         (this.options.paging ||
                                             this._searchQueries.length ||
                                             this.columns._state.filters
                                                 .length) &&
-                                            this._currentPage &&
-                                            this.pages.length &&
-                                            !t.noPaging
+                                        this._currentPage &&
+                                        this.pages.length &&
+                                        !t.noPaging
                                             ? this.pages[this._currentPage - 1]
                                             : this.data.data.map((t, e) => ({
                                                   row: t,
                                                   index: e,
-                                              })),
+                                              }));
+                                    let s = q(
+                                        this._tableAttributes,
+                                        this.data.headings,
+                                        e,
                                         this.columns.settings,
                                         this.columns._state,
                                         this.rows.cursor,
                                         this.options,
-                                        t
+                                        t,
+                                        this._tableFooters,
+                                        this._tableCaptions
                                     );
                                     if (this.options.tableRender) {
                                         const t = this.options.tableRender(
                                             this.data,
-                                            e,
+                                            s,
                                             "main"
                                         );
-                                        t && (e = t);
+                                        t && (s = t);
                                     }
-                                    const s = this._dd.diff(
+                                    const i = this._dd.diff(
                                         this._virtualDOM,
-                                        e
+                                        s
                                     );
-                                    this._dd.apply(this.dom, s),
-                                        (this._virtualDOM = e);
+                                    this._dd.apply(this.dom, i),
+                                        (this._virtualDOM = s);
                                 }
                                 _renderPage(t = !1) {
                                     this.hasRows && this.totalPages
@@ -7004,7 +7717,7 @@
                                 }
                                 _renderPagers() {
                                     if (!this.options.paging) return;
-                                    let t = Q(
+                                    let t = it(
                                         this.onFirstPage,
                                         this.onLastPage,
                                         this._currentPage,
@@ -7051,7 +7764,7 @@
                                             {
                                                 nodeName: "THEAD",
                                                 childNodes: [
-                                                    A(
+                                                    F(
                                                         this.data.headings,
                                                         this.columns.settings,
                                                         this.columns._state,
@@ -7063,10 +7776,10 @@
                                         ],
                                     };
                                     if (
-                                        ((e.attributes.class = e.attributes
-                                            .class
-                                            ? `${e.attributes.class} ${this.options.classes.table}`
-                                            : this.options.classes.table),
+                                        ((e.attributes.class = c(
+                                            e.attributes.class,
+                                            this.options.classes.table
+                                        )),
                                         this.options.tableRender)
                                     ) {
                                         const t = this.options.tableRender(
@@ -7110,16 +7823,20 @@
                                 }
                                 _bindEvents() {
                                     if (this.options.perPageSelect) {
-                                        const t = this.wrapperDOM.querySelector(
-                                            `select.${this.options.classes.selector}`
-                                        );
-                                        t &&
-                                            t instanceof HTMLSelectElement &&
-                                            t.addEventListener(
+                                        const t = l(
+                                                this.options.classes.selector
+                                            ),
+                                            e =
+                                                this.wrapperDOM.querySelector(
+                                                    t
+                                                );
+                                        e &&
+                                            e instanceof HTMLSelectElement &&
+                                            e.addEventListener(
                                                 "change",
                                                 () => {
                                                     (this.options.perPage =
-                                                        parseInt(t.value, 10)),
+                                                        parseInt(e.value, 10)),
                                                         this.update(),
                                                         this._fixHeight(),
                                                         this.emit(
@@ -7134,23 +7851,25 @@
                                         this.wrapperDOM.addEventListener(
                                             "input",
                                             (t) => {
-                                                const e = t.target;
+                                                const e = l(
+                                                        this.options.classes
+                                                            .input
+                                                    ),
+                                                    s = t.target;
                                                 if (
                                                     !(
-                                                        e instanceof
+                                                        s instanceof
                                                             HTMLInputElement &&
-                                                        e.matches(
-                                                            `.${this.options.classes.input}`
-                                                        )
+                                                        s.matches(e)
                                                     )
                                                 )
                                                     return;
                                                 t.preventDefault();
-                                                const s = [];
+                                                const i = [];
                                                 if (
                                                     (Array.from(
                                                         this.wrapperDOM.querySelectorAll(
-                                                            `.${this.options.classes.input}`
+                                                            e
                                                         )
                                                     )
                                                         .filter(
@@ -7163,7 +7882,7 @@
                                                                         .and ||
                                                                     this.options
                                                                         .searchAnd,
-                                                                i =
+                                                                s =
                                                                     t.dataset
                                                                         .querySeparator ||
                                                                     this.options
@@ -7177,12 +7896,12 @@
                                                                               t.value,
                                                                           ];
                                                             e
-                                                                ? i.forEach(
+                                                                ? s.forEach(
                                                                       (e) => {
                                                                           t
                                                                               .dataset
                                                                               .columns
-                                                                              ? s.push(
+                                                                              ? i.push(
                                                                                     {
                                                                                         terms: [
                                                                                             e,
@@ -7195,7 +7914,7 @@
                                                                                             ),
                                                                                     }
                                                                                 )
-                                                                              : s.push(
+                                                                              : i.push(
                                                                                     {
                                                                                         terms: [
                                                                                             e,
@@ -7208,8 +7927,8 @@
                                                                   )
                                                                 : t.dataset
                                                                       .columns
-                                                                ? s.push({
-                                                                      terms: i,
+                                                                ? i.push({
+                                                                      terms: s,
                                                                       columns:
                                                                           JSON.parse(
                                                                               t
@@ -7217,21 +7936,21 @@
                                                                                   .columns
                                                                           ),
                                                                   })
-                                                                : s.push({
-                                                                      terms: i,
+                                                                : i.push({
+                                                                      terms: s,
                                                                       columns:
                                                                           void 0,
                                                                   });
                                                         }),
-                                                    1 === s.length &&
-                                                        1 === s[0].terms.length)
+                                                    1 === i.length &&
+                                                        1 === i[0].terms.length)
                                                 ) {
-                                                    const t = s[0];
+                                                    const t = i[0];
                                                     this.search(
                                                         t.terms[0],
                                                         t.columns
                                                     );
-                                                } else this.multiSearch(s);
+                                                } else this.multiSearch(i);
                                             }
                                         ),
                                         this.wrapperDOM.addEventListener(
@@ -7257,7 +7976,8 @@
                                                         ),
                                                             t.preventDefault();
                                                     else if (
-                                                        e.classList.contains(
+                                                        d(
+                                                            e,
                                                             this.options.classes
                                                                 .sorter
                                                         )
@@ -7269,7 +7989,7 @@
                                                             ).indexOf(
                                                                 e.parentElement
                                                             ),
-                                                            i = a(
+                                                            i = o(
                                                                 s,
                                                                 this.columns
                                                                     .settings
@@ -7277,7 +7997,8 @@
                                                         this.columns.sort(i),
                                                             t.preventDefault();
                                                     } else if (
-                                                        e.classList.contains(
+                                                        d(
+                                                            e,
                                                             this.options.classes
                                                                 .filter
                                                         )
@@ -7289,7 +8010,7 @@
                                                             ).indexOf(
                                                                 e.parentElement
                                                             ),
-                                                            i = a(
+                                                            i = o(
                                                                 s,
                                                                 this.columns
                                                                     .settings
@@ -7389,7 +8110,7 @@
                                                       ) {
                                                           const s = Array.from(
                                                               this.dom.querySelectorAll(
-                                                                  "body tr"
+                                                                  "tbody > tr"
                                                               )
                                                           ).find((t) =>
                                                               t.contains(e)
@@ -7422,7 +8143,7 @@
                                                           return;
                                                       const s = Array.from(
                                                           this.dom.querySelectorAll(
-                                                              "body tr"
+                                                              "tbody > tr"
                                                           )
                                                       ).find((t) =>
                                                           t.contains(e)
@@ -7452,22 +8173,30 @@
                                         this._rect.width && this.update(!0);
                                 }
                                 destroy() {
-                                    this.options.destroyable &&
-                                        ((this.dom.innerHTML =
-                                            this._initialInnerHTML),
-                                        this.dom.classList.remove(
-                                            this.options.classes.table
-                                        ),
-                                        this.wrapperDOM.parentElement &&
-                                            this.wrapperDOM.parentElement.replaceChild(
-                                                this.dom,
-                                                this.wrapperDOM
-                                            ),
-                                        (this.initialized = !1),
+                                    if (this.options.destroyable) {
+                                        if (this.wrapperDOM)
+                                            if (this.wrapperDOM.parentElement) {
+                                                const t = s("div");
+                                                (t.innerHTML =
+                                                    this._initialHTML),
+                                                    this.wrapperDOM.parentElement.replaceChild(
+                                                        t.firstElementChild,
+                                                        this.wrapperDOM
+                                                    );
+                                            } else
+                                                this.options.classes.table
+                                                    ?.split(" ")
+                                                    .forEach((t) =>
+                                                        this.wrapperDOM.classList.remove(
+                                                            t
+                                                        )
+                                                    );
                                         window.removeEventListener(
                                             "resize",
                                             this._listeners.onResize
-                                        ));
+                                        ),
+                                            (this.initialized = !1);
+                                    }
                                 }
                                 update(t = !1) {
                                     t &&
@@ -7478,9 +8207,13 @@
                                         (this.hasHeadings = Boolean(
                                             this.data.headings.length
                                         ))),
-                                        this.wrapperDOM.classList.remove(
-                                            this.options.classes.empty
-                                        ),
+                                        this.options.classes.empty
+                                            ?.split(" ")
+                                            .forEach((t) =>
+                                                this.wrapperDOM.classList.remove(
+                                                    t
+                                                )
+                                            ),
                                         this._paginate(),
                                         this._renderPage(),
                                         this._renderPagers(),
@@ -7506,19 +8239,14 @@
                                             this.columns._state.filters.forEach(
                                                 (e, s) => {
                                                     e &&
-                                                        (t = t.filter((t) =>
-                                                            "function" ==
-                                                            typeof e
-                                                                ? e(
-                                                                      t.row[s]
-                                                                          .data
-                                                                  )
-                                                                : (t.row[s]
-                                                                      .text ??
-                                                                      t.row[s]
-                                                                          .data) ===
-                                                                  e
-                                                        ));
+                                                        (t = t.filter((t) => {
+                                                            const i =
+                                                                t.row.cells[s];
+                                                            return "function" ==
+                                                                typeof e
+                                                                ? e(i.data)
+                                                                : n(i) === e;
+                                                        }));
                                                 }
                                             ),
                                         this.options.paging &&
@@ -7554,7 +8282,7 @@
                                             this.containerDOM.getBoundingClientRect()),
                                         (this.containerDOM.style.height = `${this._rect.height}px`));
                                 }
-                                search(t, e) {
+                                search(t, e = void 0) {
                                     if (!t.length)
                                         return (
                                             (this._currentPage = 1),
@@ -7646,10 +8374,8 @@
                                         })
                                     );
                                     this.data.data.forEach((t, e) => {
-                                        const i = t.map((t, e) => {
-                                            let s = (
-                                                t.text || String(t.data)
-                                            ).trim();
+                                        const i = t.cells.map((t, e) => {
+                                            let s = n(t).trim();
                                             const i = this.columns.settings[e];
                                             if (s.length) {
                                                 const t =
@@ -7675,11 +8401,11 @@
                                                         ""
                                                     ));
                                             }
-                                            const n =
+                                            const a =
                                                 i.searchItemSeparator ||
                                                 this.options
                                                     .searchItemSeparator;
-                                            return n ? s.split(n) : [s];
+                                            return a ? s.split(a) : [s];
                                         });
                                         s.every((t) =>
                                             t.find(
@@ -7726,8 +8452,8 @@
                                 insert(e) {
                                     let s = [];
                                     if (Array.isArray(e)) {
-                                        const t = this.data.headings.map(
-                                            (t) => t.text ?? String(t.data)
+                                        const t = this.data.headings.map((t) =>
+                                            t.data ? String(t.data) : t.text
                                         );
                                         e.forEach((e, i) => {
                                             const n = [];
@@ -7735,7 +8461,7 @@
                                                 ([e, s]) => {
                                                     const a = t.indexOf(e);
                                                     a > -1
-                                                        ? (n[a] = q(
+                                                        ? (n[a] = X(
                                                               s,
                                                               this.columns
                                                                   .settings[a]
@@ -7743,7 +8469,7 @@
                                                         : this.hasHeadings ||
                                                           this.hasRows ||
                                                           0 !== i ||
-                                                          ((n[t.length] = q(
+                                                          ((n[t.length] = X(
                                                               s,
                                                               this.columns
                                                                   .settings[
@@ -7752,11 +8478,11 @@
                                                           )),
                                                           t.push(e),
                                                           this.data.headings.push(
-                                                              B(e)
+                                                              Z(e)
                                                           ));
                                                 }
                                             ),
-                                                s.push(n);
+                                                s.push({ cells: n });
                                         });
                                     } else
                                         t(e) &&
@@ -7765,16 +8491,32 @@
                                             this.hasRows
                                                 ? e.data &&
                                                   Array.isArray(e.data) &&
-                                                  (s = e.data.map((t) =>
-                                                      t.map((t, e) =>
-                                                          q(
-                                                              t,
-                                                              this.columns
-                                                                  .settings[e]
-                                                          )
-                                                      )
-                                                  ))
-                                                : (this.data = F(
+                                                  (s = e.data.map((t) => {
+                                                      let e, s;
+                                                      return (
+                                                          Array.isArray(t)
+                                                              ? ((e = {}),
+                                                                (s = t))
+                                                              : ((e =
+                                                                    t.attributes),
+                                                                (s = t.cells)),
+                                                          {
+                                                              attributes: e,
+                                                              cells: s.map(
+                                                                  (t, e) =>
+                                                                      X(
+                                                                          t,
+                                                                          this
+                                                                              .columns
+                                                                              .settings[
+                                                                              e
+                                                                          ]
+                                                                      )
+                                                              ),
+                                                          }
+                                                      );
+                                                  }))
+                                                : (this.data = G(
                                                       e,
                                                       void 0,
                                                       this.columns.settings,
@@ -7797,23 +8539,21 @@
                                         this.update(!0);
                                 }
                                 refresh() {
-                                    this.options.searchable &&
-                                        (Array.from(
-                                            this.wrapperDOM.querySelectorAll(
-                                                `.${this.options.classes.input}`
-                                            )
-                                        ).forEach((t) => {
-                                            t.value = "";
-                                        }),
-                                        (this._searchQueries = [])),
-                                        (this._currentPage = 1),
+                                    if (this.options.searchable) {
+                                        const t = l(this.options.classes.input);
+                                        Array.from(
+                                            this.wrapperDOM.querySelectorAll(t)
+                                        ).forEach((t) => (t.value = "")),
+                                            (this._searchQueries = []);
+                                    }
+                                    (this._currentPage = 1),
                                         (this.onFirstPage = !0),
                                         this.update(!0),
                                         this.emit("datatable.refresh");
                                 }
                                 print() {
                                     const t = s("table");
-                                    let e = P(
+                                    let e = q(
                                         this._tableAttributes,
                                         this.data.headings,
                                         this.data.data.map((t, e) => ({
@@ -7824,7 +8564,12 @@
                                         this.columns._state,
                                         !1,
                                         this.options,
-                                        { noColumnWidths: !0, unhideHeader: !0 }
+                                        {
+                                            noColumnWidths: !0,
+                                            unhideHeader: !0,
+                                        },
+                                        this._tableFooters,
+                                        this._tableCaptions
                                     );
                                     if (this.options.tableRender) {
                                         const t = this.options.tableRender(
@@ -7849,9 +8594,11 @@
                                                 !this.columns.settings[e]
                                                     ?.hidden
                                         ).length || 1;
-                                    this.wrapperDOM.classList.add(
-                                        this.options.classes.empty
-                                    ),
+                                    this.options.classes.empty
+                                        ?.split(" ")
+                                        .forEach((t) =>
+                                            this.wrapperDOM.classList.add(t)
+                                        ),
                                         this._label &&
                                             (this._label.innerHTML = ""),
                                         (this.totalPages = 0),
@@ -7863,7 +8610,7 @@
                                             {
                                                 nodeName: "THEAD",
                                                 childNodes: [
-                                                    A(
+                                                    F(
                                                         this.data.headings,
                                                         this.columns.settings,
                                                         this.columns._state,
@@ -7905,10 +8652,16 @@
                                         ],
                                     };
                                     if (
-                                        ((s.attributes.class = s.attributes
-                                            .class
-                                            ? `${s.attributes.class} ${this.options.classes.table}`
-                                            : this.options.classes.table),
+                                        (this._tableFooters.forEach((t) =>
+                                            s.childNodes.push(t)
+                                        ),
+                                        this._tableCaptions.forEach((t) =>
+                                            s.childNodes.push(t)
+                                        ),
+                                        (s.attributes.class = c(
+                                            s.attributes.class,
+                                            this.options.classes.table
+                                        )),
                                         this.options.tableRender)
                                     ) {
                                         const t = this.options.tableRender(
@@ -7950,7 +8703,7 @@
                                     t,
                                     e = {}
                                 ) {
-                                    const s = new K(t, e);
+                                    const s = new rt(t, e);
                                     return (
                                         t.initialized
                                             ? s.init()
@@ -8066,64 +8819,46 @@
                                             columnDelimiter: ",",
                                             ...s,
                                         },
-                                        n = (t) =>
+                                        a = (t) =>
                                             !i.skipColumn.includes(t) &&
-                                            !e.columns.settings[t]?.hidden;
-                                    let a = [];
-                                    const o = e.data.headings
-                                        .filter((t, e) => n(e))
-                                        .map((t) => t.text ?? t.data);
-                                    if (((a[0] = o), i.selection))
-                                        if (Array.isArray(i.selection))
+                                            !e.columns.settings[t]?.hidden,
+                                        o = e.data.headings
+                                            .filter((t, e) => a(e))
+                                            .map((t) => t.text ?? t.data);
+                                    let r;
+                                    if (i.selection)
+                                        if (Array.isArray(i.selection)) {
+                                            r = [];
                                             for (
                                                 let t = 0;
                                                 t < i.selection.length;
                                                 t++
                                             )
-                                                a = a.concat(
+                                                r = r.concat(
                                                     e.pages[
                                                         i.selection[t] - 1
-                                                    ].map((t) =>
-                                                        t.row
-                                                            .filter((t, e) =>
-                                                                n(e)
-                                                            )
-                                                            .map(
-                                                                (t) =>
-                                                                    t.text ??
-                                                                    t.data
-                                                            )
-                                                    )
+                                                    ].map((t) => t.row)
                                                 );
-                                        else
-                                            a = a.concat(
-                                                e.pages[i.selection - 1].map(
-                                                    (t) =>
-                                                        t.row
-                                                            .filter((t, e) =>
-                                                                n(e)
-                                                            )
-                                                            .map(
-                                                                (t) =>
-                                                                    t.text ??
-                                                                    t.data
-                                                            )
-                                                )
+                                        } else
+                                            r = e.pages[i.selection - 1].map(
+                                                (t) => t.row
                                             );
-                                    else
-                                        a = a.concat(
-                                            e.data.data.map((t) =>
-                                                t
-                                                    .filter((t, e) => n(e))
-                                                    .map(
-                                                        (t) => t.text ?? t.data
-                                                    )
+                                    else r = e.data.data;
+                                    let l = [];
+                                    if (
+                                        ((l[0] = o),
+                                        (l = l.concat(
+                                            r.map((t) =>
+                                                t.cells
+                                                    .filter((t, e) => a(e))
+                                                    .map((t) => n(t))
                                             )
-                                        );
-                                    if (a.length) {
+                                        )),
+                                        l.length)
+                                    ) {
                                         let t = "";
                                         if (
-                                            (a.forEach((e) => {
+                                            (l.forEach((e) => {
                                                 e.forEach((e) => {
                                                     "string" == typeof e &&
                                                         (e = (e = (e = (e = (e =
@@ -8185,56 +8920,44 @@
                                             space: 4,
                                             ...s,
                                         },
-                                        n = (t) =>
+                                        a = (t) =>
                                             !i.skipColumn.includes(t) &&
                                             !e.columns.settings[t]?.hidden;
-                                    let a = [];
+                                    let o;
                                     if (i.selection)
-                                        if (Array.isArray(i.selection))
+                                        if (Array.isArray(i.selection)) {
+                                            o = [];
                                             for (
                                                 let t = 0;
                                                 t < i.selection.length;
                                                 t++
                                             )
-                                                a = a.concat(
+                                                o = o.concat(
                                                     e.pages[
                                                         i.selection[t] - 1
-                                                    ].map((t) =>
-                                                        t.row
-                                                            .filter((t, e) =>
-                                                                n(e)
-                                                            )
-                                                            .map((t) => t.data)
-                                                    )
+                                                    ].map((t) => t.row)
                                                 );
-                                        else
-                                            a = a.concat(
-                                                e.pages[i.selection - 1].map(
-                                                    (t) =>
-                                                        t.row
-                                                            .filter((t, e) =>
-                                                                n(e)
-                                                            )
-                                                            .map((t) => t.data)
-                                                )
+                                        } else
+                                            o = e.pages[i.selection - 1].map(
+                                                (t) => t.row
                                             );
-                                    else
-                                        a = a.concat(
-                                            e.data.data.map((t) =>
-                                                t
-                                                    .filter((t, e) => n(e))
-                                                    .map((t) => t.data)
-                                            )
-                                        );
-                                    const o = e.data.headings
-                                        .filter((t, e) => n(e))
-                                        .map((t) => t.text ?? String(t.data));
-                                    if (a.length) {
+                                    else o = e.data.data;
+                                    const r = o.map((t) =>
+                                            t.cells
+                                                .filter((t, e) => a(e))
+                                                .map((t) => n(t))
+                                        ),
+                                        l = e.data.headings
+                                            .filter((t, e) => a(e))
+                                            .map(
+                                                (t) => t.text ?? String(t.data)
+                                            );
+                                    if (r.length) {
                                         const t = [];
-                                        a.forEach((e, s) => {
+                                        r.forEach((e, s) => {
                                             (t[s] = t[s] || {}),
                                                 e.forEach((e, i) => {
-                                                    t[s][o[i]] = e;
+                                                    t[s][l[i]] = e;
                                                 });
                                         });
                                         const e = JSON.stringify(
@@ -8271,10 +8994,10 @@
                                             tableName: "myTable",
                                             ...s,
                                         },
-                                        n = (t) =>
+                                        a = (t) =>
                                             !i.skipColumn.includes(t) &&
                                             !e.columns.settings[t]?.hidden;
-                                    let a = [];
+                                    let o = [];
                                     if (i.selection)
                                         if (Array.isArray(i.selection))
                                             for (
@@ -8282,60 +9005,37 @@
                                                 t < i.selection.length;
                                                 t++
                                             )
-                                                a = a.concat(
+                                                o = o.concat(
                                                     e.pages[
                                                         i.selection[t] - 1
-                                                    ].map((t) =>
-                                                        t.row
-                                                            .filter((t, e) =>
-                                                                n(e)
-                                                            )
-                                                            .map(
-                                                                (t) =>
-                                                                    t.text ??
-                                                                    t.data
-                                                            )
-                                                    )
+                                                    ].map((t) => t.row)
                                                 );
                                         else
-                                            a = a.concat(
-                                                e.pages[i.selection - 1].map(
-                                                    (t) =>
-                                                        t.row
-                                                            .filter((t, e) =>
-                                                                n(e)
-                                                            )
-                                                            .map(
-                                                                (t) =>
-                                                                    t.text ??
-                                                                    t.data
-                                                            )
-                                                )
+                                            o = e.pages[i.selection - 1].map(
+                                                (t) => t.row
                                             );
-                                    else
-                                        a = a.concat(
-                                            e.data.data.map((t) =>
-                                                t
-                                                    .filter((t, e) => n(e))
-                                                    .map(
-                                                        (t) => t.text ?? t.data
-                                                    )
-                                            )
-                                        );
-                                    const o = e.data.headings
-                                        .filter((t, e) => n(e))
-                                        .map((t) => t.text ?? String(t.data));
-                                    if (a.length) {
+                                    else o = e.data.data;
+                                    const r = o.map((t) =>
+                                            t.cells
+                                                .filter((t, e) => a(e))
+                                                .map((t) => n(t))
+                                        ),
+                                        l = e.data.headings
+                                            .filter((t, e) => a(e))
+                                            .map(
+                                                (t) => t.text ?? String(t.data)
+                                            );
+                                    if (r.length) {
                                         let t = `INSERT INTO \`${i.tableName}\` (`;
                                         if (
-                                            (o.forEach((e) => {
+                                            (l.forEach((e) => {
                                                 t += `\`${e}\`,`;
                                             }),
                                             (t = t
                                                 .trim()
                                                 .substring(0, t.length - 1)),
                                             (t += ") VALUES "),
-                                            a.forEach((e) => {
+                                            r.forEach((e) => {
                                                 (t += "("),
                                                     e.forEach((e) => {
                                                         t +=
@@ -8384,54 +9084,46 @@
                                             columnDelimiter: ",",
                                             ...s,
                                         },
-                                        n = (t) =>
+                                        a = (t) =>
                                             !i.skipColumn.includes(t) &&
-                                            !e.columns.settings[t]?.hidden;
-                                    let a = [];
-                                    const o = e.data.headings
-                                        .filter((t, e) => n(e))
-                                        .map((t) => t.text ?? t.data);
-                                    if (((a[0] = o), i.selection))
-                                        if (Array.isArray(i.selection))
+                                            !e.columns.settings[t]?.hidden,
+                                        o = e.data.headings
+                                            .filter((t, e) => a(e))
+                                            .map((t) => t.text ?? t.data);
+                                    let r;
+                                    if (i.selection)
+                                        if (Array.isArray(i.selection)) {
+                                            r = [];
                                             for (
                                                 let t = 0;
                                                 t < i.selection.length;
                                                 t++
                                             )
-                                                a = a.concat(
+                                                r = r.concat(
                                                     e.pages[
                                                         i.selection[t] - 1
-                                                    ].map((t) =>
-                                                        t.row
-                                                            .filter((t, e) =>
-                                                                n(e)
-                                                            )
-                                                            .map((t) => t.data)
-                                                    )
+                                                    ].map((t) => t.row)
                                                 );
-                                        else
-                                            a = a.concat(
-                                                e.pages[i.selection - 1].map(
-                                                    (t) =>
-                                                        t.row
-                                                            .filter((t, e) =>
-                                                                n(e)
-                                                            )
-                                                            .map((t) => t.data)
-                                                )
+                                        } else
+                                            r = e.pages[i.selection - 1].map(
+                                                (t) => t.row
                                             );
-                                    else
-                                        a = a.concat(
-                                            e.data.data.map((t) =>
-                                                t
-                                                    .filter((t, e) => n(e))
-                                                    .map((t) => t.data)
+                                    else r = e.data.data;
+                                    let l = [];
+                                    if (
+                                        ((l[0] = o),
+                                        (l = l.concat(
+                                            r.map((t) =>
+                                                t.cells
+                                                    .filter((t, e) => a(e))
+                                                    .map((t) => n(t))
                                             )
-                                        );
-                                    if (a.length) {
+                                        )),
+                                        l.length)
+                                    ) {
                                         let t = "";
                                         if (
-                                            (a.forEach((e) => {
+                                            (l.forEach((e) => {
                                                 e.forEach((e) => {
                                                     "string" == typeof e &&
                                                         (e = (e = (e = (e = (e =
@@ -8486,7 +9178,7 @@
                                 (exports.isJson = e),
                                 (exports.isObject = t),
                                 (exports.makeEditable = function (t, e = {}) {
-                                    const s = new Z(t, e);
+                                    const s = new at(t, e);
                                     return (
                                         t.initialized
                                             ? s.init()

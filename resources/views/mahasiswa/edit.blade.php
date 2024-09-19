@@ -164,27 +164,46 @@
                                         <option value="{{ $editmahasiswa->kelas_id }}" hidden>
                                             {{ $editmahasiswa->kelas->kelas }}
                                         </option>
-                                        @foreach ($datakelas as $item)
-                                            {{-- <option value="{{ $item->id }}" {{ old('kelas_id') == $item->id ? 'selected' : '' }}>{{ $item->kelas }}</option> --}}
+                                        @php
+                                            $kelasTingkat = $datakelas->groupBy('tingkat');
+                                        @endphp
+                                        @foreach ($kelasTingkat as $tingkat => $kelas)
+                                            <optgroup
+                                                @if ($tingkat == 1) label="Tingkat 1"
+                                            @elseif ($tingkat == 2)
+                                            label="Tingkat 2" 
+                                            @elseif ($tingkat == 3)
+                                            label="Tingkat 3"
+                                            @elseif ($tingkat == 4)
+                                            label="Alumni" @endif>
+                                                @foreach ($kelas as $item)
+                                                    <option value="{{ $item->id }}"
+                                                        {{ old('kelas_id', $editmahasiswa->kelas_id) == $item->id ? 'selected' : '' }}>
+                                                        {{ $item->kelas }}
+                                                    </option>
+                                                @endforeach
+                                            </optgroup>
+                                        @endforeach
+                                        {{-- @foreach ($datakelas as $item)
                                             <option value="{{ $item->id }}"
                                                 {{ old('kelas_id', $editmahasiswa->kelas_id) == $item->id ? 'selected' : '' }}>
                                                 {{ $item->kelas }}</option>
-                                        @endforeach
+                                        @endforeach --}}
                                     </select>
                                     @error('kelas_id')
                                         <span class="invalid-feedback mb-2">{{ $message }}</span>
                                     @enderror
                                 </div>
-                                {{-- Input Status UKM --}}
+                                {{-- Edit Status UKM --}}
                                 <div class="mt-3">
                                     <label for="Status_UKM"
                                         class="@if (old('status_ukm') && old('status_ukm') != $editmahasiswa->status_ukm) text-success @endif">Status UKM</label>
                                     <select name="status_ukm" id="Status_UKM"
                                         class="form-select shadow-sm @if (old('status_ukm') && old('status_ukm') != $editmahasiswa->status_ukm) border-success text-success @endif @error('status_ukm') is-invalid @enderror"
                                         tabindex="12">
-                                        {{-- <option value="{{ $editmahasiswa->status_ukm }}" hidden>
-                                            {{ $editmahasiswa->status_ukm }}
-                                        </option> --}}
+                                        <option value="BPH"
+                                            {{ (old('status_ukm') ?? $editmahasiswa->status_ukm) == 'BPH' ? 'selected' : '' }}>
+                                            BPH</option>
                                         <option value="Anggota LCC"
                                             {{ (old('status_ukm') ?? $editmahasiswa->status_ukm) == 'Anggota LCC' ? 'selected' : '' }}>
                                             Anggota LCC</option>
@@ -193,21 +212,48 @@
                                             Bukan Anggota</option>
                                     </select>
                                     @error('status_ukm')
+                                        <span class="invalid-feedback mb-2">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                {{-- Edit Jabatan --}}
+                                <div class="mt-3">
+                                    <label for="jabatan_id"
+                                        class="@if (old('jabatan_id') && old('jabatan_id') != $editmahasiswa->jabatan_id) text-success @endif">Jabatan</label>
+                                    <select name="jabatan_id" id="jabatan_id"
+                                        class="form-select shadow-sm @if (old('jabatan_id') && old('jabatan_id') != $editmahasiswa->jabatan_id) border-success text-success @endif @error('jabatan_id') is-invalid @enderror"
+                                        tabindex="12">
+                                        @foreach ($dataJabatan as $item)
+                                            <option value="{{ $item->id }}"
+                                                {{ old('jabatan_id', $editmahasiswa->jabatan_id) == $item->id ? 'selected' : '' }}>
+                                                {{ $item->jabatan }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                    @error('jabatan_id')
+                                        <span class="invalid-feedback mb-2">{{ $message }}</span>
+                                    @enderror
+                                </div>
+
+                                {{-- Input Alasan --}}
+                                <div class="mt-3">
+                                    <label for="Alasan"
+                                        class="@if (old('alasan') && old('alasan') != $editmahasiswa->alasan) text-success @endif">Alasan Masuk LCC</label>
+                                    <textarea name="alasan" id="Alasan" cols="30" rows="2"
+                                        class="form-control shadow-sm @if (old('alasan') && old('alasan') != $editmahasiswa->alasan) border-success text-success @endif @error('alasan') is-invalid @enderror"
+                                        autocomplete="off" tabindex="13">{{ old('alasan', $editmahasiswa->alasan) }}</textarea>
+                                    @error('alasan')
                                         <span class="invalid-feedback  mb-2">{{ $message }}</span>
                                     @enderror
                                 </div>
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-6">
-                                        {{-- Input Tingkat --}}
                                         <div class="mt-3">
                                             <label for="tingkat"
                                                 class="@if (old('tingkat') && old('tingkat') != $editmahasiswa->tingkat) text-success @endif">Tingkat</label>
                                             <select name="tingkat" id="tingkat"
                                                 class="form-select shadow-sm @if (old('tingkat') && old('tingkat') != $editmahasiswa->tingkat) border-success text-success @endif @error('tingkat') is-invalid @enderror"
                                                 tabindex="13">
-                                                {{-- <option value="{{ $editmahasiswa->tingkat }}" hidden>
-                                                    {{ $editmahasiswa->tingkat }}
-                                                </option> --}}
                                                 <option value="1"
                                                     {{ (old('tingkat') ?? $editmahasiswa->tingkat) == '1' ? 'selected' : '' }}>
                                                     Satu</option>
@@ -227,7 +273,6 @@
                                         </div>
                                     </div>
                                     <div class="col-6">
-                                        {{-- Input Angkatan --}}
                                         <div class="mt-3">
                                             <label for="angkatan"
                                                 class="@if (old('angkatan') && old('angkatan') != $editmahasiswa->angkatan) text-success @endif">Angkatan</label>
@@ -240,11 +285,11 @@
                                             @enderror
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 {{-- Button Konfirmasi --}}
                                 <div class="d-flex justify-content-end">
-                                    <button type="submit" class="btn btn-login text-white mt-4"
-                                        style="padding-left: 20px; padding-right: 20px;" tabindex="15">Simpan <i
+                                    <button type="submit" class="btn btn-danger btn-login text-white mt-4"
+                                        style="padding-left: 20px; padding-right: 20px;" tabindex="14">Simpan <i
                                             class="bi bi-box-arrow-in-right"></i></button>
                                 </div>
                             </div>
@@ -255,4 +300,57 @@
 
         </section>
     </div>
+@endsection
+@section('js_mahasiswaEdit')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const statusUKMSelect = document.getElementById('Status_UKM');
+            const jabatanSelect = document.getElementById('jabatan_id');
+
+            // Store the original options
+            const originalOptions = [{
+                    value: '1',
+                    text: 'Mahasiswa'
+                },
+                @foreach ($dataJabatan as $item)
+                    {
+                        value: '{{ $item->id }}',
+                        text: '{{ $item->jabatan }}'
+                    },
+                @endforeach
+            ];
+
+            function updateJabatanOptions() {
+                const selectedStatus = statusUKMSelect.value;
+
+                // Clear current options
+                jabatanSelect.innerHTML = '';
+
+                // Add appropriate options based on selected status
+                if (selectedStatus === 'BPH') {
+                    originalOptions.forEach(option => {
+                        if (option.value !== '1') { // exclude "Mahasiswa"
+                            const newOption = document.createElement('option');
+                            newOption.value = option.value;
+                            newOption.text = option.text;
+                            jabatanSelect.add(newOption);
+                        }
+                    });
+                } else {
+                    // Only include "Mahasiswa"
+                    const mahasiswaOption = originalOptions.find(option => option.value === '1');
+                    const newOption = document.createElement('option');
+                    newOption.value = mahasiswaOption.value;
+                    newOption.text = mahasiswaOption.text;
+                    jabatanSelect.add(newOption);
+                }
+            }
+
+            // Initialize the "Jabatan" options based on the current "Status UKM" value
+            updateJabatanOptions();
+
+            // Add event listener to update the options when the "Status UKM" value changes
+            statusUKMSelect.addEventListener('change', updateJabatanOptions);
+        });
+    </script>
 @endsection

@@ -23,7 +23,9 @@
             {{ $title === 'kelas' ? 'bg-primary text-white' : '' }}
             {{ $title === 'mahasiswa' ? 'bg-primary text-white' : '' }}
             {{ $title === 'kegiatan' ? 'bg-primary text-white' : '' }}
-             {{ $title === 'jadwal' ? 'bg-primary text-white' : '' }}"
+             {{ $title === 'jadwal' ? 'bg-primary text-white' : '' }}
+             {{ $title === 'sesi' ? 'bg-primary text-white' : '' }}
+             {{ $title === 'jabatan' ? 'bg-primary text-white' : '' }}"
                     data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                         class="bi bi-database-fill-gear mb-1 me-2" viewBox="0 0 16 16">
@@ -38,10 +40,12 @@
                 {{ $title === 'kelas' ? 'text-white' : '' }}
                 {{ $title === 'mahasiswa' ? 'text-white' : '' }}
                 {{ $title === 'kegiatan' ? 'text-white' : '' }}
-                {{ $title === 'jadwal' ? 'text-white' : '' }}"></i>
+                {{ $title === 'jadwal' ? 'text-white' : '' }}
+                {{ $title === 'sesi' ? 'text-white' : '' }}
+                {{ $title === 'jabatan' ? 'text-white' : '' }}"></i>
                 </a>
                 <ul id="components-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav"
-                    style="display: {{ Request::is('prodi*', 'kelas*', 'mahasiswa*', 'kegiatan*', 'jadwal*') ? 'block' : '' }}">
+                    style="display: {{ Request::is('prodi*', 'kelas*', 'mahasiswa*', 'kegiatan*', 'jadwal*', 'jabatan*', 'sesi*') ? 'block' : '' }}">
                     <li class="{{ Request::is('prodi*') ? 'active' : '' }}">
                         <a href="/prodi" class="{{ $title === 'prodi' ? 'text-danger' : '' }}">
                             <i class="bi bi-circle"></i><span>Data Prodi</span>
@@ -50,6 +54,11 @@
                     <li class="{{ Request::is('kelas*') ? 'active' : '' }}">
                         <a href="/kelas" class="{{ $title === 'kelas' ? 'text-danger' : '' }}">
                             <i class="bi bi-circle"></i><span>Data Kelas</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('jabatan*') ? 'active' : '' }}">
+                        <a href="/jabatan" class="{{ $title === 'jabatan' ? 'text-danger' : '' }}">
+                            <i class="bi bi-circle"></i><span>Data Jabatan</span>
                         </a>
                     </li>
                     {{-- <li>
@@ -65,6 +74,11 @@
                     <li class="{{ Request::is('kegiatan*') ? 'active' : '' }}">
                         <a href="/kegiatan" class="{{ $title === 'kegiatan' ? 'text-danger' : '' }}">
                             <i class="bi bi-circle"></i><span>Data Kegiatan</span>
+                        </a>
+                    </li>
+                    <li class="{{ Request::is('sesi*') ? 'active' : '' }}">
+                        <a href="/sesi" class="{{ $title === 'sesi' ? 'text-danger' : '' }}">
+                            <i class="bi bi-circle"></i><span>Data Sesi Waktu</span>
                         </a>
                     </li>
                     {{-- <li class="{{ Request::is('jadwal*') ? 'active' : '' }}">

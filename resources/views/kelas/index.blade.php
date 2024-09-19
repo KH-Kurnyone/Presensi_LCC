@@ -32,45 +32,50 @@
 
     <section class="section">
         <div class="mb-3 d-lg-flex justify-content-between">
-            <button class="btn btn-login text-white" tabindex="1" data-bs-toggle="modal" data-bs-target="#tambahKelas"><i
+            <button class="btn btn-danger btn-login text-white" tabindex="1" data-bs-toggle="modal" data-bs-target="#tambahKelas"><i
                     class="bi bi-plus-lg"></i> Tambah Data
                 Kelas</button>
             <div class="my-1">
-                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#editStatus"><i
-                        class="bi bi-pencil-square"></i> Edit Status</button>
+                <button class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edittingkat"><i
+                        class="bi bi-pencil-square"></i> Edit Tingkat</button>
             </div>
         </div>
-        {{-- Modal Edit Status --}}
-        <div class="modal fade" id="editStatus" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+        {{-- Modal Edit Tingkat --}}
+        <div class="modal fade" id="edittingkat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel"><i class="bi bi-pencil-square"></i> Edit
-                            Status</h1>
+                            Tingkat</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form id="updateStatusForm" action="{{ route('updateStatus') }}" method="POST">
+                    <form id="updateTingkatForm" action="{{ route('updateTingkat') }}" method="POST">
                         @csrf
                         @method('PUT')
                         <div class="modal-body">
                             <div>
-                                <label for="status">Status</label>
-                                <select name="status" id="status"
-                                    class="form-select shadow-sm @error('status') is-invalid @enderror" tabindex="1">
+                                <label for="tingkat">Tingkat</label>
+                                <select name="tingkat" id="tingkat"
+                                    class="form-select shadow-sm @error('tingkat') is-invalid @enderror" tabindex="13">
                                     <option disabled selected hidden></option>
-                                    <option value="Aktif" {{ old('status') == 'Aktif' ? 'selected' : '' }}>
-                                        Aktif
+                                    <option value="1" {{ old('tingkat') == '1' ? 'selected' : '' }}>
+                                        Satu
                                     </option>
-                                    <option value="Non Aktif" {{ old('status') == 'Non Aktif' ? 'selected' : '' }}>Non Aktif
+                                    <option value="2" {{ old('tingkat') == '2' ? 'selected' : '' }}>Dua
                                     </option>
+                                    <option value="3" {{ old('tingkat') == '3' ? 'selected' : '' }}>
+                                        Tiga
+                                    </option>
+                                    <option value="4" {{ old('tingkat') == '4' ? 'selected' : '' }}>
+                                        Alumni</option>
                                 </select>
-                                @error('status')
+                                @error('tingkat')
                                     <span class="invalid-feedback  mb-2">{{ $message }}</span>
                                 @enderror
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-login text-white">Simpan <i
+                            <button type="submit" class="btn btn-danger btn-login text-white">Simpan <i
                                     class="bi bi-box-arrow-in-right"></i></button>
                         </div>
                     </form>
@@ -80,7 +85,7 @@
 
         {{-- Modal Tambah data Kelas --}}
         <div class="modal fade" id="tambahKelas" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel"><i class="bi bi-plus-lg"></i> Tambah
@@ -114,10 +119,28 @@
                                     @error('kelas')
                                         <span class="invalid-feedback  mb-2">{{ $message }}</span>
                                     @enderror
+                                    <select name="tingkat" id="tingkat"
+                                        class="form-select mt-2 shadow-sm @error('tingkat') is-invalid @enderror"
+                                        tabindex="3">
+                                        <option disabled selected hidden>- Pilih Tingkat</option>
+                                        <option value="1" {{ old('tingkat') == '1' ? 'selected' : '' }}>
+                                            Satu
+                                        </option>
+                                        <option value="2" {{ old('tingkat') == '2' ? 'selected' : '' }}>Dua
+                                        </option>
+                                        <option value="3" {{ old('tingkat') == '3' ? 'selected' : '' }}>
+                                            Tiga
+                                        </option>
+                                        <option value="4" {{ old('tingkat') == '4' ? 'selected' : '' }}>
+                                            Alumni</option>
+                                    </select>
+                                    @error('tingkat')
+                                        <span class="invalid-feedback  mb-2">{{ $message }}</span>
+                                    @enderror
                                     {{-- Input Angkatan --}}
                                     <input type="number" name="angkatan"
                                         class="form-control shadow-sm mt-2 @error('angkatan') is-invalid @enderror"
-                                        autocomplete="off" placeholder="Angkatan" tabindex="3"
+                                        autocomplete="off" placeholder="Angkatan" tabindex="4"
                                         value="{{ old('angkatan') }}">
                                     @error('angkatan')
                                         <span class="invalid-feedback  mb-2">{{ $message }}</span>
@@ -126,7 +149,7 @@
                             </div>
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-login text-white" tabindex="3">Simpan <i
+                            <button type="submit" class="btn btn-danger btn-login text-white" tabindex="5">Simpan <i
                                     class="bi bi-box-arrow-in-right"></i></button>
                         </div>
                     </form>
@@ -148,7 +171,7 @@
                                     <th scope="col">No.</th>
                                     <th scope="col">Prodi</th>
                                     <th scope="col">Kelas</th>
-                                    <th scope="col">Status</th>
+                                    <th scope="col">Tingkat</th>
                                     <th scope="col">Angkatan</th>
                                     <th scope="col">Aksi</th>
                                 </tr>
@@ -156,24 +179,25 @@
                             <tbody>
                                 @foreach ($datakelas as $item)
                                     <tr>
-                                        <td>
+                                        <td class="text-center">
                                             <input class="form-check-input border-secondary checkbox_ids" type="checkbox"
                                                 name="selected_ids[]" value="{{ $item->id }}">
                                         </td>
-                                        <td>{{ $loop->iteration }}.</td>
+                                        <td class="text-center">{{ $loop->iteration }}.</td>
                                         <td>{{ $item->prodi->prodi }}</td>
-                                        <td>{{ $item->kelas }}</td>
-                                        {{-- <td>{{ $item->status }}</td> --}}
-                                        <td>
-                                            @if ($item->status == 'Aktif')
-                                                <span
-                                                    class="badge rounded-pill bg-success py-2 px-4">{{ $item->status }}</span>
-                                            @elseif ($item->status == 'Non Aktif')
-                                                <span
-                                                    class="badge rounded-pill bg-secondary py-2 px-4">{{ $item->status }}</span>
+                                        <td class="text-center">{{ $item->kelas }}</td>
+                                        <td class="text-center">
+                                            @if ($item->tingkat == 1)
+                                                <span class="badge rounded-pill bg-success py-2 px-4">I</span>
+                                            @elseif ($item->tingkat == 2)
+                                                <span class="badge rounded-pill text-dark bg-warning py-2 px-4">II</span>
+                                            @elseif ($item->tingkat == 3)
+                                                <span class="badge rounded-pill bg-danger py-2 px-4">III</span>
+                                            @elseif ($item->tingkat == 4)
+                                                <span class="badge rounded-pill bg-secondary p-2">Alumni</span>
                                             @endif
                                         </td>
-                                        <td>{{ $item->angkatan }}</td>
+                                        <td class="text-center">{{ $item->angkatan }}</td>
                                         <td class="text-center">
                                             <button class="btn btn-warning" data-bs-toggle="modal"
                                                 data-bs-target="#editkelas{{ $item->id }}"><i
@@ -186,7 +210,7 @@
                                             {{-- Modal Not Delete --}}
                                             <div class="modal fade" id="notdeletekelas{{ $item->id }}"
                                                 tabindex="-1">
-                                                <div class="modal-dialog">
+                                                <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title text-danger fw-bold"><i
@@ -208,7 +232,7 @@
                                             {{-- Modal Yes Delete --}}
                                             <div class="modal fade" id="yesdeletekelas{{ $item->id }}"
                                                 tabindex="-1">
-                                                <div class="modal-dialog">
+                                                <div class="modal-dialog modal-dialog-centered">
                                                     <div class="modal-content">
                                                         <div class="modal-header">
                                                             <h5 class="modal-title text-danger fw-bold"><i
@@ -238,7 +262,7 @@
                                         @endif
                                         {{-- Modal Edit --}}
                                         <div class="modal fade" id="editkelas{{ $item->id }}" tabindex="-1">
-                                            <div class="modal-dialog">
+                                            <div class="modal-dialog modal-dialog-centered">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <h5 class="modal-title fw-bold"><i
@@ -277,6 +301,28 @@
                                                                     <span
                                                                         class="invalid-feedback  mb-2">{{ $message }}</span>
                                                                 @enderror
+                                                                {{-- Update Tingkat --}}
+                                                                <label for="tingkat" class="fw-bold mt-2">Tingkat</label>
+                                                                <select name="tingkat" id="tingkat"
+                                                                    class="form-select shadow-sm @error('tingkat') is-invalid @enderror"
+                                                                    tabindex="3">
+                                                                    <option value="1"
+                                                                        {{ (old('tingkat') ?? $item->tingkat) == '1' ? 'selected' : '' }}>
+                                                                        Satu</option>
+                                                                    <option value="2"
+                                                                        {{ (old('tingkat') ?? $item->tingkat) == '2' ? 'selected' : '' }}>
+                                                                        Dua</option>
+                                                                    <option value="3"
+                                                                        {{ (old('tingkat') ?? $item->tingkat) == '3' ? 'selected' : '' }}>
+                                                                        Tiga</option>
+                                                                    <option value="4"
+                                                                        {{ (old('tingkat') ?? $item->tingkat) == '4' ? 'selected' : '' }}>
+                                                                        Alumni</option>
+                                                                </select>
+                                                                @error('status')
+                                                                    <span
+                                                                        class="invalid-feedback  mb-2">{{ $message }}</span>
+                                                                @enderror
                                                                 {{-- Update Angkatan --}}
                                                                 <label for="angkatan"
                                                                     class="fw-bold mt-2">Angkatan</label>
@@ -288,25 +334,9 @@
                                                                     <span
                                                                         class="invalid-feedback  mb-2">{{ $message }}</span>
                                                                 @enderror
-                                                                {{-- Update Status --}}
-                                                                <label for="status" class="fw-bold mt-2">Status</label>
-                                                                <select name="status" id="status"
-                                                                    class="form-select shadow-sm @error('status') is-invalid @enderror"
-                                                                    tabindex="4">
-                                                                    <option value="Aktif"
-                                                                        {{ (old('status') ?? $item->status) == 'Aktif' ? 'selected' : '' }}>
-                                                                        Aktif</option>
-                                                                    <option value="Non Aktif"
-                                                                        {{ (old('status') ?? $item->status) == 'Non Aktif' ? 'selected' : '' }}>
-                                                                        Non Aktif</option>
-                                                                </select>
-                                                                @error('status')
-                                                                    <span
-                                                                        class="invalid-feedback  mb-2">{{ $message }}</span>
-                                                                @enderror
                                                             </div>
                                                             <div class="d-flex justify-content-end">
-                                                                <button class="btn btn-login text-white mx-3 mt-3">Simpan
+                                                                <button class="btn btn-danger btn-login text-white mx-3 mt-3">Simpan
                                                                     <i class="bi bi-box-arrow-in-right"></i></button>
                                                             </div>
                                                         </form>
@@ -342,13 +372,41 @@
 @endsection --}}
 
 @section('js_editStatus')
-    <script>
+    @if ($errors->has('prodi_id') || $errors->has('kelas') || $errors->has('tingkat') || $errors->has('angkatan'))
+        <script>
+            $(document).ready(function() {
+                $('#tambahKelas').modal('show');
+            });
+        </script>
+    @endif
+    {{-- <script>
         document.getElementById('updateStatusForm').addEventListener('submit', function(event) {
             event.preventDefault();
 
             // Ambil semua checkbox yang dipilih
             const checkboxes = document.querySelectorAll('.checkbox_ids:checked');
             const form = document.getElementById('updateStatusForm');
+
+            // Tambahkan input hidden untuk setiap checkbox yang dipilih
+            checkboxes.forEach(checkbox => {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'selected_ids[]';
+                input.value = checkbox.value;
+                form.appendChild(input);
+            });
+
+            // Submit form
+            form.submit();
+        });
+    </script> --}}
+    <script>
+        document.getElementById('updateTingkatForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Ambil semua checkbox yang dipilih
+            const checkboxes = document.querySelectorAll('.checkbox_ids:checked');
+            const form = document.getElementById('updateTingkatForm');
 
             // Tambahkan input hidden untuk setiap checkbox yang dipilih
             checkboxes.forEach(checkbox => {

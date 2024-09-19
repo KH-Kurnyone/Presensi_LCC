@@ -19,18 +19,18 @@ class MahasiswaImport implements ToModel
          // Create a new Mahasiswa instance and save it to the database
          $mahasiswa = Mahasiswa::create([
             'kelas_id'      => $row[1],
-            'nim'           => $row[2],
-            'nama'          => $row[3],
-            'jenis_kelamin' => $row[4],
-            'tempat_lahir'  => $row[5],
-            'tanggal_lahir' => $row[6],
-            'alamat'        => $row[7],
-            'asal_sekolah'  => $row[8],
-            'jurusan'       => $row[9],
-            'no_telpon'     => $row[10],
-            'status_ukm'    => $row[11],
-            'tingkat'       => $row[12],
-            'angkatan'      => $row[13],
+            'jabatan_id'    => $row[2],
+            'nim'           => $row[3],
+            'nama'          => $row[4],
+            'jenis_kelamin' => $row[5],
+            'tempat_lahir'  => $row[6],
+            'tanggal_lahir' => $row[7],
+            'alamat'        => $row[8],
+            'asal_sekolah'  => $row[9],
+            'jurusan'       => $row[10],
+            'no_telpon'     => $row[11],
+            'status_ukm'    => $row[12],
+            'alasan'        => $row[13],
         ]);
 
         // Create a new User instance using the data from the Mahasiswa instance

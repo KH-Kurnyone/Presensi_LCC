@@ -21,19 +21,21 @@
     <section class="section">
 
         <div class="mb-3 d-lg-flex justify-content-between">
-            <a href="/mahasiswa/create" class="btn btn-login text-white my-1"><i class="bi bi-plus-lg"></i>
+            <a href="/mahasiswa/create" class="btn btn-danger btn-login text-white my-1" tabindex="1"><i
+                    class="bi bi-plus-lg"></i>
                 Tambah Data Mahasiswa</a>
             <div class="my-1">
-                {{-- <a href="{{ route('exportmahasiswa') }}" class="btn btn-success">Export <i
-                        class="bi bi-file-earmark-excel"></i></a> --}}
+                <a data-bs-toggle="modal" data-bs-target="#exportExcel" class="btn btn-success"><i
+                        class="bi bi-file-earmark-excel"></i>
+                    Export Ke Excel</a>
                 <a class="btn btn-success" data-bs-toggle="modal" data-bs-target="#importdata">
                     <i class="bi bi-file-earmark-excel"></i>
-                    <span class="d-none d-lg-inline">Import Data Excel</span>
+                    <span class="d-none d-lg-inline">Import Dari Excel</span>
                 </a>
-                <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edittingkat">
+                {{-- <a class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#edittingkat">
                     <i class="bi bi-pencil-square"></i>
                     <span class="d-none d-lg-inline">Edit Tingkat</span>
-                </a>
+                </a> --}}
                 @if ($datakehadiran->where('mahasiswa_id')->count() > 0)
                     <button type="submit" class="btn btn-danger d-none"><i class="bi bi-trash3"></i> Hapus Semua</button>
                 @else
@@ -46,52 +48,32 @@
             </div>
         </div>
 
-        {{-- Modal Edit Tingkat Selection --}}
-        <div class="modal fade" id="edittingkat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+        {{-- Modal Export Ke Excel --}}
+        <div class="modal fade" id="exportExcel" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel"><i class="bi bi-pencil-square"></i> Edit
-                            Tingkat</h1>
+                        <h1 class="modal-title fs-5 fw-bold text-success" id="exampleModalLabel"><i
+                                class="bi bi-file-earmark-excel-fill"></i>
+                            Export Data
+                        </h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
-                    <form id="updateTingkatForm" action="{{ route('updateTingkat') }}" method="POST">
-                        @csrf
-                        @method('PUT')
-                        <div class="modal-body">
-                            <div>
-                                <label for="tingkat">Tingkat</label>
-                                <select name="tingkat" id="tingkat"
-                                    class="form-select shadow-sm @error('tingkat') is-invalid @enderror" tabindex="13">
-                                    <option disabled selected hidden></option>
-                                    <option value="1" {{ old('tingkat') == '1' ? 'selected' : '' }}>
-                                        Satu
-                                    </option>
-                                    <option value="2" {{ old('tingkat') == '2' ? 'selected' : '' }}>Dua
-                                    </option>
-                                    <option value="3" {{ old('tingkat') == '3' ? 'selected' : '' }}>
-                                        Tiga
-                                    </option>
-                                    <option value="4" {{ old('tingkat') == '4' ? 'selected' : '' }}>
-                                        Alumni</option>
-                                </select>
-                                @error('tingkat')
-                                    <span class="invalid-feedback  mb-2">{{ $message }}</span>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="submit" class="btn btn-login text-white">Simpan <i
-                                    class="bi bi-box-arrow-in-right"></i></button>
-                        </div>
-                    </form>
+                    <div class="modal-body">
+                        <span class="text-center">
+                            Apakah anda yakin akan ekspor/mengirim data ke excel?
+                        </span>
+                    </div>
+                    <div class="modal-footer">
+                        <a href="{{ route('exportmahasiswa') }}" class="btn btn-success">Ya, Export Ke Excel</a>
+                    </div>
                 </div>
             </div>
         </div>
 
         {{-- Modal Delete All --}}
         <div class="modal fade" id="deleteallmahasiswa" tabindex="-1">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title text-danger fw-bold"><i class="bi bi-trash3"></i>
@@ -113,12 +95,13 @@
             </div>
         </div>
 
+        {{-- Import Dari Excel --}}
         <div class="modal fade" id="importdata" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5 fw-bold text-success" id="exampleModalLabel">Import Data Excel <i
-                                class="bi bi-file-earmark-excel-fill"></i></h1>
+                        <h1 class="modal-title fs-5 fw-bold text-success" id="exampleModalLabel"><i
+                                class="bi bi-file-earmark-excel-fill"></i> Import Data Excel</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form action="{{ route('importmahasiswa') }}" method="POST" enctype="multipart/form-data">
@@ -144,49 +127,64 @@
                 <table class="table datatable table-hover table-sm" id="mahasiswaTable">
                     <thead>
                         <tr>
-                            <th>
+                            {{-- <th>
                                 <input type="checkbox" id="select_all_ids" class="form-check-input border-secondary">
-                            </th>
+                            </th> --}}
                             <th scope="col">No.</th>
                             <th scope="col">Nama</th>
-                            <th scope="col">Prodi</th>
+                            {{-- <th scope="col">Prodi</th> --}}
                             <th scope="col">Kelas</th>
                             <th scope="col">Gender</th>
                             <th scope="col">Status UKM</th>
+                            <th scope="col">Jabatan</th>
                             <th scope="col">Tingkat</th>
                             <th scope="col">Angkatan</th>
                             <th scope="col">Aksi</th>
                         </tr>
                     </thead>
                     <tbody>
+                        @php
+                            use Carbon\Carbon;
+                            Carbon::setLocale('id');
+                        @endphp
                         @foreach ($datamahasiswa as $item)
                             <tr>
-                                <td>
+                                {{-- <td class="text-center">
                                     <input class="form-check-input border-secondary checkbox_ids" type="checkbox"
                                         name="selected_ids[]" value="{{ $item->id }}">
-                                </td>
-                                <td>{{ $loop->iteration }}.</td>
+                                </td> --}}
+                                <td class="text-center">{{ $loop->iteration }}.</td>
                                 <td>{{ $item->nama }}</td>
-                                <td>{{ $item->kelas->prodi->singkatan }}</td>
-                                <td>{{ $item->kelas->kelas }}</td>
-                                <td>{{ $item->jenis_kelamin }}</td>
-                                <td>
+                                {{-- <td class="text-center">{{ $item->kelas->prodi->singkatan }}</td> --}}
+                                <td class="text-center">{{ $item->kelas->kelas }}</td>
+                                <td class="text-center">{{ $item->jenis_kelamin }}</td>
+
+                                <td class="text-center">
                                     @if ($item->status_ukm == 'Anggota LCC')
-                                        <span class="badge rounded-pill bg-success p-2">{{ $item->status_ukm }}</span>
+                                        <span class="badge rounded-pill bg-success py-2"
+                                            style="padding: 0px 15px 0px 15px">{{ $item->status_ukm }}</span>
                                     @elseif ($item->status_ukm == 'Bukan Anggota')
-                                        <span class="badge rounded-pill bg-secondary p-2">{{ $item->status_ukm }}</span>
+                                        <span class="badge rounded-pill bg-secondary py-2">{{ $item->status_ukm }}</span>
+                                    @elseif ($item->status_ukm == 'BPH')
+                                        <span class="badge rounded-pill bg-primary py-2"
+                                            style="padding: 0px 43px 0px 43px">{{ $item->status_ukm }}</span>
                                     @endif
                                 </td>
-                                @if ($item->tingkat == 1)
-                                    <td>Satu</td>
-                                @elseif($item->tingkat == 2)
-                                    <td>Dua</td>
-                                @elseif($item->tingkat == 3)
-                                    <td>Tiga</td>
-                                @elseif($item->tingkat == 4)
-                                    <td>Alumni</td>
-                                @endif
-                                <td>{{ $item->angkatan }}</td>
+                                <td class="text-center">{{ $item->jabatan->jabatan }}</td>
+                                <td class="text-center">
+                                    @if ($item->kelas->tingkat == 1)
+                                        <span class="badge rounded-pill bg-success py-2 px-4">I</span>
+                                    @elseif ($item->kelas->tingkat == 2)
+                                        <span class="badge rounded-pill text-dark bg-warning py-2 px-4">II</span>
+                                    @elseif ($item->kelas->tingkat == 3)
+                                        <span class="badge rounded-pill bg-danger py-2 px-4">III</span>
+                                    @elseif ($item->kelas->tingkat == 4)
+                                        <span class="badge rounded-pill bg-secondary p-2">Alumni</span>
+                                    @endif
+                                </td>
+                                <td class="text-center">
+                                    {{ $item->kelas->angkatan }}
+                                </td>
                                 <td class="text-center">
                                     <button class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#crud{{ $item->id }}"><i
@@ -195,7 +193,7 @@
                                 {{-- Modal Crud --}}
                                 <div class="modal fade" id="crud{{ $item->id }}" tabindex="-1"
                                     aria-labelledby="exampleModalLabel" aria-hidden="true">
-                                    <div class="modal-dialog">
+                                    <div class="modal-dialog modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h1 class="modal-title fs-5 fw-bold" id="exampleModalLabel">Aksi</h1>
@@ -222,7 +220,7 @@
                                 @if ($datakehadiran->where('mahasiswa_id', $item->id)->count() > 0)
                                     {{-- Modal Not Delete --}}
                                     <div class="modal fade" id="notdeletemahasiswa{{ $item->id }}" tabindex="-1">
-                                        <div class="modal-dialog">
+                                        <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title text-danger fw-bold"><i
@@ -242,7 +240,7 @@
                                 @else
                                     {{-- Modal Yes Delete --}}
                                     <div class="modal fade" id="yesdeletemahasiswa{{ $item->id }}" tabindex="-1">
-                                        <div class="modal-dialog">
+                                        <div class="modal-dialog modal-dialog-centered">
                                             <div class="modal-content">
                                                 <div class="modal-header">
                                                     <h5 class="modal-title text-danger fw-bold"><i
@@ -270,7 +268,7 @@
                                 @endif
                                 {{-- Modal Detail Mahasiswa --}}
                                 <div class="modal fade" id="detailmahasiswa{{ $item->id }}" tabindex="-1">
-                                    <div class="modal-dialog modal-lg">
+                                    <div class="modal-dialog modal-lg modal-dialog-centered">
                                         <div class="modal-content">
                                             <div class="modal-header">
                                                 <h5 class="modal-title fw-bold" style="color: #012970">
@@ -293,9 +291,13 @@
                                                             <div class="col-lg-3">
                                                                 <div class="text-center">
                                                                     <div class="d-flex justify-content-center">
-                                                                        {!! DNS2D::getBarcodeHTML("$item->nim", 'QRCODE', 6, 6) !!}
+                                                                        {!! DNS2D::getBarcodeHTML("$item->nim", 'QRCODE', 7, 7) !!}
                                                                     </div>
-                                                                    <h5 class="fw-bold mt-2">Barcode</p>
+                                                                    {{-- <h5 class="fw-bold mt-2">Barcode</p> --}}
+                                                                    <div class="fw-bold fs-6 mt-2">{{ $item->nama }}
+                                                                    </div>
+                                                                    <div class="fs-6">{{ $item->jabatan->jabatan }}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                             <div class="col-lg-8">
@@ -304,11 +306,11 @@
                                                                     <div class="col-1">:</div>
                                                                     <div class="col-7">{{ $item->nim }}</div>
                                                                 </div>
-                                                                <div class="row mx-3 ">
+                                                                {{-- <div class="row mx-3 ">
                                                                     <div class="col-4 fw-bold">Nama</div>
                                                                     <div class="col-1">:</div>
                                                                     <div class="col-7">{{ $item->nama }}</div>
-                                                                </div>
+                                                                </div> --}}
                                                                 <div class="row mx-3 ">
                                                                     <div class="col-4 fw-bold">Prodi</div>
                                                                     <div class="col-1">:</div>
@@ -334,7 +336,7 @@
                                                                     <div class="col-4 fw-bold">Tanggal Lahir</div>
                                                                     <div class="col-1">:</div>
                                                                     <div class="col-7">
-                                                                        {{ \Carbon\Carbon::parse($item->tanggal_lahir)->format('d/m/Y') }}
+                                                                        {{ Carbon::parse($item->tanggal_lahir)->translatedFormat('l, d F Y') }}
                                                                     </div>
                                                                 </div>
                                                                 <div class="row mx-3 ">
@@ -366,21 +368,26 @@
                                                                     <div class="col-4 fw-bold">Tingkat</div>
                                                                     <div class="col-1">:</div>
                                                                     <div class="col-7">
-                                                                        @if ($item->tingkat == 1)
-                                                                            <span>Satu</span>
-                                                                        @elseif($item->tingkat == 2)
-                                                                            <span>Dua</span>
-                                                                        @elseif($item->tingkat == 3)
-                                                                            <span>Tiga</span>
-                                                                        @elseif($item->tingkat == 4)
+                                                                        @if ($item->kelas->tingkat == 1)
+                                                                            <span>I</span>
+                                                                        @elseif($item->kelas->tingkat == 2)
+                                                                            <span>II</span>
+                                                                        @elseif($item->kelas->tingkat == 3)
+                                                                            <span>III</span>
+                                                                        @elseif($item->kelas->tingkat == 4)
                                                                             <span>Alumni</span>
                                                                         @endif
                                                                     </div>
                                                                 </div>
-                                                                <div class="row mx-3 mb-4">
+                                                                <div class="row mx-3">
                                                                     <div class="col-4 fw-bold">Angkatan</div>
                                                                     <div class="col-1">:</div>
-                                                                    <div class="col-7">{{ $item->angkatan }}</div>
+                                                                    <div class="col-7">{{ $item->kelas->angkatan }}</div>
+                                                                </div>
+                                                                <div class="row mx-3 mb-4">
+                                                                    <div class="col-4 fw-bold">Alasan Masuk LCC</div>
+                                                                    <div class="col-1">:</div>
+                                                                    <div class="col-7">{{ $item->alasan }}</div>
                                                                 </div>
                                                             </div>
                                                         </div>

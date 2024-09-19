@@ -1,14 +1,3 @@
-/**
-* Template Name: NiceAdmin
-* Updated: Sep 18 2023 with Bootstrap v5.3.2
-* Template URL: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/
-* Author: BootstrapMade.com
-* License: https://bootstrapmade.com/license/
-*/
-
-/*--------------------------------------------------------------
-# General
---------------------------------------------------------------*/
 :root {
     scroll-behavior: smooth;
 }
@@ -1270,7 +1259,6 @@ h6 {
     background-color: #ff5555 !important;
 }
 
-
 .scanner-container {
     width: 50%; /* Lebar container 50% */
     height: 100%; /* Tinggi container 100% */
@@ -1284,7 +1272,7 @@ h6 {
 .scanner-video {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Menjaga aspek rasio video */
+    object-fit: cover;
 }
 
 .scanner-line {
@@ -1354,28 +1342,102 @@ h6 {
     left: 0;
     background: rgba(255, 255, 255, 0.8);
     z-index: 9999;
-  }
-  
-  .spinner {
+}
+
+.spinner {
     border: 4px solid rgba(0, 0, 0, 0.1);
     border-top: 4px solid #3498db;
     border-radius: 50%;
     width: 40px;
     height: 40px;
     animation: spin 1s linear infinite;
-  }
-  
-  @keyframes spin {
+}
+
+.student-card {
+    background-color: #007bff;
+    color: white;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    transition: transform 0.3s;
+    display: flex;
+    justify-content: space-between;
+}
+
+.student-card:hover {
+    transform: translateY(-5px);
+}
+
+.student-name {
+    font-size: 1.2em;
+    font-weight: bold;
+}
+
+.attendance-count {
+    font-size: 1em;
+}
+
+#kehadiran {
+    min-height: 400px; /* Adjust this value as needed */
+}
+
+#terajin,
+#perbandingan {
+    height: 100%; /* Ensure these cards fill the available space */
+}
+
+@keyframes spin {
     0% {
         transform: rotate(0deg);
     }
     100% {
         transform: rotate(360deg);
     }
-  }
+}
+
+.text-input {
+    border: none;
+    background-color: transparent;
+    font-size: 16px; /* Sesuaikan dengan ukuran font yang Anda inginkan */
+    padding: 0;
+    text-align: center; /* Pusatkan teks */
+    cursor: default;
+}
+
+.time-input {
+    border: none;
+    background-color: transparent;
+    font-size: 16px; /* Sesuaikan dengan ukuran font yang Anda inginkan */
+    padding: 0;
+    text-align: center; /* Pusatkan teks */
+    cursor: default;
+}
+
+.time-input::-webkit-calendar-picker-indicator {
+    display: none; /* Sembunyikan ikon kalender di input time */
+}
+
+.label-sesi:hover {
+    color: #007bff;
+}
+
+.disabled-form {
+    pointer-events: none; /* Mencegah interaksi pengguna */
+    background-color: #ececec;
+    opacity: 0.8;
+}
 
 /* Tampilan Komputer */
 @media screen and (min-width: 1024px) {
+    .hidden-dekstop {
+        display:none;
+    }
+    .h-desktop {
+        height: 41%;
+    }
+    .checkbox-sesi {
+        margin-left: -4%;
+    }
     .logo-dekstop {
         display: none;
     }
@@ -1416,6 +1478,9 @@ h6 {
 
 /* Tampilan HP */
 @media screen and (max-width: 930px) {
+    .hidden-mobile {
+        display: none;
+    }
     .scanner-container {
         width: 100%;
         height: 100%;

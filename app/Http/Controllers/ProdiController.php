@@ -19,10 +19,10 @@ class ProdiController extends Controller
     {
         if (Gate::allows('Admin'))
         {
-            $data = Prodi::orderBy('prodi','asc');
+            $data = Prodi::orderBy('prodi','asc')->get();
 
             return view('prodi.index', [
-                'dataprodi' => $data->paginate(50),
+                'dataprodi' => $data,
                 'datakelas' => Kelas::all(),
                 'title' => 'prodi',
             ]);

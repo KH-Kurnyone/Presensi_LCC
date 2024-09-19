@@ -47,26 +47,86 @@
         <div class="border-bottom border-dark mx-3 mb-1 mt-4"></div>
         <div class="border-bottom border-dark mx-3"></div>
         <div class="mx-3 mt-3">
-            <div class="row">
-                <div class="col-2">Tanggal</div>
-                <div class="col-1">:</div>
-                <div class="col-9" style="margin-left: -50px">
-                    {{ \Carbon\Carbon::parse($kehadiran->tanggal)->format('d/m/Y') }}</div>
-            </div>
-            <div class="row">
-                <div class="col-2">Nama Kegiatan</div>
-                <div class="col-1">:</div>
-                <div class="col-9" style="margin-left: -50px">{{ $kehadiran->kegiatan->kegiatan }}</div>
-            </div>
             {{-- <div class="row">
-                <div class="col-2">Pertemuan Ke</div>
-                <div class="col-1">:</div>
-                <div class="col-9" style="margin-left: -50px">{{ $kehadiran->pertemuan }}</div>
+                <div class="col-6">
+                    <div class="d-flex">
+                        <div style="width: 100px;">Kegiatan</div>
+                        <div class="ms-lg-5 ms-2">: {{ $kehadiran->kegiatan->kegiatan }},</div>
+                    </div>
+
+                    <div class="d-flex">
+                        <div style="width: 100px;">Waktu</div>
+                        <div class="ms-lg-5 ms-2">:
+                            @foreach ($dataSesi as $item)
+                                {{ $item->sesi }},
+                            @endforeach
+                        </div>
+                    </div>
+
+                    <div class="d-flex">
+                        <div style="width: 100px;">Keterangan</div>
+                        <div class="ms-lg-5 ms-2">: {{ $kehadiran->ket_kegiatan }}.</div>
+                    </div>
+                </div>
+                <div class="col-6 text-end mt-md-0">
+                    @php
+                        use Carbon\Carbon;
+                        Carbon::setLocale('id');
+                    @endphp
+                    <div>
+                        {{ Carbon::parse($kehadiran->tanggal)->translatedFormat('l, d F Y') }}
+                    </div>
+                    <div>
+                        Pemateri : {{ $kehadiran->mahasiswa->nama }}
+                    </div>
+                </div>
             </div> --}}
+            @php
+                use Carbon\Carbon;
+                Carbon::setLocale('id');
+            @endphp
             <div class="row">
-                <div class="col-2">Keterangan</div>
-                <div class="col-1">:</div>
-                <div class="col-9" style="margin-left: -50px">{{ $kehadiran->ket_kegiatan }}</div>
+                <div class="col-lg-6 col-6 ">
+                    <div class="row">
+                        <div class="col-lg-3 col-4">Kegiatan</div>
+                        <div class="col-lg-1 col-1">:</div>
+                        <div class="col-lg-8 col-7" style="margin-left: -4%">{{ $kehadiran->kegiatan->kegiatan }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-4">Keterangan</div>
+                        <div class="col-lg-1 col-1">:</div>
+                        <div class="col-lg-8 col-7" style="margin-left: -4%">{{ $kehadiran->ket_kegiatan }}</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-3 col-4">Waktu</div>
+                        <div class="col-lg-1 col-1">:</div>
+                        <div class="col-lg-8 col-7" style="margin-left: -8%">
+                            <ul>
+                                @foreach ($dataSesi as $item)
+                                    <li>
+                                        {{ $item->sesi }}
+                                        ({{ \Carbon\Carbon::parse($item->waktu_mulai)->format('H:i') }} -
+                                        {{ \Carbon\Carbon::parse($item->waktu_selesai)->format('H:i') }})
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-6 text-end">
+                    <div>
+                        {{ Carbon::parse($kehadiran->tanggal)->translatedFormat('l, d F Y') }}
+                    </div>
+                    <div>
+                        Pemateri :
+                        @if ($kehadiran->mahasiswa_id == 0)
+                            BPH LCC
+                        @else
+                            {{ $kehadiran->mahasiswa->nama }}
+                        @endif
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -75,20 +135,29 @@
                 <thead class="text-center">
                     <th>No.</th>
                     <th>Nama Mahasiswa</th>
-                    <th>Prodi</th>
+                    {{-- <th>Prodi</th> --}}
                     <th>Kelas</th>
                     <th>Gender</th>
-                    <th>Status Kehadiran</th>
+                    <th>Status</th>
+                    <th>Waktu Hadir</th>
+                    <th>Keterangan</th>
                 </thead>
                 <tbody>
                     @foreach ($statuskehadiran as $item)
                         <tr>
                             <td class="text-center">{{ $loop->iteration }}.</td>
                             <td>{{ $item->mahasiswa->nama }}</td>
-                            <td class="text-center">{{ $item->mahasiswa->kelas->prodi->prodi }}</td>
+                            {{-- <td>{{ $item->mahasiswa->kelas->prodi->prodi }}</td> --}}
                             <td class="text-center">{{ $item->mahasiswa->kelas->kelas }}</td>
                             <td class="text-center">{{ $item->mahasiswa->jenis_kelamin }}</td>
                             <td class="text-center">{{ $item->status_kehadiran }}</td>
+                            @if ($item->waktu_hadir === null)
+                                <td class="text-center">-</td>
+                            @else
+                                <td class="text-center">{{ \Carbon\Carbon::parse($item->waktu_hadir)->format('H:i') }}
+                                </td>
+                            @endif
+                            <td class="text-center">{{ $item->keterangan }}</td>
                         </tr>
                     @endforeach
                 </tbody>

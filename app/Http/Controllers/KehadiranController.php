@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Kegiatan;
 use App\Models\Kehadiran;
 use App\Models\Mahasiswa;
+use App\Models\Sesi;
+use App\Models\SesiDet;
 use App\Models\Statuskehadiran;
+use Faker\Core\DateTime;
 use Illuminate\Http\Request;
 use RealRashid\SweetAlert\Facades\Alert;
 
@@ -19,9 +22,9 @@ class KehadiranController extends Controller
     public function index()
     {
         if (auth()->user()->can('Admin') || auth()->user()->can('Viewer')) {
-            $dataadmin = Kehadiran::orderBy('tanggal','desc')->latest();
+            $dataadmin = Kehadiran::with('sesiDet.sesi')->orderBy('tanggal', 'desc')->latest();
         } else {
-            $dataadmin = Kehadiran::where('status','Aktif')->orderBy('tanggal','desc')->latest();
+            $dataadmin = Kehadiran::with('sesiDet.sesi')->where('status', 'Aktif')->orderBy('tanggal', 'desc')->latest();
         }
         // $data = Kehadiran::where('user_id', auth()->user()->id)->orderBy('tanggal','desc')->latest();
 
@@ -39,17 +42,31 @@ class KehadiranController extends Controller
      */
     public function create()
     {
-        $datakegiatan = Kegiatan::orderBy('kegiatan','asc');
-        $data = Mahasiswa::where('status_ukm','Anggota LCC')
-            ->where('tingkat', '1')
-            ->orderBy('nama', 'asc');
+        $datakegiatan = Kegiatan::orderBy('kegiatan', 'asc')->get();
+        $dataSesi = Sesi::orderBy('sesi', 'asc')->get();
+        $dataPemateri = Mahasiswa::where('status_ukm', 'BPH')
+            ->whereHas('kelas', function ($query) {
+                $query->where('tingkat', '2');
+            })
+            ->orderBy('nama', 'asc')
+            ->get();
+
+        $data = Mahasiswa::where('status_ukm', 'Anggota LCC')
+            ->whereHas('kelas', function ($query) {
+                $query->where('tingkat', '1');
+            })
+            ->orderBy('nama', 'asc')
+            ->get();
 
         return view('kehadiran.add', [
-            'datakegiatan' => $datakegiatan->paginate(50),
-            'datamahasiswa' => $data->paginate(100),
+            'datakegiatan' => $datakegiatan,
+            'dataSesi' => $dataSesi,
+            'dataPemateri' => $dataPemateri,
+            'datamahasiswa' => $data,
             'title' => 'kehadiran',
         ]);
     }
+
 
     /**
      * Store a newly created resource in storage.
@@ -60,13 +77,19 @@ class KehadiranController extends Controller
     public function store(Request $request)
     {
         $this->validate($request, [
-            'tanggal'           => 'required',
-            'kegiatan_id'        => 'required',
-            'ket_kegiatan'      => 'required',
+            'mahasiswa_id'        => 'required',
+            'sesi_id'             => 'required|array',
+            'sesi_id.*'           => 'required|exists:sesis,id',
+            'tanggal'             => 'required|date',
+            'kegiatan_id'         => 'required|exists:kegiatans,id',
+            'ket_kegiatan'        => 'required|string',
+            'status_kehadiran'    => 'required|array',
             'status_kehadiran.*'  => 'required|in:Hadir,Sakit,Izin,Alfa',
         ]);
 
+        // Create Kehadiran
         $kehadiran = Kehadiran::create([
+            'mahasiswa_id'  => $request->mahasiswa_id,
             'tanggal'       => $request->tanggal,
             'kegiatan_id'   => $request->kegiatan_id,
             'ket_kegiatan'  => $request->ket_kegiatan,
@@ -74,15 +97,66 @@ class KehadiranController extends Controller
             'status'        => 'Aktif',
         ]);
 
+        // Create SesiDet
+        foreach ($request->sesi_id as $sesi_id) {
+            $dataSesiDet[] = [
+                'kehadiran_id' => $kehadiran->id,
+                'sesi_id'      => $sesi_id,
+            ];
+        }
+        SesiDet::insert($dataSesiDet);
+
+        // Create StatusKehadiran
+        // foreach ($request->status_kehadiran as $mahasiswaId => $status_kehadiran) {
+        //     $dataStatusKehadiran[] = [
+        //         'kehadiran_id'     => $kehadiran->id,
+        //         'mahasiswa_id'     => $mahasiswaId,
+        //         'status_kehadiran' => $status_kehadiran,
+        //         // 'waktu_hadir'      => $request->waktu_hadir[$mahasiswaId],
+        //         // 'keterangan'       => $request->keterangan[$mahasiswaId],
+        //         'created_at'       => now(),
+        //         'updated_at'       => now(),
+        //     ];
+        // }
+        // StatusKehadiran::insert($dataStatusKehadiran);
+
+        // foreach ($request->status_kehadiran as $mahasiswaId => $status_kehadiran) {
+        //     $dataStatusKehadiran[] = [
+        //         'kehadiran_id'     => $kehadiran->id,
+        //         'mahasiswa_id'     => $mahasiswaId,
+        //         'status_kehadiran' => $status_kehadiran,
+        //         'waktu_hadir'      => empty($request->waktu_hadir[$mahasiswaId]) ? null : $request->waktu_hadir[$mahasiswaId],
+        //         'keterangan'       => $request->keterangan[$mahasiswaId],
+        //         'created_at'       => now(),
+        //         'updated_at'       => now(),
+        //     ];
+        // }
+        // StatusKehadiran::insert($dataStatusKehadiran);
+
         foreach ($request->status_kehadiran as $mahasiswaId => $status_kehadiran) {
             Statuskehadiran::create([
                 'kehadiran_id'     => $kehadiran->id,
                 'mahasiswa_id'     => $mahasiswaId,
                 'status_kehadiran' => $status_kehadiran,
+                'waktu_hadir'      => $request->waktu_hadir[$mahasiswaId],
+                'keterangan'       => $request->keterangan[$mahasiswaId],
             ]);
         }
-        return redirect('/kehadiran')->with('kehadiranadd','Data kehadiran di buat!');
+        // $dataStatusKehadiran[] = [
+        //     'kehadiran_id'     => $kehadiran->id,
+        //     'mahasiswa_id'     => $mahasiswaId,
+        //     'status_kehadiran' => $status_kehadiran,
+        //     'waktu_hadir'      => $request->waktu_hadir[$mahasiswaId],
+        //     'keterangan'       => $request->keterangan[$mahasiswaId],
+        //     'created_at'       => now(),
+        //     'updated_at'       => now(),
+        // ];
+        // StatusKehadiran::insert($dataStatusKehadiran);
+
+
+        return redirect('/kehadiran')->with('kehadiranadd', 'Data kehadiran berhasil dibuat!');
     }
+
 
     /**
      * Display the specified resource.
@@ -92,11 +166,14 @@ class KehadiranController extends Controller
      */
     public function show($id)
     {
-        $datakegiatan = Kegiatan::orderBy('kegiatan','asc');
         $kehadiran = Kehadiran::findOrFail($id);
         $statuskehadiran = Statuskehadiran::where('kehadiran_id', $kehadiran->id)->get();
+        $dataSesi = SesiDet::where('kehadiran_id', $kehadiran->id)
+            ->join('sesis', 'sesi_dets.sesi_id', '=', 'sesis.id')
+            ->orderBy('sesis.sesi', 'asc')
+            ->get();
 
-        return view('kehadiran.detail', compact('kehadiran','statuskehadiran','datakegiatan'), [
+        return view('kehadiran.detail', compact('kehadiran', 'statuskehadiran', 'dataSesi'), [
             'title' => 'kehadiran',
         ]);
     }
@@ -111,12 +188,21 @@ class KehadiranController extends Controller
     {
         // $data = Mahasiswa::where('status_ukm','Anggota LCC')->orderBy('nama', 'asc');
         // $data = Statuskehadiran::where('kehadiran_id', $id);
-        $datakegiatan = Kegiatan::orderBy('kegiatan','asc')->get();
+        $dataPemateri = Mahasiswa::where('status_ukm', 'BPH')
+            ->whereHas('kelas', function ($query) {
+                $query->where('tingkat', '2');
+            })
+            ->orderBy('nama', 'asc')
+            ->get();
+        $datakegiatan = Kegiatan::orderBy('kegiatan', 'asc')->get();
+
         $kehadiran = Kehadiran::findOrFail($id);
         $statuskehadiran = Statuskehadiran::where('kehadiran_id', $kehadiran->id)->get();
 
-        return view('kehadiran.edit', compact('kehadiran','statuskehadiran','datakegiatan'), [
-            // 'datamahasiswa' => $data->paginate(50),
+        $dataSesiChecked = SesiDet::where('kehadiran_id', $kehadiran->id)->get();
+        $dataSesi = Sesi::orderBy('sesi', 'asc')->get();
+
+        return view('kehadiran.edit', compact('kehadiran', 'statuskehadiran', 'datakegiatan', 'dataSesi', 'dataPemateri', 'dataSesiChecked'), [
             'title' => 'kehadiran',
         ]);
     }
@@ -130,33 +216,52 @@ class KehadiranController extends Controller
      */
     public function update(Request $request, $id)
     {
+        // Update Validation
         $this->validate($request, [
-            'tanggal'           => 'required',
-            // 'pertemuan'         => 'required',
-            'kegiatan_id'       => 'required',
-            'ket_kegiatan'      => 'required',
-            'status_kehadiran'  => 'required',
-            // 'status_kehadiran.*' => 'required|in:Hadir,Sakit,Izin,Alfa',
+            'tanggal'               => 'required|date',
+            'mahasiswa_id'          => 'required|exists:mahasiswas,id',
+            'kegiatan_id'           => 'required|exists:kegiatans,id',
+            'ket_kegiatan'          => 'required',
         ]);
 
+        // Update Kehadiran
         $kehadiran = Kehadiran::findOrFail($id);
         $kehadiran->update([
             'tanggal'        => $request->tanggal,
-            // 'pertemuan'      => $request->pertemuan,
+            'mahasiswa_id'   => $request->mahasiswa_id,
             'kegiatan_id'    => $request->kegiatan_id,
             'ket_kegiatan'   => $request->ket_kegiatan,
             'status'         => $request->status,
         ]);
 
-        foreach ($request->status_kehadiran as $statusId => $status_kehadiran) {
-            $data = Statuskehadiran::findOrFail($statusId);
-            $data->update([
-                'status_kehadiran' => $status_kehadiran
-            ]);
-        }
+        // Update StatusKehadiran
+        // foreach ($request->status_kehadiran as $statusId => $status_kehadiran) {
+        //     $data = Statuskehadiran::findOrFail($statusId);
+        //     $data->update([
+        //         'status_kehadiran' => $status_kehadiran
+        //     ]);
+        // }
 
-        // Alert::success('Berhasil!', 'Data kehadiran berhasil di ubah!');
-        return redirect('/kehadiran')->with('kehadiranedit','Data kehadiran di ubah!');
+        // // Update SesiDet
+        // $existingSesiIds = SesiDet::where('kehadiran_id', $kehadiran->id)->pluck('sesi_id')->toArray();
+        // // Delete SesiDet
+        // $sesiIdsToRemove = array_diff($existingSesiIds, $request->sesi_id ?? []);
+        // if (!empty($sesiIdsToRemove)) {
+        //     SesiDet::where('kehadiran_id', $kehadiran->id)
+        //         ->whereIn('sesi_id', $sesiIdsToRemove)
+        //         ->delete();
+        // }
+        // // Insert SesiDet
+        // $sesiIdsToAdd = array_diff($request->sesi_id ?? [], $existingSesiIds);
+        // foreach ($sesiIdsToAdd as $sesiId) {
+        //     SesiDet::create([
+        //         'kehadiran_id' => $kehadiran->id,
+        //         'sesi_id'      => $sesiId
+        //     ]);
+        // }
+
+        // Return
+        return redirect('/kehadiran')->with('kehadiranedit', 'Data kehadiran di ubah!');
     }
 
     public function updateStatus(Request $request)
@@ -189,9 +294,10 @@ class KehadiranController extends Controller
     {
         Kehadiran::where('id', $id)->delete();
         Statuskehadiran::where('kehadiran_id', $id)->delete();
+        SesiDet::where('kehadiran_id', $id)->delete();
 
         // Alert::success('Berhasil!', 'Data kehadiran berhasil di hapus!');
-        return redirect('/kehadiran')->with('kehadirandelete','Data kehadiran di hapus!');
+        return redirect('/kehadiran')->with('kehadirandelete', 'Data kehadiran di hapus!');
     }
 
     public function printlaporan()
@@ -199,8 +305,9 @@ class KehadiranController extends Controller
         // $kehadiran = Kehadiran::findOrFail($id);
         // $statuskehadiran = Statuskehadiran::where('kehadiran_id', $kehadiran->id)->get();
 
-        return view('kehadiran.print',
-        // compact('kehadiran','statuskehadiran')
+        return view(
+            'kehadiran.print',
+            // compact('kehadiran','statuskehadiran')
         );
     }
 
@@ -212,8 +319,9 @@ class KehadiranController extends Controller
         return redirect()->route('datakehadiran.show', $kehadiran->id);
     }
 
-    public function scan() {
-        return view('kehadiran.scan',[
+    public function scan()
+    {
+        return view('kehadiran.scan', [
             'title' => 'kehadiran'
         ]);
     }

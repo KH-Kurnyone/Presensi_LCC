@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Kehadiran;
+use App\Models\SesiDet;
 use App\Models\Statuskehadiran;
 use Illuminate\Http\Request;
 
@@ -49,8 +50,12 @@ class KehadiranPrintController extends Controller
     {
         $kehadiran = Kehadiran::findOrFail($id);
         $statuskehadiran = Statuskehadiran::where('kehadiran_id', $kehadiran->id)->get();
+        $dataSesi = SesiDet::where('kehadiran_id', $kehadiran->id)
+            ->join('sesis', 'sesi_dets.sesi_id', '=', 'sesis.id')
+            ->orderBy('sesis.sesi', 'asc')
+            ->get();
 
-        return view('kehadiran.print', compact('kehadiran','statuskehadiran'), ['id' => $id]);
+        return view('kehadiran.print', compact('kehadiran','statuskehadiran','dataSesi'), ['id' => $id]);
     }
 
     /**

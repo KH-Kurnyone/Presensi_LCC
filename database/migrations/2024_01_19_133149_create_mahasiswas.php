@@ -15,9 +15,8 @@ class CreateMahasiswas extends Migration
     {
         Schema::create('mahasiswas', function (Blueprint $table) {
             $table->id();
-            // $table->foreignId('prodi_id');
-            // $table->string('barcode');
             $table->foreignId('kelas_id');
+            $table->foreignId('jabatan_id');
             $table->integer('nim');
             $table->string('nama','100');
             $table->enum('jenis_kelamin',['Laki-Laki','Perempuan']);
@@ -27,9 +26,8 @@ class CreateMahasiswas extends Migration
             $table->string('asal_sekolah','100');
             $table->string('jurusan','100');
             $table->string('no_telpon','15');
-            $table->enum('status_ukm',['Anggota LCC','Bukan Anggota']);
-            $table->enum('tingkat',['1','2','3','4']);
-            $table->string('angkatan', '5');
+            $table->enum('status_ukm',['Anggota LCC','Bukan Anggota','BPH']);
+            $table->text('alasan');
             $table->timestamps();
         });
     }

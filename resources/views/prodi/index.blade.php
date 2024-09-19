@@ -53,7 +53,7 @@
                                 <span class="invalid-feedback  mb-2">{{ $message }}</span>
                             @enderror
                         </div>
-                        <button class="btn btn-login text-white mx-3 mt-3" tabindex="3">Simpan <i
+                        <button class="btn btn-danger btn-login text-white mx-3 mt-3" tabindex="3">Simpan <i
                                 class="bi bi-box-arrow-in-right"></i></button>
                     </form>
                 </div>
@@ -74,9 +74,9 @@
                             <tbody>
                                 @foreach ($dataprodi as $item)
                                     <tr>
-                                        <td>{{ $loop->iteration }}.</td>
+                                        <td class="text-center">{{ $loop->iteration }}.</td>
                                         <td>{{ $item->prodi }}</td>
-                                        <td>{{ $item->singkatan }}</td>
+                                        <td class="text-center">{{ $item->singkatan }}</td>
                                         <td class="text-center">
                                             {{-- Button Edit --}}
                                             <button class="btn btn-warning" data-bs-toggle="modal"

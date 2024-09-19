@@ -11,7 +11,6 @@
     padding: 8px 10px;
 }
 
-/* sortir jumlah data */
 .datatable-top > nav:first-child,
 .datatable-top > div:first-child,
 .datatable-bottom > nav:first-child,
@@ -19,7 +18,6 @@
     float: left;
 }
 
-/* pencarian */
 .datatable-top > nav:last-child,
 .datatable-top > div:not(first-child),
 .datatable-bottom > nav:last-child,
@@ -27,7 +25,6 @@
     float: right;
 }
 
-/* Tampilan HP */
 @media screen and (max-width: 930px) {
     .datatable-top > nav:last-child,
     .datatable-top > div:not(first-child),
@@ -45,11 +42,9 @@
 }
 
 .datatable-input {
-    padding: 6px 0px;
+    padding: 6px 12px;
     border-radius: 10px;
-    border: solid;
-    border-color: #aeaeae;
-    border-width: 1px;
+    border: solid 1px #aeaeae;
 }
 
 .datatable-info {
@@ -133,7 +128,7 @@
     border-collapse: separate;
 }
 
-/* table */
+/* NANTI */
 .datatable-table > tbody > tr > td,
 .datatable-table > tbody > tr > th,
 .datatable-table > tfoot > tr > td,
@@ -143,22 +138,16 @@
     vertical-align: top;
     padding: 8px 10px;
     white-space: nowrap;
-    /* text-align: center; */
+    /* border: solid 1px #cecece; */
 }
 
-
-/* .nama_prodi {
-    background-color: #000;
-} */
-
-/* table-header */
 .datatable-table > thead > tr > th {
     vertical-align: bottom;
     text-align: center;
-    white-space: nowrap;
     border-bottom: 1px solid #d9d9d9;
     background: #e0e0e0;
     color: #000;
+    white-space: nowrap;
 }
 
 .datatable-table > tfoot > tr > th {

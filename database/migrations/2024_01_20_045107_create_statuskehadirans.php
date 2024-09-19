@@ -16,10 +16,10 @@ class CreateStatuskehadirans extends Migration
         Schema::create('statuskehadirans', function (Blueprint $table) {
             $table->id();
             $table->foreignId('kehadiran_id');
-            // $table->foreignId('prodi_id');
-            // $table->foreignId('kelas_id');
             $table->foreignId('mahasiswa_id');
             $table->enum('status_kehadiran',['Hadir','Sakit','Izin','Alfa']);
+            $table->time('waktu_hadir')->nullable();
+            $table->string('keterangan','30');
             $table->timestamps();
         });
     }

@@ -35,6 +35,7 @@
         integrity="sha512-vKMx8UnXk60zUwyUnUPM3HbQo8QfmNx7+ltw8Pm5zLusl1XIfwcxo8DbWCqMGKaWeNxWA8yrx5v3SaVpMvR3CA=="
         crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link href="https://fonts.googleapis.com/css?family=Poppins" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             font-family: 'Poppins' !important;
@@ -99,11 +100,10 @@
 
 </head>
 
-<body id="content">
-    <div id="loading" class="loading">
-        <!-- Bisa menggunakan GIF atau CSS untuk animasi -->
+<body id="content" class="bg-white">
+    {{-- <div id="loading" class="loading">
         <div class="spinner"></div>
-    </div>
+    </div> --}}
     <!-- ======= Header ======= -->
     {{-- <img src="/assetsadmin/img/logo.png" alt=""> --}}
     {{-- <div class="header-dekstop"> --}}
@@ -242,7 +242,8 @@
                     <div class="modal-header">
                         <h5 class="modal-title fw-bold" style="color: #9C0000"><i class="bi bi-info-circle"></i>
                             Informasi</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
                         <form action="/logoutwebsite" method="POST">
@@ -276,13 +277,18 @@
             item.addEventListener('click', activeLink));
     </script> --}}
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     @yield('js_input')
     @yield('js_scaner')
     @yield('js_editTingkat')
     @yield('js_editStatus')
     @yield('js_editStatus_kehadiran')
+    @yield('js_mahasiswaAdd')
+    @yield('js_mahasiswaEdit')
+    @yield('js_dashboard')
+    @yield('profile')
+    {{-- @yield('js_sesi') --}}
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
     <script>
         $(function(e) {
 
@@ -343,6 +349,7 @@
         integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw=="
         crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
+
     @if (Session::has('login'))
         <script>
             toastr.options = {
@@ -368,7 +375,7 @@
             });
         </script>
     @endif
-    
+
     @if (Session::has('editStatus'))
         <script>
             toastr.options = {
@@ -491,6 +498,34 @@
         </script>
     @endif
 
+    @if (Session::has('jabatanAdd') || Session::has('jabatanEdit') || Session::has('jabatanDelete'))
+        <script>
+            toastr.options = {
+                "progressBar": true,
+                "closeButton": true,
+                "positionClass": "toast-top-right",
+            }
+
+            let messages = '';
+
+            @if (Session::has('jabatanAdd'))
+                messages += "{{ Session::get('jabatanAdd') }} ";
+            @endif
+
+            @if (Session::has('jabatanEdit'))
+                messages += "{{ Session::get('jabatanEdit') }} ";
+            @endif
+
+            @if (Session::has('jabatanDelete'))
+                messages += "{{ Session::get('jabatanDelete') }} ";
+            @endif
+
+            toastr.success(messages.trim(), 'Berhasil!', {
+                timeOut: 1000
+            });
+        </script>
+    @endif
+
     @if (Session::has('kegiatanadd') || Session::has('kegiatanedit') || Session::has('kegiatandelete'))
         <script>
             toastr.options = {
@@ -511,6 +546,34 @@
 
             @if (Session::has('kegiatandelete'))
                 messages += "{{ Session::get('kegiatandelete') }} ";
+            @endif
+
+            toastr.success(messages.trim(), 'Berhasil!', {
+                timeOut: 1000
+            });
+        </script>
+    @endif
+
+    @if (Session::has('sesiAdd') || Session::has('sesiEdit') || Session::has('sesiDelete'))
+        <script>
+            toastr.options = {
+                "progressBar": true,
+                "closeButton": true,
+                "positionClass": "toast-top-right",
+            }
+
+            let messages = '';
+
+            @if (Session::has('sesiAdd'))
+                messages += "{{ Session::get('sesiAdd') }} ";
+            @endif
+
+            @if (Session::has('sesiEdit'))
+                messages += "{{ Session::get('sesiEdit') }} ";
+            @endif
+
+            @if (Session::has('sesiDelete'))
+                messages += "{{ Session::get('sesiDelete') }} ";
             @endif
 
             toastr.success(messages.trim(), 'Berhasil!', {

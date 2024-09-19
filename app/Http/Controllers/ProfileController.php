@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Kelas;
 use App\Models\Mahasiswa;
+use Barryvdh\DomPDF\PDF;
 use Illuminate\Support\Facades\Hash;
 use RealRashid\SweetAlert\Facades\Alert;
 use Illuminate\Support\Facades\Gate;
@@ -21,15 +22,27 @@ class ProfileController extends Controller
 
     public function editProfile()
     {
-        $datakelas = Kelas::orderBy('kelas','asc')->get();
-        return view('profile.edit', compact('datakelas'),[
+        $datakelas = Kelas::orderBy('kelas', 'asc')->get();
+        return view('profile.edit', compact('datakelas'), [
             'title' => 'profile',
         ]);
     }
 
+    // public function printPDF()
+    // {
+    //     // Get user data
+    //     $user = auth()->user();
+
+    //     // Pass user data to the view
+    //     $pdf = PDF::loadView('PDF', compact('user'));
+
+    //     // Download the PDF
+    //     return $pdf->download("profile_card.pdf");
+    // }
+
     public function updateProfile(Request $request, $id)
     {
-        $data = $request->validate ([
+        $data = $request->validate([
             'nama'           => 'required',
             'jenis_kelamin'  => 'required',
             'tempat_lahir'   => 'required',
@@ -45,30 +58,29 @@ class ProfileController extends Controller
         ]);
         $mahasiswa = Mahasiswa::findOrFail($id);
         $mahasiswa->update($data);
-        return redirect('/profile')->with('mahasiswaedit','Data mahasiswa diubah!');
+        return redirect('/profile')->with('mahasiswaedit', 'Data mahasiswa diubah!');
     }
 
-    public function indexubahpassword() {
-        if (Gate::allows('Petugas') || Gate::allows('Admin') || Gate::allows('Mahasiswa'))
-        {
+    public function indexubahpassword()
+    {
+        if (Gate::allows('Petugas') || Gate::allows('Admin') || Gate::allows('Mahasiswa')) {
             return view('profile.ubahpassword', [
                 'title' => 'profile'
             ]);
-        } return back();
+        }
+        return back();
     }
 
     public function ubahpassword(Request $request)
     {
         $request->validate([
             'Password_Lama' => ['required'],
-            'Password_Baru' => ['required','min:5'],
-            'Konfirmasi_Password' => ['required','min:5'],
+            'Password_Baru' => ['required', 'min:5'],
+            'Konfirmasi_Password' => ['required', 'min:5'],
         ]);
 
-        if (hash::check($request->Password_Lama, auth()->user()->password))
-        {
-            if ($request->Password_Baru != $request->Konfirmasi_Password)
-            {
+        if (hash::check($request->Password_Lama, auth()->user()->password)) {
+            if ($request->Password_Baru != $request->Konfirmasi_Password) {
                 Alert::error('Informasi', 'Konfirmasi password tidak sesuai dengan password baru!');
                 return redirect('/profile/ubahpassword');
             } else {
@@ -76,8 +88,7 @@ class ProfileController extends Controller
                 Alert::success('Informasi', 'Password telah diperbarui!');
                 return redirect('/profile');
             }
-        } else
-        {
+        } else {
             Alert::error('Informasi', 'Password lama salah, coba lagi!');
             return redirect('/profile/ubahpassword');
         }

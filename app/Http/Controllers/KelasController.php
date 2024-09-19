@@ -19,38 +19,58 @@ class KelasController extends Controller
      */
     public function index()
     {
-        if (Gate::allows('Admin'))
-        {
-        $data = Kelas::orderBy('angkatan','desc')->orderBy('kelas','asc');
-        $dataprodi = Prodi::orderBy('prodi','asc');
+        if (Gate::allows('Admin')) {
+            $data = Kelas::orderBy('angkatan', 'desc')->orderBy('kelas', 'asc')->get();
+            $dataprodi = Prodi::orderBy('prodi', 'asc');
 
-        return view('kelas.index', [
-            'dataprodi' => $dataprodi->get(),
-            'datamahasiswa' => Mahasiswa::all(),
-            'datakelas' => $data->paginate(50),
-            'title' => 'kelas',
-        ]);
-        } return back();
+            return view('kelas.index', [
+                'dataprodi' => $dataprodi->get(),
+                'datamahasiswa' => Mahasiswa::all(),
+                'datakelas' => $data,
+                'title' => 'kelas',
+            ]);
+        }
+        return back();
     }
 
-    public function updateStatus(Request $request)
+    // public function updateStatus(Request $request)
+    // {
+    //     // Validasi input
+    //     $request->validate([
+    //         'selected_ids' => 'required|array',
+    //         'selected_ids.*' => 'exists:kelas,id',
+    //         'status' => 'required',
+    //     ]);
+
+    //     // Ambil data kelas yang dipilih
+    //     $selectedIds = $request->input('selected_ids');
+    //     $newStatus = $request->input('status');
+
+    //     // Update status kelas yang dipilih
+    //     Kelas::whereIn('id', $selectedIds)->update(['status' => $newStatus]);
+
+    //     // Redirect dengan pesan sukses
+    //     return redirect()->back()->with('editStatus', 'Status berhasil diperbarui.');
+    // }
+
+    public function updateTingkat(Request $request)
     {
         // Validasi input
         $request->validate([
             'selected_ids' => 'required|array',
             'selected_ids.*' => 'exists:kelas,id',
-            'status' => 'required',
+            'tingkat' => 'required',
         ]);
 
-        // Ambil data kelas yang dipilih
+        // Ambil data mahasiswa yang dipilih
         $selectedIds = $request->input('selected_ids');
-        $newStatus = $request->input('status');
+        $newTingkat = $request->input('tingkat');
 
-        // Update status kelas yang dipilih
-        Kelas::whereIn('id', $selectedIds)->update(['status' => $newStatus]);
+        // Update tingkat mahasiswa yang dipilih
+        Kelas::whereIn('id', $selectedIds)->update(['tingkat' => $newTingkat]);
 
         // Redirect dengan pesan sukses
-        return redirect()->back()->with('editStatus', 'Status berhasil diperbarui.');
+        return redirect()->back()->with('editTingkat', 'Tingkat kelas berhasil diperbarui.');
     }
 
     /**
@@ -60,7 +80,7 @@ class KelasController extends Controller
      */
     public function create()
     {
-      //    
+        //    
     }
 
     /**
@@ -74,12 +94,13 @@ class KelasController extends Controller
         $data = $request->validate([
             'prodi_id'     => 'required',
             'kelas'        => 'required|unique:kelas',
-            'status'       => 'Aktif',
+            // 'status'       => 'Aktif',
+            'tingkat'      => 'required',
             'angkatan'     => 'required|min:4|max:4',
         ]);
         Kelas::create($data);
         // Alert::success('Berhasil!', 'Data kelas berhasil di input!');
-        return redirect('/kelas')->with('kelasadd','Data kelas berhasil di buat!');
+        return redirect('/kelas')->with('kelasadd', 'Data kelas berhasil di buat!');
     }
 
     /**
@@ -113,19 +134,20 @@ class KelasController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $data = $request->validate ([
+        $data = $request->validate([
             'prodi_id'  => 'required',
             // 'kelas'        => 'required|unique:kelas',
             'kelas'     =>  [
                 'required',
                 Rule::unique('kelas')->ignore($id, 'id'),
             ],
-            'status'    => 'required', 
+            // 'status'    => 'required',
+            'tingkat'  => 'required',
             'angkatan'  => 'required|min:4|max:4'
         ]);
         Kelas::where('id', $id)->update($data);
         // Alert::success('Berhasil!', 'Data prodi berhasil di ubah!');
-        return redirect('/kelas')->with('kelasedit','Data kelas berhasil di ubah!');
+        return redirect('/kelas')->with('kelasedit', 'Data kelas berhasil di ubah!');
     }
 
     /**
@@ -138,6 +160,6 @@ class KelasController extends Controller
     {
         Kelas::where('id', $id)->delete();
         // Alert::success('Berhasil!', 'Data kelas berhasil di hapus!');
-        return redirect('/kelas')->with('kelasdelete','Data kelas berhasil di hapus!');
+        return redirect('/kelas')->with('kelasdelete', 'Data kelas berhasil di hapus!');
     }
 }

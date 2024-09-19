@@ -61,7 +61,7 @@
                     </div>
                     {{-- Button Konfirmasi --}}
                     <div class="d-flex justify-content-end mb-4 mx-4">
-                        <button class="btn btn-login text-white mt-4" style="padding-left: 20px; padding-right: 20px;"
+                        <button class="btn btn-danger btn-login text-white mt-4" style="padding-left: 20px; padding-right: 20px;"
                             tabindex="4">Simpan <i class="bi bi-box-arrow-in-right"></i></button>
                     </div>
                 </div>

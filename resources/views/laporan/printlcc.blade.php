@@ -62,9 +62,14 @@
                 <div class="col-1">:</div>
                 <div class="col-9" style="margin-left: -50px"></div>
             </div>
+            <div class="row">
+                <div class="col-2">Waktu</div>
+                <div class="col-1">:</div>
+                <div class="col-9" style="margin-left: -50px"></div>
+            </div>
         </div>
 
-        <div class="table-responsive my-2">
+        <div class="table-responsive my-3">
             <table class="table table-bordered">
                 <thead class="text-center">
                     <th>No.</th>

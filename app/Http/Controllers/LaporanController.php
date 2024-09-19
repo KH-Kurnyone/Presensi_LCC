@@ -24,39 +24,76 @@ class LaporanController extends Controller
         $hitunghadir = 0;
 
         // Select Kegiatan
-        $datakegiatan = Kegiatan::orderBy('kegiatan','asc')->get();
+        $datakegiatan = Kegiatan::orderBy('kegiatan', 'asc')->get();
+
+        // $filterKegiatan = $request->kegiatan;
+        // $tanggal_awal = $request->tanggal_awal;
+        // $tanggal_akhir = $request->tanggal_akhir;
+
+        // if (auth()->user()->can('Admin') || auth()->user()->can('Viewer')) {
+        //     $kehadiranQuery = Kehadiran::orderBy('tanggal', 'desc')->where('status', 'Aktif');
+
+        //     if ($filterKegiatan || ($tanggal_awal && $tanggal_akhir)) {
+        //         $kehadiranQuery = Kehadiran::orderBy('tanggal', 'desc');
+
+        //         if ($filterKegiatan) {
+        //             $kehadiranQuery->where('kegiatan_id', $filterKegiatan);
+        //         }
+
+        //         if ($tanggal_awal && $tanggal_akhir) {
+        //             $kehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
+        //         }
+        //     }
+
+        //     $kehadiran = $kehadiranQuery->get();
+        // } else {
+        //     $kehadiranQuery = Kehadiran::orderBy('tanggal', 'desc')->where('status', 'Aktif');
+        //     if ($filterKegiatan) {
+        //         $kehadiranQuery->where('kegiatan_id', $filterKegiatan);
+        //     }
+        //     if ($tanggal_awal && $tanggal_akhir) {
+        //         $kehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
+        //     }
+        //     $kehadiran = $kehadiranQuery->get();
+        // }
 
         $filterKegiatan = $request->kegiatan;
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
 
-        if (auth()->user()->can('Admin') || auth()->user()->can('Viewer')) {
-            $kehadiranQuery = Kehadiran::orderBy('tanggal', 'asc')->where('status', 'Aktif');
-        
-            if ($filterKegiatan || ($tanggal_awal && $tanggal_akhir)) {
-                $kehadiranQuery = Kehadiran::orderBy('tanggal', 'asc');
-                
-                if ($filterKegiatan) {
-                    $kehadiranQuery->where('kegiatan_id', $filterKegiatan);
-                }
-        
-                if ($tanggal_awal && $tanggal_akhir) {
-                    $kehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
-                }
-            }
-            
-            $kehadiran = $kehadiranQuery->get();
-        } else {
-            $kehadiranQuery = Kehadiran::orderBy('tanggal', 'asc')->where('status', 'Aktif');
+        $kehadiran = collect(); // Inisialisasi variabel kehadiran sebagai koleksi kosong
+
+        if (($filterKegiatan || ($tanggal_awal && $tanggal_akhir)) && (auth()->user()->can('Admin') || auth()->user()->can('Viewer'))) {
+            // Buat query dasar hanya ketika ada filter
+            $kehadiranQuery = Kehadiran::orderBy('tanggal', 'desc')->where('status', 'Aktif');
+
             if ($filterKegiatan) {
                 $kehadiranQuery->where('kegiatan_id', $filterKegiatan);
             }
+
             if ($tanggal_awal && $tanggal_akhir) {
                 $kehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
             }
+
             $kehadiran = $kehadiranQuery->get();
+        } else if (auth()->user()->cannot('Admin') && auth()->user()->cannot('Viewer')) {
+            // Buat query dasar untuk non-admin atau non-viewer hanya ketika ada filter
+            if ($filterKegiatan || ($tanggal_awal && $tanggal_akhir)) {
+                $kehadiranQuery = Kehadiran::orderBy('tanggal', 'desc')->where('status', 'Aktif');
+
+                if ($filterKegiatan) {
+                    $kehadiranQuery->where('kegiatan_id', $filterKegiatan);
+                }
+
+                if ($tanggal_awal && $tanggal_akhir) {
+                    $kehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
+                }
+
+                $kehadiran = $kehadiranQuery->get();
+            }
         }
-        
+
+        // Pastikan $kehadiran kosong jika tidak ada filter yang diberikan
 
         $statuskehadiranQuery = Statuskehadiran::join('kehadirans', 'statuskehadirans.kehadiran_id', '=', 'kehadirans.id')
             ->join('mahasiswas', 'statuskehadirans.mahasiswa_id', '=', 'mahasiswas.id')
@@ -73,13 +110,21 @@ class LaporanController extends Controller
         $statuskehadiranQuery->whereIn('kehadiran_id', $kehadiran->pluck('id'));
         $statuskehadiran = $statuskehadiranQuery->get();
 
-        $datalcc = Mahasiswa::where('status_ukm','Anggota LCC')->where('tingkat','1')->orderby('nama','asc');
-        $datakelas = Kelas::where('status','aktif')->with(['mahasiswa' => function($query) {
-            $query->orderBy('nama', 'asc');
-        }])->orderBy('kelas','asc')->get();
+        $datalcc = Mahasiswa::where('status_ukm', 'Anggota LCC')
+            ->whereHas('kelas', function ($query) {
+                $query->where('tingkat', '1');
+            })
+            ->orderby('nama', 'asc')->get();
 
-        return view('laporan.index', compact('kehadiran', 'statuskehadiran', 'datakelas','datakegiatan'), [
-            'datalcc'   => $datalcc->get(),
+        $datakelas = Kelas::where('tingkat', '1')
+            ->with(['mahasiswa' => function ($query) {
+                $query->orderBy('nama', 'asc');
+            }])
+            ->orderBy('kelas', 'asc')
+            ->get();
+
+        return view('laporan.index', compact('kehadiran', 'statuskehadiran', 'datakelas', 'datakegiatan', 'datalcc'), [
+            // 'datalcc'   => $datalcc->get(),
             'title'     => 'laporan',
         ]);
     }
@@ -89,30 +134,92 @@ class LaporanController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    // public function create(Request $request)
+    // {
+    //     $kehadiran = null;
+    //     $statuskehadiran = null;
+    //     $hitunghadir = 0;
+
+    //     $datakegiatan = Kegiatan::orderBy('kegiatan', 'asc')->get();
+
+    //     $filterKegiatan = $request->kegiatan;
+    //     $tanggal_awal = $request->tanggal_awal;
+    //     $tanggal_akhir = $request->tanggal_akhir;
+
+    //     $kehadiranQuery = Kehadiran::orderBy('tanggal', 'asc');
+    //     if ($filterKegiatan) {
+    //         $kehadiranQuery->where('kegiatan_id', $filterKegiatan);
+    //     }
+    //     if ($tanggal_awal && $tanggal_akhir) {
+    //         $kehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
+    //     }
+    //     $kehadiran = $kehadiranQuery->get();
+
+    //     if ($kehadiran->isEmpty()) {
+    //         Alert::error('Tidak Ditemukan!', 'Data kehadiran tidak ditemukan!');
+    //     }
+
+    //     $statuskehadiranQuery = Statuskehadiran::join('kehadirans', 'statuskehadirans.kehadiran_id', '=', 'kehadirans.id')
+    //         ->join('mahasiswas', 'statuskehadirans.mahasiswa_id', '=', 'mahasiswas.id')
+    //         ->select('statuskehadirans.*')
+    //         ->orderBy('kehadirans.tanggal', 'asc')
+    //         ->orderBy('mahasiswas.nama', 'asc')
+    //         ->with(['kehadiran', 'mahasiswa']);
+    //     if ($filterKegiatan) {
+    //         $statuskehadiranQuery->where('kegiatan_id', $filterKegiatan);
+    //     }
+    //     if ($tanggal_awal && $tanggal_akhir) {
+    //         $statuskehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
+    //     }
+    //     $statuskehadiranQuery->whereIn('kehadiran_id', $kehadiran->pluck('id'));
+    //     $statuskehadiran = $statuskehadiranQuery->get();
+
+    //     return view('laporan.printlaporan', compact('kehadiran', 'statuskehadiran', 'datakegiatan'));
+    // }
+
     public function create(Request $request)
     {
         $kehadiran = null;
         $statuskehadiran = null;
         $hitunghadir = 0;
 
-        $datakegiatan = Kegiatan::orderBy('kegiatan','asc')->get();
-
         $filterKegiatan = $request->kegiatan;
         $tanggal_awal = $request->tanggal_awal;
         $tanggal_akhir = $request->tanggal_akhir;
 
-        $kehadiranQuery = Kehadiran::orderBy('tanggal', 'asc');
-        if ($filterKegiatan) {
-            $kehadiranQuery->where('kegiatan_id', $filterKegiatan);
+        $kehadiran = collect(); // Inisialisasi variabel kehadiran sebagai koleksi kosong
+
+        if (($filterKegiatan || ($tanggal_awal && $tanggal_akhir)) && (auth()->user()->can('Admin') || auth()->user()->can('Viewer'))) {
+            // Buat query dasar hanya ketika ada filter
+            $kehadiranQuery = Kehadiran::orderBy('tanggal', 'desc')->where('status', 'Aktif');
+
+            if ($filterKegiatan) {
+                $kehadiranQuery->where('kegiatan_id', $filterKegiatan);
+            }
+
+            if ($tanggal_awal && $tanggal_akhir) {
+                $kehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
+            }
+
+            $kehadiran = $kehadiranQuery->get();
+        } else if (auth()->user()->cannot('Admin') && auth()->user()->cannot('Viewer')) {
+            // Buat query dasar untuk non-admin atau non-viewer hanya ketika ada filter
+            if ($filterKegiatan || ($tanggal_awal && $tanggal_akhir)) {
+                $kehadiranQuery = Kehadiran::orderBy('tanggal', 'desc')->where('status', 'Aktif');
+
+                if ($filterKegiatan) {
+                    $kehadiranQuery->where('kegiatan_id', $filterKegiatan);
+                }
+
+                if ($tanggal_awal && $tanggal_akhir) {
+                    $kehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
+                }
+
+                $kehadiran = $kehadiranQuery->get();
+            }
         }
-        if ($tanggal_awal && $tanggal_akhir) {
-            $kehadiranQuery->whereBetween('tanggal', [$tanggal_awal, $tanggal_akhir]);
-        }
-        $kehadiran = $kehadiranQuery->get();
-        
-        if ($kehadiran->isEmpty()) {
-            Alert::error('Tidak Ditemukan!', 'Data kehadiran tidak ditemukan!');
-        }
+
+        // Pastikan $kehadiran kosong jika tidak ada filter yang diberikan
 
         $statuskehadiranQuery = Statuskehadiran::join('kehadirans', 'statuskehadirans.kehadiran_id', '=', 'kehadirans.id')
             ->join('mahasiswas', 'statuskehadirans.mahasiswa_id', '=', 'mahasiswas.id')
@@ -129,7 +236,10 @@ class LaporanController extends Controller
         $statuskehadiranQuery->whereIn('kehadiran_id', $kehadiran->pluck('id'));
         $statuskehadiran = $statuskehadiranQuery->get();
 
-        return view('laporan.printlaporan', compact('kehadiran', 'statuskehadiran', 'datakegiatan'));
+        return view('laporan.printlaporan', compact('kehadiran', 'statuskehadiran'), [
+            // 'datalcc'   => $datalcc->get(),
+            'title'     => 'laporan',
+        ]);
     }
 
     /**
@@ -190,16 +300,20 @@ class LaporanController extends Controller
 
     public function printlcc()
     {
-        $datalcc = Mahasiswa::where('status_ukm','Anggota LCC')->where('tingkat','1')->orderby('nama','asc');
+        $datalcc = Mahasiswa::where('status_ukm', 'Anggota LCC')
+            ->whereHas('kelas', function ($query) {
+                $query->where('tingkat', '1');
+            })
+            ->orderby('nama', 'asc')->get();
         return view('laporan.printlcc', [
-            'datalcc' => $datalcc->paginate(50),
+            'datalcc' => $datalcc,
         ]);
     }
     public function printmi23a()
     {
-        $datami23a = Mahasiswa::where('kelas_id','1')->orderby('nama','asc');
+        $datami23a = Mahasiswa::where('kelas_id', '1')->orderby('nama', 'asc');
         return view('laporan.printlcc', [
-            'datalcc' => $datami23a->paginate(50),
+            'datalcc' => $datami23a->get(),
         ]);
     }
 }

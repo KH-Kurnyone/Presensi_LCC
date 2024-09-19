@@ -10,14 +10,28 @@ class Kehadiran extends Model
     use HasFactory;
     protected $guarded = ['id'];
 
-    public function statuskehadiran() {
-        return $this->hasMany(Statuskehadiran::class,'kehadiran_id','id');
-    }
-    public function user() {
-        return $this->belongsTo(User::class,'user_id','id');
-    }
-    public function kegiatan() {
-        return $this->belongsTo(Kegiatan::class,'kegiatan_id','id');
+    public function statuskehadiran()
+    {
+        return $this->hasMany(Statuskehadiran::class, 'kehadiran_id', 'id');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function kegiatan()
+    {
+        return $this->belongsTo(Kegiatan::class, 'kegiatan_id', 'id');
+    }
+
+    public function sesiDet()
+    {
+        return $this->belongsTo(SesiDet::class, 'kehadiran_id', 'id');
+    }
+
+    public function mahasiswa()
+    {
+        return $this->belongsTo(Mahasiswa::class, 'mahasiswa_id', 'id');
+    }
 }

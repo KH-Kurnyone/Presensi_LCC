@@ -101,7 +101,7 @@
                             </div>
                         </div>
                         <button type="submit"
-                            class="form-control btn-login rounded-pill submit px-3 text-white text-center"
+                            class="form-control bg-danger btn-login rounded-pill submit px-3 text-white text-center"
                             tabindex="3">Login</button>
                     </form>
                 </div>
