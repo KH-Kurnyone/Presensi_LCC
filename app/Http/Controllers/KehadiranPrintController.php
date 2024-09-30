@@ -50,12 +50,42 @@ class KehadiranPrintController extends Controller
     {
         $kehadiran = Kehadiran::findOrFail($id);
         $statuskehadiran = Statuskehadiran::where('kehadiran_id', $kehadiran->id)->get();
+
+        $jumlahHadir = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('status_kehadiran', 'Hadir')
+            ->count();
+        $jumlahDisiplin = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->whereIn('keterangan', ['Lebih Awal', 'Tepat Waktu'])
+            ->count();
+        $jumlahTelat = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('keterangan', 'like', 'Telat % Menit')
+            ->count();
+        $jumlahIzin = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('status_kehadiran', 'Izin')
+            ->count();
+        $jumlahSakit = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('status_kehadiran', 'Sakit')
+            ->count();
+        $jumlahAlfa = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('status_kehadiran', 'Alfa')
+            ->count();
+
         $dataSesi = SesiDet::where('kehadiran_id', $kehadiran->id)
             ->join('sesis', 'sesi_dets.sesi_id', '=', 'sesis.id')
             ->orderBy('sesis.sesi', 'asc')
             ->get();
 
-        return view('kehadiran.print', compact('kehadiran','statuskehadiran','dataSesi'), ['id' => $id]);
+        return view('kehadiran.print', compact(
+            'kehadiran',
+            'statuskehadiran',
+            'dataSesi',
+            'jumlahHadir',
+            'jumlahIzin',
+            'jumlahSakit',
+            'jumlahAlfa',
+            'jumlahDisiplin',
+            'jumlahTelat',
+        ), ['id' => $id]);
     }
 
     /**

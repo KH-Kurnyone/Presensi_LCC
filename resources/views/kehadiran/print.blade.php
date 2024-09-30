@@ -30,17 +30,30 @@
 
     <!-- Template Main CSS File -->
     <link href="/assetsadmin/css/style.css" rel="stylesheet">
+    <style>
+        @media print {
+            @page {
+                margin: 2cm;
+            }
+
+            body {
+                margin: 0;
+            }
+        }
+    </style>
+
 </head>
 
-<body style="font-family: 'Times New Roman', Times, serif; font-size: 12px; background-color:#fff; color:#000">
+<body style="font-family: 'Times New Roman', Times, serif; font-size: 12px; background-color:#fff; color:#000;">
     <section class="section">
-        <img src="/img_logo/Logo_Politeknik_LP3I.png" alt="" class="mt-3 mx-4"
+        <img src="/img_logo/Logo_Politeknik_LP3I.png" alt="" class="mx-4"
             style="position: absolute; width: 55px;">
         <div class="mx-3" style="display: flex; justify-content: end;">
-            <img src="/assetsadmin/img/LogoLCC.png" alt="" style="position: absolute; width: 100px;">
+            <img src="/assetsadmin/img/LogoLCC.png" alt=""
+                style="position: absolute; width: 100px; margin-top: -15px;">
         </div>
         <div class="text-center">
-            <p class="fw-bold mt-4" style="font-size: 16px">Laporan Kehadiran UKM LCC</p>
+            <p class="fw-bold" style="font-size: 16px">Laporan Kehadiran UKM LCC</p>
             <p class="fw-bold" style="margin-top: -17px; font-size: 16px">Politeknik LP3I Tasikmalaya</p>
             <p style="margin-top: -17px">Jl. Ir. H. Juanda, Panglayungan, Kec. Cipedes, Kab. Tasikmalaya</p>
         </div>
@@ -86,7 +99,7 @@
                 Carbon::setLocale('id');
             @endphp
             <div class="row">
-                <div class="col-lg-6 col-6 ">
+                <div class="col-lg-8 col-8 ">
                     <div class="row">
                         <div class="col-lg-3 col-4">Kegiatan</div>
                         <div class="col-lg-1 col-1">:</div>
@@ -114,7 +127,7 @@
                     </div>
                 </div>
 
-                <div class="col-lg-6 col-6 text-end">
+                <div class="col-lg-4 col-4 text-end">
                     <div>
                         {{ Carbon::parse($kehadiran->tanggal)->translatedFormat('l, d F Y') }}
                     </div>
@@ -130,7 +143,7 @@
             </div>
         </div>
 
-        <div class="table-responsive mx-3 my-3">
+        <div class="table-responsive mx-3">
             <table class="table table-bordered border-dark table-sm">
                 <thead class="text-center">
                     <th>No.</th>
@@ -162,6 +175,42 @@
                     @endforeach
                 </tbody>
             </table>
+        </div>
+        <div class="mx-3">
+            <div class="fw-bold fs-6">Keterangan Kehadiran</div>
+            <div class="d-flex">
+                <div class="col-2">
+                    - Total Hadir
+                </div>
+                <div class="col-10">
+                    : {{ $jumlahHadir }} Mahasiswa ({{ $jumlahDisiplin }} Awal/Tepat Waktu dan {{ $jumlahTelat }}
+                    Telat)
+                </div>
+            </div>
+            <div class="d-flex">
+                <div class="col-2">
+                    - Total Sakit
+                </div>
+                <div class="col-10">
+                    : {{ $jumlahSakit }} Mahasiswa
+                </div>
+            </div>
+            <div class="d-flex">
+                <div class="col-2">
+                    - Total Izin
+                </div>
+                <div class="col-10">
+                    : {{ $jumlahIzin }} Mahasiswa
+                </div>
+            </div>
+            <div class="d-flex">
+                <div class="col-2">
+                    - Total Alfa
+                </div>
+                <div class="col-10">
+                    : {{ $jumlahAlfa }} Mahasiswa
+                </div>
+            </div>
         </div>
     </section>
 

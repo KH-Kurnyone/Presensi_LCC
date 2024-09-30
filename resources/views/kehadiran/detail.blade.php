@@ -126,7 +126,7 @@
             </div>
 
             {{-- Table Kehadiran --}}
-            <div class="table-responsive mx-3 my-3">
+            <div class="table-responsive mx-3">
                 <table class="table table-bordered">
                     <thead class="table-secondary text-center" style="white-space: nowrap">
                         <th>No.</th>
@@ -175,6 +175,41 @@
                 </table>
             </div>
             {{-- End Tabel Kehadiran --}}
+            <div class="mx-3 mb-3">
+                <h5 class="fw-bold">Keterangan Kehadiran</h5>
+                <div class="d-flex">
+                    <div class="col-2">
+                        - Total Hadir
+                    </div>
+                    <div class="col-10">
+                        : {{ $jumlahHadir }} Mahasiswa ({{ $jumlahDisiplin }} Awal/Tepat Waktu dan {{ $jumlahTelat }} Telat)
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="col-2">
+                        - Total Sakit
+                    </div>
+                    <div class="col-10">
+                        : {{ $jumlahSakit }} Mahasiswa
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="col-2">
+                        - Total Izin
+                    </div>
+                    <div class="col-10">
+                        : {{ $jumlahIzin }} Mahasiswa
+                    </div>
+                </div>
+                <div class="d-flex">
+                    <div class="col-2">
+                        - Total Alfa
+                    </div>
+                    <div class="col-10">
+                        : {{ $jumlahAlfa }} Mahasiswa
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="d-flex justify-content-end mb-5">

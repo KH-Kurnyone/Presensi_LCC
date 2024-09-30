@@ -453,8 +453,6 @@
         });
     </script>
 
-
-
     {{-- Grafik Anggota dan Bukan Anggota --}}
     {{-- <script>
         const ctxOrganization = document.getElementById('organizationChart').getContext('2d');

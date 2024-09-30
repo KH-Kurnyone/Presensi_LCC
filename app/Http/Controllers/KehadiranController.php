@@ -168,12 +168,43 @@ class KehadiranController extends Controller
     {
         $kehadiran = Kehadiran::findOrFail($id);
         $statuskehadiran = Statuskehadiran::where('kehadiran_id', $kehadiran->id)->get();
+
+        $jumlahHadir = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('status_kehadiran', 'Hadir')
+            ->count();
+        $jumlahDisiplin = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->whereIn('keterangan', ['Lebih Awal', 'Tepat Waktu'])
+            ->count();
+        $jumlahTelat = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('keterangan', 'like', 'Telat % Menit')
+            ->count();
+        $jumlahIzin = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('status_kehadiran', 'Izin')
+            ->count();
+        $jumlahSakit = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('status_kehadiran', 'Sakit')
+            ->count();
+        $jumlahAlfa = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
+            ->where('status_kehadiran', 'Alfa')
+            ->count();
+
+
         $dataSesi = SesiDet::where('kehadiran_id', $kehadiran->id)
             ->join('sesis', 'sesi_dets.sesi_id', '=', 'sesis.id')
             ->orderBy('sesis.sesi', 'asc')
             ->get();
 
-        return view('kehadiran.detail', compact('kehadiran', 'statuskehadiran', 'dataSesi'), [
+        return view('kehadiran.detail', compact(
+            'kehadiran',
+            'statuskehadiran',
+            'dataSesi',
+            'jumlahHadir',
+            'jumlahIzin',
+            'jumlahSakit',
+            'jumlahAlfa',
+            'jumlahDisiplin',
+            'jumlahTelat',
+        ), [
             'title' => 'kehadiran',
         ]);
     }
@@ -202,7 +233,14 @@ class KehadiranController extends Controller
         $dataSesiChecked = SesiDet::where('kehadiran_id', $kehadiran->id)->get();
         $dataSesi = Sesi::orderBy('sesi', 'asc')->get();
 
-        return view('kehadiran.edit', compact('kehadiran', 'statuskehadiran', 'datakegiatan', 'dataSesi', 'dataPemateri', 'dataSesiChecked'), [
+        return view('kehadiran.edit', compact(
+            'kehadiran',
+            'statuskehadiran',
+            'datakegiatan',
+            'dataSesi',
+            'dataPemateri',
+            'dataSesiChecked',
+        ), [
             'title' => 'kehadiran',
         ]);
     }
@@ -219,7 +257,7 @@ class KehadiranController extends Controller
         // Update Validation
         $this->validate($request, [
             'tanggal'               => 'required|date',
-            'mahasiswa_id'          => 'required|exists:mahasiswas,id',
+            // 'mahasiswa_id'          => 'required|exists:mahasiswas,id',
             'kegiatan_id'           => 'required|exists:kegiatans,id',
             'ket_kegiatan'          => 'required',
         ]);

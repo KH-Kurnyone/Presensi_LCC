@@ -30,21 +30,32 @@
 
     <!-- Template Main CSS File -->
     <link href="/assetsadmin/css/style.css" rel="stylesheet">
+    <style>
+        @media print {
+            @page {
+                margin: 2cm;
+            }
+
+            body {
+                margin: 0;
+            }
+        }
+    </style>
 </head>
 
 <body style="font-family: 'Times New Roman', Times, serif; font-size: 12px; background-color:#fff; color:#000">
     <section class="section">
         <img src="/img_logo/Logo_Politeknik_LP3I.png" alt="" class="mt-3 mx-4"
             style="position: absolute; width: 55px;">
-            <div class="mx-3" style="display: flex; justify-content: end;">
-                <img src="/assetsadmin/img/LogoLCC.png" alt="" style="position: absolute; width: 100px;">
+        <div class="mx-3" style="display: flex; justify-content: end;">
+            <img src="/assetsadmin/img/LogoLCC.png" alt="" style="position: absolute; width: 100px;">
         </div>
         <div class="text-center">
             <p class="fw-bold mt-4" style="font-size: 16px">Laporan Kehadiran UKM LCC</p>
             <p class="fw-bold" style="margin-top: -17px; font-size: 16px">Politeknik LP3I Tasikmalaya</p>
             <p style="margin-top: -17px">Jl. Ir. H. Juanda, Panglayungan, Kec. Cipedes, Kab. Tasikmalaya</p>
         </div>
-        <div class="border-bottom border-dark mx-3 mb-1 mt-4"></div>
+        <div class="border-bottom border-dark mx-3 mb-1 mt-3"></div>
         <div class="border-bottom border-dark mx-3"></div>
         <div class="mx-3 mt-3">
             <div class="row">
@@ -69,8 +80,8 @@
             </div>
         </div>
 
-        <div class="table-responsive my-3">
-            <table class="table table-bordered">
+        <div class="table-responsive mt-2 mx-3">
+            <table class="table table-bordered table-sm">
                 <thead class="text-center">
                     <th>No.</th>
                     <th>Nama Lengkap</th>
@@ -84,11 +95,17 @@
                         <tr class="border">
                             <td class="text-center">{{ $loop->iteration }}.</td>
                             <td>{{ $item->nama }}</td>
-                            <td class="text-center">{{ $item->kelas->prodi->prodi }}</td>
+                            <td>{{ $item->kelas->prodi->prodi }}</td>
                             <td class="text-center">{{ $item->kelas->kelas }}</td>
                             <td class="text-center">{{ $item->jenis_kelamin }}</td>
                             <td rowspan="2">{{ $loop->iteration }}.</td>
                         </tr>
+                        @if ($loop->iteration == 23)
+                            <tr height="50px">
+                                <td colspan="5"></td>
+                                <td></td>
+                            </tr>
+                        @endif
                     @endforeach
                     <tr height="50px">
                         <td colspan="5"></td>
@@ -100,7 +117,7 @@
     </section>
 
     <script>
-        addEventListener('load',function myfunction(){
+        addEventListener('load', function myfunction() {
             window.print()
         });
     </script>

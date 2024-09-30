@@ -116,6 +116,7 @@ class DashboardController extends Controller
         ]);
     }
 
+    // Perbandinga Bukan Anggota dan Anggota
     public function getOrganizationData(Request $request)
     {
         $tingkat = $request->input('tingkat', '1'); // Pastikan tingkat adalah string
@@ -125,12 +126,14 @@ class DashboardController extends Controller
         SUM(CASE WHEN status_ukm = 'Bukan Anggota' THEN 1 ELSE 0 END) as bukanAnggota
     ")
             ->whereHas('kelas', function ($query) use ($tingkat) {
-                $query->where('tingkat', $tingkat);
+                $query->where('tingkat', $tingkat)
+                    ->where('kelas', 'like', 'MI%'); // Menambahkan kondisi untuk kelas yang dimulai dengan 'MI'
             })
             ->first();
 
         return response()->json($data);
     }
+
 
     public function getAttendanceData(Request $request)
     {
