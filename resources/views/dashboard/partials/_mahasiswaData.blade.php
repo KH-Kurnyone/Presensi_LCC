@@ -12,13 +12,13 @@
         <div class="col-4">
             <div class="row">
                 <div class="col-lg-6">
-                    <h5 class="fw-bold">{{ $item->kelas }}</h5>
+                    <p class="fw-bold">{{ $item->kelas }}</p>
                 </div>
-                <div class="col-lg-1 titik-mobile">
-                    <h5>:</h5>
-                </div>
-                <div class="col-lg-3">
-                    <h5>{{ $item->mahasiswa->count() }}</h5>
+                {{-- <div class="col-lg-1 titik-mobile">
+                    <p>:</p>
+                </div> --}}
+                <div class="col-lg-6">
+                    <p>: {{ $item->mahasiswa->count() }}</p>
                 </div>
             </div>
         </div>

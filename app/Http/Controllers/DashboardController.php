@@ -74,30 +74,30 @@ class DashboardController extends Controller
 
         $kegiatanId = $request->input('kegiatan_id');
 
-        $top7Mahasiswa = Statuskehadiran::with('mahasiswa') // Eager load mahasiswa
-            ->select('mahasiswa_id', DB::raw('COUNT(CASE WHEN status_kehadiran = "Hadir" THEN 1 END) as total_hadir'), DB::raw('COUNT(CASE WHEN keterangan LIKE "Telat%" THEN 1 END) as total_telat'))
-            ->when($kegiatanId, function ($query, $kegiatanId) {
-                return $query->whereHas('kehadiran', function ($q) use ($kegiatanId) {
-                    $q->where('kegiatan_id', $kegiatanId)->where('status', 'Aktif');
-                });
-            }, function ($query) {
-                return $query->whereHas('kehadiran', function ($q) {
-                    $q->where('status', 'Aktif');
-                });
-            })
-            ->groupBy('mahasiswa_id')
-            ->join('mahasiswas', 'statuskehadirans.mahasiswa_id', '=', 'mahasiswas.id')
-            ->orderBy('total_hadir', 'desc')
-            ->orderBy('total_telat', 'asc')
-            ->orderBy('mahasiswas.nama', 'asc')
-            ->take(7)
-            ->get();
+        // $top7Mahasiswa = Statuskehadiran::with('mahasiswa') // Eager load mahasiswa
+        //     ->select('mahasiswa_id', DB::raw('COUNT(CASE WHEN status_kehadiran = "Hadir" THEN 1 END) as total_hadir'), DB::raw('COUNT(CASE WHEN keterangan LIKE "Telat%" THEN 1 END) as total_telat'))
+        //     ->when($kegiatanId, function ($query, $kegiatanId) {
+        //         return $query->whereHas('kehadiran', function ($q) use ($kegiatanId) {
+        //             $q->where('kegiatan_id', $kegiatanId)->where('status', 'Aktif');
+        //         });
+        //     }, function ($query) {
+        //         return $query->whereHas('kehadiran', function ($q) {
+        //             $q->where('status', 'Aktif');
+        //         });
+        //     })
+        //     ->groupBy('mahasiswa_id')
+        //     ->join('mahasiswas', 'statuskehadirans.mahasiswa_id', '=', 'mahasiswas.id')
+        //     ->orderBy('total_hadir', 'desc')
+        //     ->orderBy('total_telat', 'asc')
+        //     ->orderBy('mahasiswas.nama', 'asc')
+        //     ->take(7)
+        //     ->get();
 
 
         // Jika permintaan menggunakan AJAX, kembalikan data JSON
-        if ($request->ajax()) {
-            return response()->json($top7Mahasiswa);
-        }
+        // if ($request->ajax()) {
+        //     return response()->json($top7Mahasiswa);
+        // }
 
         return view('dashboard.index', [
             // Total Mahasiswa Terdaftar
@@ -110,7 +110,7 @@ class DashboardController extends Controller
             'tingkatLCC'    => $tingkatLCC,
 
             'dataKegiatan'  => $dataKegiatan,
-            'top7Mahasiswa'  => $top7Mahasiswa,
+            // 'top7Mahasiswa'  => $top7Mahasiswa,
 
             'title'         => 'dashboard',
         ]);

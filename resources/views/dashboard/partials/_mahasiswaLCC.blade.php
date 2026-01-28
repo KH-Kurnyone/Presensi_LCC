@@ -12,17 +12,17 @@
         <div class="col-4">
             <div class="row">
                 <div class="col-lg-6">
-                    <h5 class="fw-bold ">{{ $item->kelas }}</h5>
+                    <p class="fw-bold ">{{ $item->kelas }}</p>
                 </div>
-                <div class="col-lg-1 titik-mobile">
+                {{-- <div class="col-lg-1 titik-mobile">
                     <h5>:</h5>
-                </div>
-                <div class="col-lg-3">
-                    <h5>
+                </div> --}}
+                <div class="col-lg-6">
+                    <p>:
                         {{ $item->mahasiswa->filter(function ($mahasiswa) {
                                 return $mahasiswa->status_ukm == 'Anggota LCC' || $mahasiswa->status_ukm == 'BPH';
                             })->count() }}
-                    </h5>
+                    </p>
                 </div>
             </div>
         </div>

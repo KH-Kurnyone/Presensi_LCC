@@ -18,8 +18,8 @@ class CreateStatuskehadirans extends Migration
             $table->foreignId('kehadiran_id');
             $table->foreignId('mahasiswa_id');
             $table->enum('status_kehadiran',['Hadir','Sakit','Izin','Alfa']);
-            $table->time('waktu_hadir')->nullable();
-            $table->string('keterangan','30');
+            // $table->time('waktu_hadir')->nullable();
+            // $table->string('keterangan','50');
             $table->timestamps();
         });
     }

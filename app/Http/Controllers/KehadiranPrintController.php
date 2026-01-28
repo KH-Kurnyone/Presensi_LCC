@@ -54,12 +54,6 @@ class KehadiranPrintController extends Controller
         $jumlahHadir = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
             ->where('status_kehadiran', 'Hadir')
             ->count();
-        $jumlahDisiplin = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
-            ->whereIn('keterangan', ['Lebih Awal', 'Tepat Waktu'])
-            ->count();
-        $jumlahTelat = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
-            ->where('keterangan', 'like', 'Telat % Menit')
-            ->count();
         $jumlahIzin = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
             ->where('status_kehadiran', 'Izin')
             ->count();
@@ -83,8 +77,6 @@ class KehadiranPrintController extends Controller
             'jumlahIzin',
             'jumlahSakit',
             'jumlahAlfa',
-            'jumlahDisiplin',
-            'jumlahTelat',
         ), ['id' => $id]);
     }
 

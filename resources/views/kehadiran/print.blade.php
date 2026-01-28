@@ -101,19 +101,19 @@
             <div class="row">
                 <div class="col-lg-8 col-8 ">
                     <div class="row">
-                        <div class="col-lg-3 col-4">Kegiatan</div>
+                        <div class="col-lg-3 col-3">Kegiatan</div>
                         <div class="col-lg-1 col-1">:</div>
-                        <div class="col-lg-8 col-7" style="margin-left: -4%">{{ $kehadiran->kegiatan->kegiatan }}</div>
+                        <div class="col-lg-8 col-8" style="margin-left: -4%">{{ $kehadiran->kegiatan->kegiatan }}</div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-3 col-4">Keterangan</div>
+                        <div class="col-lg-3 col-3">Keterangan</div>
                         <div class="col-lg-1 col-1">:</div>
-                        <div class="col-lg-8 col-7" style="margin-left: -4%">{{ $kehadiran->ket_kegiatan }}</div>
+                        <div class="col-lg-8 col-8" style="margin-left: -4%">{{ $kehadiran->ket_kegiatan }}</div>
                     </div>
                     <div class="row">
-                        <div class="col-lg-3 col-4">Waktu</div>
+                        <div class="col-lg-3 col-3">Waktu</div>
                         <div class="col-lg-1 col-1">:</div>
-                        <div class="col-lg-8 col-7" style="margin-left: -8%">
+                        <div class="col-lg-8 col-8" style="margin-left: -8%">
                             <ul>
                                 @foreach ($dataSesi as $item)
                                     <li>
@@ -148,29 +148,29 @@
                 <thead class="text-center">
                     <th>No.</th>
                     <th>Nama Mahasiswa</th>
-                    {{-- <th>Prodi</th> --}}
+                    <th>Prodi</th>
                     <th>Kelas</th>
                     <th>Gender</th>
                     <th>Status</th>
-                    <th>Waktu Hadir</th>
-                    <th>Keterangan</th>
+                    {{-- <th>Waktu Hadir</th>
+                    <th>Keterangan</th> --}}
                 </thead>
                 <tbody>
                     @foreach ($statuskehadiran as $item)
                         <tr>
                             <td class="text-center">{{ $loop->iteration }}.</td>
                             <td>{{ $item->mahasiswa->nama }}</td>
-                            {{-- <td>{{ $item->mahasiswa->kelas->prodi->prodi }}</td> --}}
+                            <td>{{ $item->mahasiswa->kelas->prodi->prodi }}</td>
                             <td class="text-center">{{ $item->mahasiswa->kelas->kelas }}</td>
                             <td class="text-center">{{ $item->mahasiswa->jenis_kelamin }}</td>
                             <td class="text-center">{{ $item->status_kehadiran }}</td>
-                            @if ($item->waktu_hadir === null)
+                            {{-- @if ($item->waktu_hadir === null)
                                 <td class="text-center">-</td>
                             @else
                                 <td class="text-center">{{ \Carbon\Carbon::parse($item->waktu_hadir)->format('H:i') }}
                                 </td>
                             @endif
-                            <td class="text-center">{{ $item->keterangan }}</td>
+                            <td class="text-center">{{ $item->keterangan }}</td> --}}
                         </tr>
                     @endforeach
                 </tbody>
@@ -183,8 +183,7 @@
                     - Total Hadir
                 </div>
                 <div class="col-10">
-                    : {{ $jumlahHadir }} Mahasiswa ({{ $jumlahDisiplin }} Awal/Tepat Waktu dan {{ $jumlahTelat }}
-                    Telat)
+                    : {{ $jumlahHadir }} Mahasiswa
                 </div>
             </div>
             <div class="d-flex">

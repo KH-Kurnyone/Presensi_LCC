@@ -84,10 +84,11 @@
                         </div>
                     </div>
                     <div class="d-flex mt-2">
-                        <button class="btn btn-danger btn-login text-white me-2" style="border-radius: 5px" tabindex="4"><i
-                                class="bi bi-search"></i> Cari
+                        <button class="btn btn-danger btn-login text-white me-2" style="border-radius: 5px"
+                            tabindex="4"><i class="bi bi-search"></i> Cari
                             Data</button>
-                        <a href="/laporan" class="btn btn-danger btn-login text-white" style="border-radius: 5px" tabindex="5">
+                        <a href="/laporan" class="btn btn-danger btn-login text-white" style="border-radius: 5px"
+                            tabindex="5">
                             <i class="bi bi-arrow-clockwise"></i> Refresh
                         </a>
                     </div>
@@ -125,6 +126,10 @@
                                 <th>Nama Mahasiswa</th>
                                 <th>Kelas</th>
                                 <th>Gender</th>
+                                {{-- <th>Asal Sekolah</th>
+                                <th>Jurusan</th> --}}
+                                <th>No. Telp.</th>
+                                <th>Total Alpha</th>
                                 @foreach ($kehadiran as $item)
                                     <th>
                                         {{ $item->kegiatan->kegiatan }} <br>
@@ -148,6 +153,27 @@
                                     <td>{{ $mahasiswa->nama }}</td>
                                     <td>{{ $mahasiswa->kelas->kelas }}</td>
                                     <td class="text-center">{{ $mahasiswa->jenis_kelamin }}</td>
+                                    {{-- <td>{{ $mahasiswa->asal_sekolah }}</td>
+                                    <td>{{ $mahasiswa->jurusan }}</td> --}}
+                                    @php
+                                        // Pastikan hanya angka, hapus karakter non-digit
+                                        $nomor = preg_replace('/[^0-9]/', '', $mahasiswa->no_telpon);
+
+                                        // Jika nomor diawali dengan 0, ganti dengan kode negara Indonesia (62)
+                                        if (substr($nomor, 0, 1) == '0') {
+                                            $nomor = '62' . substr($nomor, 1);
+                                        }
+
+                                        // Pesan yang akan otomatis dikirim di WhatsApp
+                                        $pesan = "Assalamualaikum {$mahasiswa->nama},\n\nSaya dari LCC, mau tanya untuk semester sekarang akan mulai aktif lagi tidak di kegiatan LCC Class? Karena kalau lihat absensi semester kemarin, banyak tidak hadirnya di beberapa pertemuan terakhir.";
+                                    @endphp
+                                    <td>
+                                        <a href="https://api.whatsapp.com/send?phone={{ $nomor }}&text={{ urlencode($pesan) }}"
+                                            target="_blank">
+                                            {{ $mahasiswa->no_telpon }}
+                                        </a>
+                                    </td>
+                                    <td class="text-center">{{ $hitungalfa }}</td>
                                     @foreach ($kehadiran as $kehadiranItem)
                                         @php
                                             $statusKehadiran = $mahasiswaKehadiran->firstWhere(
@@ -250,57 +276,56 @@
         {{-- </form> --}}
         {{-- </div> --}}
 
-        @can('Admin')
-            <div class="card-header bg-primary" style="padding: 2px"></div>
-            <div class="card p-2">
-                <p class="mx-3 my-3 fs-5 fw-bold"><i class="bi bi-file-earmark-pdf-fill fs-3"></i> Cetak Absensi Anggota LCC
-                </p>
-                <div class="accordion accordion-flush border mx-3 mb-3" id="accordionFlushExample">
-                    <div class="accordion-item border-secondary shadow-sm">
-                        <div class="mx-3">
-                            <h2 class="accordion-header" id="flush-headingLCC">
-                                <button class="accordion-button collapsed fw-bold fw-bold" type="button"
-                                    data-bs-toggle="collapse" data-bs-target="#flush-collapseLCC" aria-expanded="false"
-                                    aria-controls="flush-collapseLCC">
-                                    Anggota LP3I Computer Club - Tingkat I
-                                </button>
-                            </h2>
-                            <div id="flush-collapseLCC" class="accordion-collapse collapse"
-                                aria-labelledby="flush-headingLCC" data-bs-parent="#accordionFlushExample">
-                                <div class="accordion-body">
-                                    <div class="table-responsive my-2">
-                                        <table class="table table-bordered">
-                                            <thead class="table-secondary text-center" style="white-space: nowrap">
-                                                <th>No.</th>
-                                                <th>Nama Lengkap</th>
-                                                <th>Prodi</th>
-                                                <th>Kelas</th>
-                                                <th>Gender</th>
-                                                <th colspan="2">Tanda Tangan</th>
-                                            </thead>
-                                            <tbody style="white-space: nowrap">
-                                                @foreach ($datalcc as $item)
-                                                    <tr class="border">
-                                                        <td class="text-center">{{ $loop->iteration }}.</td>
-                                                        <td>{{ $item->nama }}</td>
-                                                        <td>{{ $item->kelas->prodi->prodi }}</td>
-                                                        <td class="text-center">{{ $item->kelas->kelas }}</td>
-                                                        <td class="text-center">{{ $item->jenis_kelamin }}</td>
-                                                        <td rowspan="2">{{ $loop->iteration }}.</td>
-                                                    </tr>
-                                                @endforeach
-                                                <tr height="50px">
-                                                    <td colspan="5"></td>
-                                                    <td></td>
+        <div class="card-header bg-primary" style="padding: 2px"></div>
+        <div class="card p-2">
+            <p class="mx-3 my-3 fs-5 fw-bold"><i class="bi bi-file-earmark-pdf-fill fs-3"></i> Cetak Absensi Anggota LCC
+            </p>
+            <div class="accordion accordion-flush border mx-3 mb-3" id="accordionFlushExample">
+                <div class="accordion-item border-secondary shadow-sm">
+                    <div class="mx-3">
+                        <h2 class="accordion-header" id="flush-headingLCC">
+                            <button class="accordion-button collapsed fw-bold fw-bold" type="button"
+                                data-bs-toggle="collapse" data-bs-target="#flush-collapseLCC" aria-expanded="false"
+                                aria-controls="flush-collapseLCC">
+                                Anggota LP3I Computer Club - Tingkat I
+                            </button>
+                        </h2>
+                        <div id="flush-collapseLCC" class="accordion-collapse collapse"
+                            aria-labelledby="flush-headingLCC" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body">
+                                <div class="table-responsive my-2">
+                                    <table class="table table-bordered">
+                                        <thead class="table-secondary text-center" style="white-space: nowrap">
+                                            <th>No.</th>
+                                            <th>Nama Lengkap</th>
+                                            <th>Prodi</th>
+                                            <th>Kelas</th>
+                                            <th>Gender</th>
+                                            <th colspan="2">Tanda Tangan</th>
+                                        </thead>
+                                        <tbody style="white-space: nowrap">
+                                            @foreach ($datalcc as $item)
+                                                <tr class="border">
+                                                    <td class="text-center">{{ $loop->iteration }}.</td>
+                                                    <td>{{ $item->nama }}</td>
+                                                    <td>{{ $item->kelas->prodi->prodi }}</td>
+                                                    <td class="text-center">{{ $item->kelas->kelas }}</td>
+                                                    <td class="text-center">{{ $item->jenis_kelamin }}</td>
+                                                    <td rowspan="2">{{ $loop->iteration }}.</td>
                                                 </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                    <div class="d-flex justify-content-end">
-                                        <div class="titik-mobile">
-                                            <a href="/printlcc" target="_blank" class="btn btn-danger btn-danger btn-login text-white">Cetak
-                                                Absensi <i class="bi bi-box-arrow-in-right"></i></a>
-                                        </div>
+                                            @endforeach
+                                            <tr height="50px">
+                                                <td colspan="5"></td>
+                                                <td></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="d-flex justify-content-end">
+                                    <div class="titik-mobile">
+                                        <a href="/printlcc" target="_blank"
+                                            class="btn btn-danger btn-danger btn-login text-white">Cetak
+                                            Absensi <i class="bi bi-box-arrow-in-right"></i></a>
                                     </div>
                                 </div>
                             </div>
@@ -308,7 +333,7 @@
                     </div>
                 </div>
             </div>
-        @endcan
+        </div>
         @can('Petugas')
             <div class="card-header bg-primary" style="padding: 2px"></div>
             <div class="card p-2">
@@ -357,7 +382,8 @@
                                     </div>
                                     <div class="d-flex justify-content-end">
                                         <div class="titik-mobile">
-                                            <a href="/printlcc" target="_blank" class="btn btn-danger btn-login text-white">Cetak
+                                            <a href="/printlcc" target="_blank"
+                                                class="btn btn-danger btn-login text-white">Cetak
                                                 Absensi <i class="bi bi-box-arrow-in-right"></i></a>
                                         </div>
                                     </div>
@@ -420,7 +446,8 @@
                                         </div>
                                         <div class="d-flex justify-content-end">
                                             <div class="titik-mobile">
-                                                <a href="#" target="" class="btn btn-danger btn-login text-white">Cetak
+                                                <a href="#" target=""
+                                                    class="btn btn-danger btn-login text-white">Cetak
                                                     Absensi <i class="bi bi-box-arrow-in-right"></i></a>
                                             </div>
                                         </div>

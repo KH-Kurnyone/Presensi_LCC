@@ -47,7 +47,8 @@
                                     class="form-select shadow-sm @error('mahasiswa_id') is-invalid @enderror"
                                     tabindex="2">
                                     <option disabled selected hidden>- Pilih Pemateri -</option>
-                                    <option value="0" {{ (old('mahasiswa_id') ?? $kehadiran->mahasiswa_id) == '0' ? 'selected' : '' }}>
+                                    <option value="0"
+                                        {{ (old('mahasiswa_id') ?? $kehadiran->mahasiswa_id) == '0' ? 'selected' : '' }}>
                                         BPH LCC</option>
                                     @foreach ($dataPemateri as $item)
                                         <option value="{{ $item->id }}"
@@ -63,16 +64,16 @@
                             <div class="col-lg-1 fw-bold titik-mobile">:</div>
                             <div class="col-lg-7">
                                 <div class="row">
-                                    {{-- @foreach ($dataSesi as $item)
+                                    @foreach ($dataSesi as $item)
                                         <div class="col-4">
                                             <input class="form-check-input @error('sesi_id') is-invalid @enderror"
                                                 type="checkbox" name="sesi_id[]" value="{{ $item->id }}"
                                                 {{ in_array($item->id, $dataSesiChecked->pluck('sesi_id')->toArray()) ? 'checked' : '' }}
-                                                tabindex="5" disabled>
+                                                tabindex="5">
                                             <label>{{ $item->sesi }}</label>
                                         </div>
-                                    @endforeach --}}
-                                    <ul class="ms-4">
+                                    @endforeach
+                                    {{-- <ul class="ms-4">
                                         @foreach ($dataSesiChecked as $item)
                                             <li>
                                                 {{ $item->sesi->sesi }}
@@ -80,7 +81,7 @@
                                                 {{ \Carbon\Carbon::parse($item->sesi->waktu_selesai)->format('H:i') }})
                                             </li>
                                         @endforeach
-                                    </ul>
+                                    </ul> --}}
                                 </div>
                             </div>
                         </div>
@@ -143,25 +144,25 @@
                         <thead class="table-secondary text-center" style="white-space: nowrap">
                             <th>No.</th>
                             <th>Nama Mahasiswa</th>
-                            {{-- <th>Prodi</th> --}}
+                            <th>Prodi</th>
                             <th>Kelas</th>
                             <th>Gender</th>
                             <th>Status</th>
-                            <th>Waktu Hadir</th>
-                            <th>Keterangan</th>
+                            {{-- <th>Waktu Hadir</th>
+                            <th>Keterangan</th> --}}
                         </thead>
                         <tbody style="white-space: nowrap">
                             @foreach ($statuskehadiran as $item)
                                 <tr>
                                     <td class="text-center">{{ $loop->iteration }}.</td>
                                     <td>{{ $item->mahasiswa->nama }}</td>
-                                    {{-- <td class="text-center">{{ $item->mahasiswa->kelas->prodi->prodi }}</td> --}}
+                                    <td>{{ $item->mahasiswa->kelas->prodi->prodi }}</td>
                                     <td class="text-center">{{ $item->mahasiswa->kelas->kelas }}</td>
                                     <td class="text-center">{{ $item->mahasiswa->jenis_kelamin }}</td>
                                     <td class="text-center">
-                                        {{-- <select name="status_kehadiran[{{ $item->id }}]"
+                                        <select name="status_kehadiran[{{ $item->id }}]"
                                             class="form-select @error('status_kehadiran') is-invalid @enderror"
-                                            tabindex="5" disabled>
+                                            tabindex="5" onchange="updateKeterangan(this, {{ $item->id }})">
                                             <option value="Hadir"
                                                 {{ $item->status_kehadiran === 'Hadir' ? 'selected' : '' }}>Hadir
                                             </option>
@@ -174,30 +175,18 @@
                                             <option value="Alfa"
                                                 {{ $item->status_kehadiran === 'Alfa' ? 'selected' : '' }}>Alfa
                                             </option>
-                                        </select> --}}
-                                        {{-- {{ $item->status_kehadiran }} --}}
-                                        @if ($item->status_kehadiran == 'Hadir')
-                                            <span
-                                                class="badge rounded-pill bg-success badge-kehadiran">{{ $item->status_kehadiran }}</span>
-                                        @elseif ($item->status_kehadiran == 'Izin')
-                                            <span
-                                                class="badge rounded-pill bg-info text-dark badge-kehadiran">{{ $item->status_kehadiran }}</span>
-                                        @elseif ($item->status_kehadiran == 'Sakit')
-                                            <span
-                                                class="badge rounded-pill bg-warning text-dark badge-kehadiran">{{ $item->status_kehadiran }}</span>
-                                        @elseif ($item->status_kehadiran == 'Alfa')
-                                            <span
-                                                class="badge rounded-pill bg-danger badge-kehadiran">{{ $item->status_kehadiran }}</span>
-                                        @endif
+                                        </select>
+                                    
                                     </td>
-                                    @if ($item->waktu_hadir === null)
-                                        <td class="text-center">-</td>
-                                    @else
-                                        <td class="text-center">
-                                            {{ \Carbon\Carbon::parse($item->waktu_hadir)->format('H:i') }}
-                                        </td>
-                                    @endif
-                                    <td class="text-center">{{ $item->keterangan }}</td>
+                                    {{-- <td class="text-center">
+                                        <input id="waktu_hadir-{{ $item->id }}" type="time" class="form-control"
+                                            name="waktu_hadir[{{ $item->id }}]" value="{{ $item->waktu_hadir }}">
+                                    </td>
+                                    <td class="text-center" width="180px">
+                                        <input id="keterangan-{{ $item->id }}" type="text"
+                                            name="keterangan[{{ $item->id }}]" class="form-control"
+                                            value="{{ $item->keterangan }}" required>
+                                    </td> --}}
                                 </tr>
                             @endforeach
                         </tbody>
@@ -205,12 +194,31 @@
                 </div>
                 {{-- End Tabel Kehadiran --}}
                 <div class="d-flex justify-content-end mx-3 mb-5">
-                    <button class="btn btn-danger btn-login text-white mt-2" style="padding-left: 20px; padding-right: 20px;"
-                        tabindex="6">Simpan <i class="bi bi-box-arrow-in-right"></i></button>
+                    <button class="btn btn-danger btn-login text-white mt-2"
+                        style="padding-left: 20px; padding-right: 20px;" tabindex="6">Simpan <i
+                            class="bi bi-box-arrow-in-right"></i></button>
                 </div>
             </form>
         </div>
 
     </section>
     {{-- </div> --}}
+@endsection
+
+@section('kehadiranEdit')
+    <script>
+        function updateKeterangan(selectElement, id) {
+            var selectedValue = selectElement.value;
+            var keteranganInput = document.getElementById('keterangan-' + id);
+            var waktuHadirInput = document.getElementById('waktu_hadir-' + id);
+
+            if (selectedValue === 'Hadir') {
+                keteranganInput.value = 'Telat >30 Menit';
+                waktuHadirInput.value = ''; // Kosongkan input waktu jika diperlukan
+            } else if (selectedValue === 'Sakit' || selectedValue === 'Izin' || selectedValue === 'Alfa') {
+                keteranganInput.value = 'Tidak Hadir';
+                waktuHadirInput.value = null; // Kosongkan input waktu
+            }
+        }
+    </script>
 @endsection

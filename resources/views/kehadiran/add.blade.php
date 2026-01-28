@@ -24,11 +24,11 @@
         </div>
         <div class="col-lg-6">
             {{-- Scanner Barcode --}}
-            <div class="my-lg-3 mb-2 d-lg-flex justify-content-end">
-                <button id="btn-scanner" class="btn btn-danger btn-login text-white d-none" data-bs-toggle="modal"
+            {{-- <div class="my-lg-3 mb-2 d-lg-flex justify-content-end">
+                <button id="btn-scanner" class="btn btn-danger btn-login text-white" data-bs-toggle="modal"
                     data-bs-target="#scannerModal"><i class="bi bi-upc-scan"></i> Scanner
                     Barcode</button>
-            </div>
+            </div> --}}
         </div>
     </div>
 
@@ -194,57 +194,30 @@
                     @endif
                 </div>
 
-                <div class="d-flex justify-content-end mx-3">
+                {{-- <div class="d-flex justify-content-end mx-3">
                     <button id="btn-confirmation" class="btn btn-danger btn-login text-white" tabindex="5">Konfirmasi <i
                             class="bi bi-box-arrow-in-right"></i></button>
-                </div>
+                </div> --}}
 
-                <div id="presence-table" class="d-none">
+                <div id="presence-table">
                     <div class="table-responsive mx-3 my-2">
                         <table class="table table-bordered">
                             <thead class="table-secondary text-center" style="white-space: nowrap">
                                 <th>No.</th>
                                 <th>Nama Mahasiswa</th>
+                                <th>Prodi</th>
                                 <th>Kelas</th>
                                 <th>Gender</th>
                                 <th>Status</th>
-                                <th>Waktu Hadir</th>
-                                <th>Keterangan</th>
+                                {{-- <th>Waktu Hadir</th>
+                                <th>Keterangan</th> --}}
                             </thead>
                             <tbody style="white-space: nowrap;">
-                                {{-- @foreach ($datamahasiswa as $item)
-                                    <tr>  
-                                        <td class="text-center">{{ $loop->iteration }}.</td>
-                                        <td>{{ $item->nama }} <input type="text" name="mahasiswa_id[]" value="{{ $item->id }}"></td>
-                                        <td class="text-center">{{ $item->kelas->kelas }}</td>
-                                        <td class="text-center">{{ $item->jenis_kelamin }}</td>
-                                        <td class="text-center">
-                                            <select name="status_kehadiran[{{ $item->id }}]"
-                                                id="status-kehadiran-{{ $item->nim }}"
-                                                class="form-select @error('status_kehadiran') is-invalid @enderror"
-                                                tabindex="6" required onchange="updateTimeInput(this)">
-                                                <option disabled selected hidden></option>
-                                                <option value="Hadir">Hadir</option>
-                                                <option value="Sakit">Sakit</option>
-                                                <option value="Izin">Izin</option>
-                                                <option value="Alfa">Alfa</option>
-                                            </select>
-                                        </td>
-                                        <td class="text-center">
-                                            <input type="time" name="waktu_hadir[]"
-                                                id="time-input-{{ $item->nim }}" class="form-control time-input"
-                                                value="">
-                                        </td>
-                                        <td class="text-center" style="width: 150px">
-                                            <input type="text" name="keterangan[]" data-nim="{{ $item->nim }}"
-                                                class="form-control text-input" value="-" readonly>
-                                        </td>
-                                    </tr>
-                                @endforeach --}}
                                 @foreach ($datamahasiswa as $item)
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}.</td>
                                         <td>{{ $item->nama }}</td>
+                                        <td>{{ $item->kelas->prodi->prodi }}</td>
                                         <td class="text-center">{{ $item->kelas->kelas }}</td>
                                         <td class="text-center">{{ $item->jenis_kelamin }}</td>
                                         <td class="text-center">
@@ -259,7 +232,7 @@
                                                 <option value="Alfa">Alfa</option>
                                             </select>
                                         </td>
-                                        <td class="text-center">
+                                        {{-- <td class="text-center">
                                             <input type="time" name="waktu_hadir[{{ $item->id }}]"
                                                 id="time-input-{{ $item->nim }}" class="form-control time-input"
                                                 value="">
@@ -268,7 +241,7 @@
                                             <input type="text" name="keterangan[{{ $item->id }}]"
                                                 data-nim="{{ $item->nim }}" class="form-control text-input"
                                                 value="-" readonly>
-                                        </td>
+                                        </td> --}}
                                     </tr>
                                 @endforeach
 
@@ -277,12 +250,12 @@
                     </div>
 
                     <div class="d-flex justify-content-end mx-3 mb-5">
-                        <button type="button" data-bs-toggle="modal" data-bs-target="#submit-presence" class="btn btn-danger btn-login text-white mt-2" style="padding-left: 20px; padding-right: 20px;"
+                        <button type="submit" class="btn btn-danger btn-login text-white mt-2" style="padding-left: 20px; padding-right: 20px;"
                             tabindex="7">Simpan <i class="bi bi-box-arrow-in-right"></i></button>
                     </div>
 
                     <!-- Modal -->
-                    <div class="modal fade" id="submit-presence" tabindex="-1" aria-labelledby="exampleModalLabel"
+                    {{-- <div class="modal fade" id="submit-presence" tabindex="-1" aria-labelledby="exampleModalLabel"
                         aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered">
                             <div class="modal-content">
@@ -299,7 +272,7 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </div> --}}
                 </div>
             </form>
 

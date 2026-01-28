@@ -138,8 +138,8 @@ class KehadiranController extends Controller
                 'kehadiran_id'     => $kehadiran->id,
                 'mahasiswa_id'     => $mahasiswaId,
                 'status_kehadiran' => $status_kehadiran,
-                'waktu_hadir'      => $request->waktu_hadir[$mahasiswaId],
-                'keterangan'       => $request->keterangan[$mahasiswaId],
+                // 'waktu_hadir'      => $request->waktu_hadir[$mahasiswaId],
+                // 'keterangan'       => $request->keterangan[$mahasiswaId],
             ]);
         }
         // $dataStatusKehadiran[] = [
@@ -172,12 +172,6 @@ class KehadiranController extends Controller
         $jumlahHadir = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
             ->where('status_kehadiran', 'Hadir')
             ->count();
-        $jumlahDisiplin = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
-            ->whereIn('keterangan', ['Lebih Awal', 'Tepat Waktu'])
-            ->count();
-        $jumlahTelat = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
-            ->where('keterangan', 'like', 'Telat % Menit')
-            ->count();
         $jumlahIzin = Statuskehadiran::where('kehadiran_id', $kehadiran->id)
             ->where('status_kehadiran', 'Izin')
             ->count();
@@ -202,8 +196,6 @@ class KehadiranController extends Controller
             'jumlahIzin',
             'jumlahSakit',
             'jumlahAlfa',
-            'jumlahDisiplin',
-            'jumlahTelat',
         ), [
             'title' => 'kehadiran',
         ]);
@@ -260,6 +252,7 @@ class KehadiranController extends Controller
             // 'mahasiswa_id'          => 'required|exists:mahasiswas,id',
             'kegiatan_id'           => 'required|exists:kegiatans,id',
             'ket_kegiatan'          => 'required',
+            'sesi_id'              => 'required',
         ]);
 
         // Update Kehadiran
@@ -273,30 +266,35 @@ class KehadiranController extends Controller
         ]);
 
         // Update StatusKehadiran
-        // foreach ($request->status_kehadiran as $statusId => $status_kehadiran) {
-        //     $data = Statuskehadiran::findOrFail($statusId);
-        //     $data->update([
-        //         'status_kehadiran' => $status_kehadiran
-        //     ]);
-        // }
+        foreach ($request->status_kehadiran as $statusId => $status_kehadiran) {
+            $data = Statuskehadiran::findOrFail($statusId);
+            $waktu_hadir = $request->waktu_hadir[$statusId] ?? null;
+            $keterangan = $request->keterangan[$statusId] ?? null;
+            $data->update([
+                'status_kehadiran' => $status_kehadiran,
+                'waktu_hadir' => $waktu_hadir,
+                'keterangan' => $keterangan,
+            ]);
+        }
+        Statuskehadiran::updateOrCreate();
 
-        // // Update SesiDet
-        // $existingSesiIds = SesiDet::where('kehadiran_id', $kehadiran->id)->pluck('sesi_id')->toArray();
-        // // Delete SesiDet
-        // $sesiIdsToRemove = array_diff($existingSesiIds, $request->sesi_id ?? []);
-        // if (!empty($sesiIdsToRemove)) {
-        //     SesiDet::where('kehadiran_id', $kehadiran->id)
-        //         ->whereIn('sesi_id', $sesiIdsToRemove)
-        //         ->delete();
-        // }
-        // // Insert SesiDet
-        // $sesiIdsToAdd = array_diff($request->sesi_id ?? [], $existingSesiIds);
-        // foreach ($sesiIdsToAdd as $sesiId) {
-        //     SesiDet::create([
-        //         'kehadiran_id' => $kehadiran->id,
-        //         'sesi_id'      => $sesiId
-        //     ]);
-        // }
+        // Update SesiDet
+        $existingSesiIds = SesiDet::where('kehadiran_id', $kehadiran->id)->pluck('sesi_id')->toArray();
+        // Delete SesiDet
+        $sesiIdsToRemove = array_diff($existingSesiIds, $request->sesi_id ?? []);
+        if (!empty($sesiIdsToRemove)) {
+            SesiDet::where('kehadiran_id', $kehadiran->id)
+                ->whereIn('sesi_id', $sesiIdsToRemove)
+                ->delete();
+        }
+        // Insert SesiDet
+        $sesiIdsToAdd = array_diff($request->sesi_id ?? [], $existingSesiIds);
+        foreach ($sesiIdsToAdd as $sesiId) {
+            SesiDet::create([
+                'kehadiran_id' => $kehadiran->id,
+                'sesi_id'      => $sesiId
+            ]);
+        }
 
         // Return
         return redirect('/kehadiran')->with('kehadiranedit', 'Data kehadiran di ubah!');

@@ -18,6 +18,59 @@
 
     <section class="section dashboard">
 
+        <div class="row mt-3">
+            {{-- Total Mahasiswa Terdaftar --}}
+            <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h5 class="fw-bold text-default mt-3">Total Mahasiswa Terdaftar</h5>
+                    <label>Filter Tingkat</label>
+                    <form id="filterForm">
+                        <select name="tingkat" id="tingkatSelect" class="form-select">
+                            <option value="1" {{ request('tingkat') == '1' ? 'selected' : '' }}>Tingkat I</option>
+                            <option value="2" {{ request('tingkat') == '2' ? 'selected' : '' }}>Tingkat II</option>
+                            <option value="3" {{ request('tingkat') == '3' ? 'selected' : '' }}>Tingkat III
+                            </option>
+                        </select>
+                    </form>
+                    <div id="mahasiswaData">
+                        @include('dashboard.partials._mahasiswaData', [
+                            'mahasiswa' => $mahasiswa,
+                            'kelas' => $kelas,
+                        ])
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            {{-- Total Anggota LCC --}}
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    <div class="card-body">
+                        <h5 class="fw-bold text-default mt-3">Total Anggota LCC</h5>
+                        <label>Filter Tingkat</label>
+                        <form id="filterFormLCC">
+                            <select name="tingkatLCC" id="tingkatLCCSelect" class="form-select">
+                                <option value="1" {{ request('tingkatLCC') == '1' ? 'selected' : '' }}>Tingkat I
+                                </option>
+                                <option value="2" {{ request('tingkatLCC') == '2' ? 'selected' : '' }}>Tingkat II
+                                </option>
+                                <option value="3" {{ request('tingkatLCC') == '3' ? 'selected' : '' }}>Tingkat III
+                                </option>
+                            </select>
+                        </form>
+                        <div id="mahasiswaLCCData">
+                            @include('dashboard.partials._mahasiswaLCC', [
+                                'mahasiswaLCC' => $mahasiswaLCC,
+                                'kelasLCC' => $kelasLCC,
+                            ])
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
         <div class="row d-flex align-items-stretch">
             <div class="col-lg-7">
 
@@ -51,31 +104,30 @@
                     </div>
                 </div>
 
-                {{-- Total Mahasiswa Terdaftar --}}
+            </div>
+
+            {{-- Perbandingan Anggota LCC Dengan Bukan Anggota --}}
+            <div class="col-lg-5">
                 <div class="card shadow">
                     <div class="card-body">
-                        <h5 class="fw-bold text-default mt-3">Total Mahasiswa Terdaftar</h5>
-                        <label>Filter Tingkat</label>
-                        <form id="filterForm">
-                            <select name="tingkat" id="tingkatSelect" class="form-select">
-                                <option value="1" {{ request('tingkat') == '1' ? 'selected' : '' }}>Tingkat I</option>
-                                <option value="2" {{ request('tingkat') == '2' ? 'selected' : '' }}>Tingkat II</option>
-                                <option value="3" {{ request('tingkat') == '3' ? 'selected' : '' }}>Tingkat III
-                                </option>
+                        <h5 class="text-center text-default mb-4 mt-3 fw-bold">Perbandingan Anggota LCC dengan Bukan Anggota
+                            Prodi MI
+                        </h5>
+                        <div class="mb-4">
+                            <label for="level-filter" class="form-label me-2">Filter Tingkat:</label>
+                            <select id="level-filter" class="form-select">
+                                <option value="1">Tingkat I</option>
+                                <option value="2">Tingkat II</option>
+                                <option value="3">Tingkat III</option>
                             </select>
-                        </form>
-                        <div id="mahasiswaData">
-                            @include('dashboard.partials._mahasiswaData', [
-                                'mahasiswa' => $mahasiswa,
-                                'kelas' => $kelas,
-                            ])
                         </div>
+                        <canvas id="organizationChart"></canvas>
                     </div>
                 </div>
             </div>
 
             {{-- Top 7 Mahasiswa Terajin --}}
-            <div class="col-lg-5">
+            {{-- <div class="col-lg-5">
                 <div class="card shadow" style="height: 96%">
                     <div class="card-body">
                         <h5 class="fw-bold text-default text-center mt-4">Top 7 Mahasiswa Terajin <br> Tingkat I</h5>
@@ -120,55 +172,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <div class="row mt-3">
-            {{-- Perbandingan Anggota LCC Dengan Bukan Anggota --}}
-            <div class="col-lg-5 mb-4">
-                <div class="card shadow h-100">
-                    <div class="card-body">
-                        <h5 class="text-center text-default mb-4 mt-3 fw-bold">Perbandingan Anggota LCC dengan Bukan Anggota Prodi MI
-                        </h5>
-                        <div class="mb-4">
-                            <label for="level-filter" class="form-label me-2">Filter Tingkat:</label>
-                            <select id="level-filter" class="form-select">
-                                <option value="1">Tingkat I</option>
-                                <option value="2">Tingkat II</option>
-                                <option value="3">Tingkat III</option>
-                            </select>
-                        </div>
-                        <canvas id="organizationChart"></canvas>
-                    </div>
-                </div>
-            </div>
-
-            {{-- Total Anggota LCC --}}
-            <div class="col-lg-7">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h5 class="fw-bold text-default mt-3">Total Anggota LCC</h5>
-                        <label>Filter Tingkat</label>
-                        <form id="filterFormLCC">
-                            <select name="tingkatLCC" id="tingkatLCCSelect" class="form-select">
-                                <option value="1" {{ request('tingkatLCC') == '1' ? 'selected' : '' }}>Tingkat I
-                                </option>
-                                <option value="2" {{ request('tingkatLCC') == '2' ? 'selected' : '' }}>Tingkat II
-                                </option>
-                                <option value="3" {{ request('tingkatLCC') == '3' ? 'selected' : '' }}>Tingkat III
-                                </option>
-                            </select>
-                        </form>
-                        <div id="mahasiswaLCCData">
-                            @include('dashboard.partials._mahasiswaLCC', [
-                                'mahasiswaLCC' => $mahasiswaLCC,
-                                'kelasLCC' => $kelasLCC,
-                            ])
-                        </div>
-                    </div>
-
-                </div>
-            </div>
+            </div> --}}
         </div>
 
     </section>

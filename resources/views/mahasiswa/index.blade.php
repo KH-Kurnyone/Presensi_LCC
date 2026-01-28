@@ -135,10 +135,11 @@
                             {{-- <th scope="col">Prodi</th> --}}
                             <th scope="col">Kelas</th>
                             <th scope="col">Gender</th>
+                            <th scope="col">No. Telp.</th>
                             <th scope="col">Status UKM</th>
-                            <th scope="col">Jabatan</th>
+                            {{-- <th scope="col">Jabatan</th> --}}
                             <th scope="col">Tingkat</th>
-                            <th scope="col">Angkatan</th>
+                            {{-- <th scope="col">Angkatan</th> --}}
                             <th scope="col">Aksi</th>
                         </tr>
                     </thead>
@@ -146,6 +147,12 @@
                         @php
                             use Carbon\Carbon;
                             Carbon::setLocale('id');
+                        @endphp
+                        @php
+                            function formatPhoneNumber($number)
+                            {
+                                return implode('-', str_split($number, 4));
+                            }
                         @endphp
                         @foreach ($datamahasiswa as $item)
                             <tr>
@@ -158,7 +165,7 @@
                                 {{-- <td class="text-center">{{ $item->kelas->prodi->singkatan }}</td> --}}
                                 <td class="text-center">{{ $item->kelas->kelas }}</td>
                                 <td class="text-center">{{ $item->jenis_kelamin }}</td>
-
+                                <td>{{ formatPhoneNumber($item->no_telpon) }}</td>
                                 <td class="text-center">
                                     @if ($item->status_ukm == 'Anggota LCC')
                                         <span class="badge rounded-pill bg-success py-2"
@@ -170,7 +177,7 @@
                                             style="padding: 0px 43px 0px 43px">{{ $item->status_ukm }}</span>
                                     @endif
                                 </td>
-                                <td class="text-center">{{ $item->jabatan->jabatan }}</td>
+                                {{-- <td class="text-center">{{ $item->jabatan->jabatan }}</td> --}}
                                 <td class="text-center">
                                     @if ($item->kelas->tingkat == 1)
                                         <span class="badge rounded-pill bg-success py-2 px-4">I</span>
@@ -182,9 +189,9 @@
                                         <span class="badge rounded-pill bg-secondary p-2">Alumni</span>
                                     @endif
                                 </td>
-                                <td class="text-center">
+                                {{-- <td class="text-center">
                                     {{ $item->kelas->angkatan }}
-                                </td>
+                                </td> --}}
                                 <td class="text-center">
                                     <button class="btn btn-primary" data-bs-toggle="modal"
                                         data-bs-target="#crud{{ $item->id }}"><i

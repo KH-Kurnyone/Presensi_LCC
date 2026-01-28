@@ -287,6 +287,7 @@
     @yield('js_mahasiswaEdit')
     @yield('js_dashboard')
     @yield('profile')
+    @yield('kehadiranEdit')
     {{-- @yield('js_sesi') --}}
 
     <script>
